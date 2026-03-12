@@ -1008,8 +1008,10 @@
                         <table class="w-full text-left text-[12px]">
                             <thead class="bg-emerald-50 border-b border-emerald-200 text-emerald-800">
                                 <tr>
-                                    <th class="py-3 px-4 font-bold">ID / Бенефитсиар</th>
-                                    <th class="py-3 px-4 font-bold">Сектор / Маблағ</th>
+                                    <th class="py-3 px-4 font-bold"><span class="filter-text"><span>ID</span><span
+                                                class="ru-block">Бенефитсиар</span></span></th>
+                                    <th class="py-3 px-4 font-bold"><span class="filter-text"><span>Сектор</span><span
+                                                class="ru-block">Маблағ</span></span></th>
                                     <th class="py-3 px-4 font-bold">Статус</th>
                                 </tr>
                             </thead>
@@ -1054,8 +1056,9 @@
                         </div>
 
                         <div class="border border-gray-200 rounded-xl p-4 shadow-sm bg-white" id="piu-card-1">
-                            <div class="flex justify-between items-center mb-3"><b>Баҳогузории иҷтимоӣ-экологӣ <span
-                                        class="ru font-normal">/ Социально-экологическая оценка</span></b> <button
+                            <div class="flex justify-between items-center mb-3"><b><span
+                                        class="filter-text"><span>Баҳогузории иҷтимоӣ-экологӣ</span><span
+                                            class="ru-block">Социально-экологическая оценка</span></span></b> <button
                                     id="piu-trigger-1" onclick="togglePiuForm(1)"
                                     class="text-blue-600 text-[12px] font-bold px-3 py-1 bg-blue-50 rounded hover:bg-blue-100 transition-colors">Ворид
                                     кардан <span class="ru">/ Внести</span></button></div>
@@ -1112,16 +1115,18 @@
 
                             <div
                                 class="bg-teal-50 border border-teal-200 p-2.5 rounded-xl flex items-center gap-3 shadow-sm flex-1 sm:flex-none">
-                                <label class="text-[12px] font-bold text-teal-900 whitespace-nowrap">№ протокол <span
-                                        class="ru font-normal">/ №:</span></label>
+                                <label class="text-[12px] font-bold text-teal-900 whitespace-nowrap"><span
+                                        class="filter-text"><span>№ протокол</span><span
+                                            class="ru-block">№:</span></span></label>
                                 <input type="text" id="batch-protocol-number" readonly
                                     class="border border-teal-200 rounded-md px-2 py-1 text-[13px] outline-none bg-teal-100/50 text-teal-900 font-bold w-full sm:w-28 uppercase cursor-not-allowed"
                                     title="Рақами худкор / Автоматический номер">
                             </div>
                             <div
                                 class="bg-teal-50 border border-teal-200 p-2.5 rounded-xl flex items-center gap-3 shadow-sm flex-1 sm:flex-none">
-                                <label class="text-[12px] font-bold text-teal-900 whitespace-nowrap">Сана <span
-                                        class="ru font-normal">/ Дата:</span></label>
+                                <label class="text-[12px] font-bold text-teal-900 whitespace-nowrap"><span
+                                        class="filter-text"><span>Сана</span><span
+                                            class="ru-block">Дата:</span></span></label>
                                 <input type="date" id="batch-protocol-date"
                                     class="border border-teal-300 rounded-md px-2 py-1 text-[13px] outline-none focus:border-teal-500 bg-white text-teal-900 font-medium w-full sm:w-auto">
                             </div>
@@ -1132,12 +1137,15 @@
                         <table class="w-full text-left text-[12px]">
                             <thead class="bg-gray-50 border-b border-gray-200 text-gray-600">
                                 <tr>
-                                    <th class="py-3 px-4 font-bold">ID / Бенефитсиар</th>
-                                    <th class="py-3 px-4 font-bold">Сектор / Маблағ</th>
-                                    <th class="py-3 px-4 font-bold text-center w-40">Қарор <span
-                                            class="ru font-normal">/ Решение</span></th>
-                                    <th class="py-3 px-4 font-bold">Эзоҳ <span class="ru font-normal">/
-                                            Комментарий</span></th>
+                                    <th class="py-3 px-4 font-bold"><span class="filter-text"><span>ID</span><span
+                                                class="ru-block">Бенефитсиар</span></span></th>
+                                    <th class="py-3 px-4 font-bold"><span class="filter-text"><span>Сектор</span><span
+                                                class="ru-block">Маблағ</span></span></th>
+                                    <th class="py-3 px-4 font-bold text-center w-40"><span
+                                            class="filter-text items-center text-center mx-auto"><span>Қарор</span><span
+                                                class="ru-block">Решение</span></span></th>
+                                    <th class="py-3 px-4 font-bold"><span class="filter-text"><span>Эзоҳ</span><span
+                                                class="ru-block">Комментарий</span></span></th>
                                 </tr>
                             </thead>
                             <tbody id="batch-tbody" class="divide-y divide-gray-100 bg-white">
@@ -1208,20 +1216,23 @@
                 <div class="p-6">
                     <div id="history-summary" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
-                            <p class="text-[11px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Санаи эҷод
-                                <span class="ru font-normal">/ Создано</span>
+                            <p class="text-[11px] text-slate-500 uppercase tracking-wider mb-1 font-bold"><span
+                                    class="filter-text"><span>Санаи эҷод</span><span
+                                        class="ru-block">Создано</span></span>
                             </p>
                             <p id="summ-created" class="text-[14px] font-bold text-slate-800">—</p>
                         </div>
                         <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-center">
-                            <p class="text-[11px] text-slate-500 uppercase tracking-wider mb-1 font-bold">Миқдори такмил
-                                <span class="ru font-normal">/ Доработок</span>
+                            <p class="text-[11px] text-slate-500 uppercase tracking-wider mb-1 font-bold"><span
+                                    class="filter-text"><span>Миқдори такмил</span><span
+                                        class="ru-block">Доработок</span></span>
                             </p>
                             <p id="summ-revs" class="text-[14px] font-bold text-slate-800">0 / 3</p>
                         </div>
                         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex flex-col justify-center">
-                            <p class="text-[11px] text-blue-600 uppercase tracking-wider mb-1 font-bold">Статуси ҷорӣ
-                                <span class="ru font-normal">/ Статус</span>
+                            <p class="text-[11px] text-blue-600 uppercase tracking-wider mb-1 font-bold"><span
+                                    class="filter-text"><span>Статуси ҷорӣ</span><span
+                                        class="ru-block">Статус</span></span>
                             </p>
                             <p id="summ-status" class="text-[14px] font-bold text-blue-900">—</p>
                         </div>
@@ -1229,15 +1240,17 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                         <div class="lg:col-span-7">
-                            <h3 class="text-[14px] font-bold text-gray-800 mb-6 uppercase tracking-wider">Таърихи
-                                тағйирот <span class="ru font-normal">/ История изменений</span></h3>
+                            <h3 class="text-[14px] font-bold text-gray-800 mb-6 uppercase tracking-wider"><span
+                                    class="filter-text"><span>Таърихи тағйирот</span><span class="ru-block">История
+                                        изменений</span></span></h3>
                             <div id="dynamic-timeline"
                                 class="relative border-l-2 border-slate-200 ml-4 space-y-0 mt-4 pb-4"></div>
                         </div>
 
                         <div class="lg:col-span-5 flex flex-col gap-4">
-                            <h3 class="text-[14px] font-bold text-gray-800 mb-2 uppercase tracking-wider">Ҳуҷҷатҳои
-                                ниҳоӣ <span class="ru font-normal">/ Финальные документы</span></h3>
+                            <h3 class="text-[14px] font-bold text-gray-800 mb-2 uppercase tracking-wider"><span
+                                    class="filter-text"><span>Ҳуҷҷатҳои ниҳоӣ</span><span class="ru-block">Финальные
+                                        документы</span></span></h3>
                             <div
                                 class="bg-white border border-blue-200 rounded-xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
                                 <div class="flex items-center gap-3">
