@@ -98,7 +98,11 @@
         document.getElementById('mainDashboardGrid').innerHTML = '';
         document.getElementById('list-tbody').innerHTML = '';
 
-        window.state.applications.forEach(function (app) { appendCardAndRow(app.id, app.status, app); });
+        if (window.activeMainFilter === 'approved_registry') {
+            (window.state.protocols || []).forEach(function (p) { appendProtocolCard(p); });
+        } else {
+            window.state.applications.forEach(function (app) { appendCardAndRow(app.id, app.status, app); });
+        }
 
         updateAllBadges();
         updateDashboardFilter();
@@ -122,14 +126,65 @@
     }
 
     function appendProtocolCard(prot) {
+        const clean = function (v) { return String(v || '').replace(/<[^>]*>?/gm, '').toLowerCase(); };
+        const listApps = (prot.apps || []).map(function (a) { return window.getApp(a.id); }).filter(Boolean);
+        const listCount = listApps.length;
+        const approvedCount = (prot.apps || []).filter(function (a) { return a.decision === 'ok'; }).length;
+        const rejectedCount = (prot.apps || []).filter(function (a) { return a.decision === 'rej'; }).length;
+        const totalAmount = (prot.totalAmount || 0).toLocaleString('ru-RU');
+
+        const sectorValues = [];
+        const regionValues = [];
+        const genderValues = [];
+        const searchParts = [String(prot.id || ''), String(prot.date || ''), String(prot.exactTime || '')];
+
+        listApps.forEach(function (app) {
+            const sector = clean(app.sector);
+            if (sector && !sectorValues.includes(sector)) sectorValues.push(sector);
+
+            const db = (window.mockDatabase || {})[app.id] || {};
+            const region = clean(db.address);
+            const gender = clean(db.gender);
+            if (region && !regionValues.includes(region)) regionValues.push(region);
+            if (gender && !genderValues.includes(gender)) genderValues.push(gender);
+
+            searchParts.push(String(app.id || ''));
+            searchParts.push(String(app.name || ''));
+            searchParts.push(String(app.sector || ''));
+            searchParts.push(String(db['full-name'] || ''));
+            searchParts.push(String(db.address || ''));
+        });
+
         const card = document.createElement('div');
+        card.setAttribute('data-status', 'approved_list');
+        card.setAttribute('data-list-id', String(prot.id || ''));
+        card.setAttribute('data-sector-values', sectorValues.join('|'));
+        card.setAttribute('data-region-values', regionValues.join('|'));
+        card.setAttribute('data-gender-values', genderValues.join('|'));
+        card.setAttribute('data-search', clean(searchParts.join(' ')));
         card.className = 'bg-teal-50 border border-teal-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-teal-400 relative overflow-hidden';
-        card.innerHTML = '<div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500"></div><div class="flex justify-between items-start mb-1 mt-1"><h3 class="font-bold text-[15px] text-teal-900 leading-tight">Протокол <br/><span class="text-[13px] text-teal-700">' + prot.id + '</span></h3><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда</div></div><div class="text-[11px] text-teal-600 font-medium mb-4 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> ' + prot.date + ' (' + prot.exactTime + ')</div><div class="grid grid-cols-2 gap-2 mb-4 bg-white/60 p-3 rounded-xl border border-teal-100"><div class="text-[11px] text-slate-600">Тасдиқ: <strong class="text-emerald-600 text-[13px] block">' + prot.okCount + '</strong></div><div class="text-[11px] text-slate-600">Рад/Такмил: <strong class="text-red-500 text-[13px] block">' + (prot.rejCount + prot.revCount) + '</strong></div></div><div class="flex justify-between items-center mt-auto border-t border-teal-200/60 pt-4"><span class="font-black text-[14px] text-teal-700">' + prot.totalAmount.toLocaleString('ru-RU') + ' сом.</span><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">Дидан <span class="ru font-normal">/ Просмотр</span></button></div>';
+        card.innerHTML = '<div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500"></div><div class="flex justify-between items-start mb-1 mt-1"><h3 class="font-bold text-[15px] text-teal-900 leading-tight">Рӯйхат <br/><span class="text-[13px] text-teal-700">' + prot.id + '</span></h3><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда</div></div><div class="text-[11px] text-teal-600 font-medium mb-4 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Сформирован: ' + prot.date + ' (' + prot.exactTime + ')</div><div class="grid grid-cols-2 gap-2 mb-4 bg-white/60 p-3 rounded-xl border border-teal-100"><div class="text-[11px] text-slate-600">Дар рӯйхат: <strong class="text-slate-700 text-[13px] block">' + listCount + '</strong></div><div class="text-[11px] text-slate-600">Тасдиқ: <strong class="text-emerald-600 text-[13px] block">' + approvedCount + '</strong></div><div class="text-[11px] text-slate-600">Рад: <strong class="text-red-500 text-[13px] block">' + rejectedCount + '</strong></div><div class="text-[11px] text-slate-600">Маблағ: <strong class="text-teal-700 text-[13px] block">' + totalAmount + ' сом.</strong></div></div><div class="flex justify-end items-center mt-auto border-t border-teal-200/60 pt-4"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">Кушодан <span class="ru font-normal">/ Открыть список</span></button></div>';
+        card.onclick = function (e) {
+            if (!e.target.closest('button')) {
+                if (typeof window.openCommitteeBatch === 'function') window.openCommitteeBatch(prot.id);
+            }
+        };
         document.getElementById('mainDashboardGrid').appendChild(card);
 
         const row = document.createElement('tr');
+        row.setAttribute('data-status', 'approved_list');
+        row.setAttribute('data-list-id', String(prot.id || ''));
+        row.setAttribute('data-sector-values', sectorValues.join('|'));
+        row.setAttribute('data-region-values', regionValues.join('|'));
+        row.setAttribute('data-gender-values', genderValues.join('|'));
+        row.setAttribute('data-search', clean(searchParts.join(' ')));
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in bg-teal-50/30';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-teal-500 align-middle"><div class="font-bold text-teal-900 text-[13px] mb-0.5">Протокол ' + prot.id + '</div><div class="text-[11px] text-teal-600 font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ' + prot.date + ' (' + prot.exactTime + ')</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">Одобрено: <b class="text-emerald-600">' + prot.okCount + '</b><br>Отклонено: <b class="text-red-500">' + (prot.rejCount + prot.revCount) + '</b></td><td class="py-4 px-5 align-middle"><div class="font-black text-teal-700 text-[13px]">' + prot.totalAmount.toLocaleString('ru-RU') + ' сомонӣ</div></td><td class="py-4 px-5 align-middle"><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда</div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="text-teal-600 text-[12px] font-bold hover:underline">Дидан / Просмотр</button></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-teal-500 align-middle"><div class="font-bold text-teal-900 text-[13px] mb-0.5">Рӯйхат ' + prot.id + '</div><div class="text-[11px] text-teal-600 font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ' + prot.date + ' (' + prot.exactTime + ')</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">Дар рӯйхат: <b class="text-slate-700">' + listCount + '</b><br>Тасдиқ: <b class="text-emerald-600">' + approvedCount + '</b>, Рад: <b class="text-red-500">' + rejectedCount + '</b></td><td class="py-4 px-5 align-middle"><div class="font-black text-teal-700 text-[13px]">' + totalAmount + ' сомонӣ</div></td><td class="py-4 px-5 align-middle"><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда</div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="text-teal-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
+        row.onclick = function (e) {
+            if (!e.target.closest('button') && typeof window.openCommitteeBatch === 'function') {
+                window.openCommitteeBatch(prot.id);
+            }
+        };
         document.getElementById('list-tbody').appendChild(row);
     }
 
@@ -401,6 +456,46 @@
             return;
         }
 
+        if (window.activeMainFilter === 'approved_registry') {
+            const searchInput = document.getElementById('filter-search-issued');
+            const searchFilter = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const sectorFilter = (document.getElementById('filter-sector') || {}).value || '';
+            const regionFilter = (document.getElementById('filter-region') || {}).value || '';
+            const genderFilter = (document.getElementById('filter-gender') || {}).value || '';
+
+            let visibleCount = 0;
+            document.querySelectorAll('#mainDashboardGrid > div[data-status="approved_list"], #list-tbody > tr[data-status="approved_list"]').forEach(function (el) {
+                const sectors = String(el.getAttribute('data-sector-values') || '');
+                const regions = String(el.getAttribute('data-region-values') || '');
+                const genders = String(el.getAttribute('data-gender-values') || '');
+                const searchHaystack = String(el.getAttribute('data-search') || '');
+
+                let show = true;
+                if (sectorFilter && !sectors.includes(String(sectorFilter).toLowerCase())) show = false;
+                if (regionFilter && !regions.includes(String(regionFilter).toLowerCase())) show = false;
+                if (genderFilter && !genders.includes(String(genderFilter).toLowerCase())) show = false;
+                if (searchFilter && !searchHaystack.includes(searchFilter)) show = false;
+
+                if (show) {
+                    if (el.tagName === 'TR') el.style.display = 'table-row';
+                    else el.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+
+            const esApproved = document.getElementById('empty-state');
+            if (visibleCount === 0) {
+                esApproved.classList.remove('hidden');
+                esApproved.classList.add('flex');
+            } else {
+                esApproved.classList.add('hidden');
+                esApproved.classList.remove('flex');
+            }
+            return;
+        }
+
         const searchInput = document.getElementById('filter-search-issued');
         const searchFilter = searchInput ? searchInput.value.toLowerCase() : '';
         let visibleCount = 0;
@@ -529,6 +624,11 @@
         if (searchIssued) {
             searchIssued.addEventListener('input', updateDashboardFilter);
         }
+
+        ['filter-sector', 'filter-region', 'filter-gender'].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', updateDashboardFilter);
+        });
 
         const approvedYear = document.getElementById('approved-stats-year');
         if (approvedYear) {
