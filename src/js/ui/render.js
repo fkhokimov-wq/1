@@ -50,7 +50,7 @@
         document.querySelector('.tab-btn[data-target="pane-approved"]').click();
     }
 
-    window.activeMainFilter = window.activeMainFilter || 'all';
+    window.activeMainFilter = window.activeMainFilter || 'statuses';
     window.activeComFilter = window.activeComFilter || 'protocols';
     window.activeFacFilter = window.activeFacFilter || 'all_fac';
     window.activeStatFilter = window.activeStatFilter || 'all_stat';
@@ -619,8 +619,7 @@
             const appFullObj = (window.mockDatabase || {})[appId] || {};
             let show = false;
 
-            if (window.activeMainFilter === 'all') show = true;
-            else if (window.activeMainFilter === 'facilitator') {
+            if (window.activeMainFilter === 'facilitator') {
                 if (window.activeFacFilter === 'all_fac') show = true;
                 else if (window.activeFacFilter === 'draft' && status === 'draft') show = true;
                 else if (window.activeFacFilter === 'rev' && status === 'fac_revision') show = true;
@@ -840,7 +839,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            renderAllCards();
+            const defaultMainBtn = document.querySelector('.filter-btn[data-filter="' + window.activeMainFilter + '"]');
+            if (defaultMainBtn) defaultMainBtn.click();
+            else renderAllCards();
         });
     }
 
