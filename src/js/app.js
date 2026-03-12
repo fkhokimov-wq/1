@@ -1,0 +1,38 @@
+// Modular bootstrap: initialize app only from extracted modules.
+(function bootstrapApp() {
+    if (window.__grantAppBootstrapped) return;
+    window.__grantAppBootstrapped = true;
+
+    const moduleScripts = [
+        'src/js/core/utils.js',
+        'src/js/state/seed-dictionaries.js',
+        'src/js/state/seed-applications.js',
+        'src/js/state/seed-monitoring.js',
+        'src/js/state/seed-data.js',
+        'src/js/state/store.js',
+        'src/js/ui/render.js',
+        'src/js/features/facilitator.js',
+        'src/js/features/gmc.js',
+        'src/js/features/piu.js',
+        'src/js/features/committee.js',
+        'src/js/features/monitoring.js'
+    ];
+
+    function loadScript(src) {
+        return new Promise(function (resolve, reject) {
+            const tag = document.createElement('script');
+            tag.src = src;
+            tag.async = false;
+            tag.onload = resolve;
+            tag.onerror = function () {
+                reject(new Error('Failed to load ' + src));
+            };
+            document.head.appendChild(tag);
+        });
+    }
+
+    Promise.all(moduleScripts.map(loadScript))
+        .catch(function () {
+            // Keep app usable even if a helper module fails to load.
+        });
+})();

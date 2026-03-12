@@ -1,0 +1,198 @@
+(function initPiuFeature() {
+    window.AppFeatures = window.AppFeatures || {};
+    if (window.AppFeatures.piu) return;
+
+    window.currentPiuAppId = null;
+
+    function loadPiuForm(id) {
+        window.currentPiuAppId = id;
+        const app = window.getApp(id);
+        if (!app) return;
+
+        document.getElementById('piu-app-name').innerHTML = app.name;
+        document.getElementById('piu-app-id').innerHTML = app.id;
+        document.getElementById('piu-evaluation-content').classList.remove('hidden');
+
+        if (!app.piuDecisions) app.piuDecisions = { 1: null };
+        if (!app.piuStatus) app.piuStatus = { 1: 'pending' };
+
+        const isReadonly = ['gmc_preparation', 'gmc_ready_for_registry', 'com_review', 'approved'].includes(app.status);
+
+        [1].forEach(function (i) {
+            const okBtn = document.getElementById('btn-app-' + i);
+            const revBtn = document.getElementById('btn-rev-' + i);
+            const triggerBtn = document.getElementById('piu-trigger-' + i);
+            const formContainer = document.getElementById('form-' + i);
+            const commentBlock = document.getElementById('piu-comment-block-' + i);
+            const saveBtn = document.getElementById('piu-save-btn-' + i);
+
+            formContainer.classList.add('hidden');
+            commentBlock.classList.add('hidden');
+            okBtn.className = 'flex-1 py-2 border rounded-lg text-xs hover:bg-gray-50 flex flex-col items-center transition-colors';
+            revBtn.className = 'flex-1 py-2 border rounded-lg text-xs hover:bg-gray-50 flex flex-col items-center transition-colors';
+
+            if (app.piuStatus[i] === 'completed') {
+                if (isReadonly) {
+                    triggerBtn.classList.add('hidden');
+                    formContainer.classList.remove('hidden');
+                    if (saveBtn) saveBtn.classList.add('hidden');
+                    okBtn.disabled = true;
+                    revBtn.disabled = true;
+                    document.getElementById('piu-comment-' + i).disabled = true;
+                } else {
+                    triggerBtn.classList.remove('hidden');
+                    triggerBtn.className = 'text-slate-500 text-[12px] font-bold px-3 py-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors';
+                    triggerBtn.innerHTML = "Таҳрир <span class='ru'>/ Изменить</span>";
+                    if (saveBtn) saveBtn.classList.remove('hidden');
+                    okBtn.disabled = false;
+                    revBtn.disabled = false;
+                    document.getElementById('piu-comment-' + i).disabled = false;
+                }
+
+                if (app.piuDecisions[i] === 'approve') {
+                    okBtn.className = 'flex-1 py-2 border rounded-lg text-xs border-[#41c79a] bg-[#e6f8f1] text-[#41c79a] font-bold flex flex-col items-center leading-tight transition-colors';
+                } else if (app.piuDecisions[i] === 'resubmit') {
+                    revBtn.className = 'flex-1 py-2 border rounded-lg text-xs border-amber-400 bg-amber-50 text-amber-700 font-bold flex flex-col items-center leading-tight transition-colors';
+                    commentBlock.classList.remove('hidden');
+                    document.getElementById('piu-comment-' + i).value = app.piuComment || '';
+                }
+            } else {
+                document.getElementById('piu-comment-' + i).value = '';
+                triggerBtn.classList.remove('hidden');
+                triggerBtn.className = 'text-blue-600 text-[12px] font-bold px-3 py-1 bg-blue-50 rounded hover:bg-blue-100 transition-colors';
+                triggerBtn.innerHTML = "Ворид кардан <span class='ru'>/ Внести</span>";
+                if (saveBtn) saveBtn.classList.remove('hidden');
+                okBtn.disabled = false;
+                revBtn.disabled = false;
+                document.getElementById('piu-comment-' + i).disabled = false;
+            }
+        });
+
+        const count = Object.values(app.piuStatus).filter(function (s) { return s === 'completed'; }).length;
+        document.getElementById('piu-counter').textContent = count + '/1';
+        const showUpload = Object.values(app.piuDecisions).includes('resubmit');
+
+        const finBtn = document.getElementById('finalize-piu-btn');
+        if (isReadonly) {
+            finBtn.classList.add('hidden');
+            document.getElementById('piu-revision-files').classList.add('hidden');
+        } else {
+            finBtn.classList.remove('hidden');
+            if (showUpload) document.getElementById('piu-revision-files').classList.remove('hidden');
+            else document.getElementById('piu-revision-files').classList.add('hidden');
+
+            if (count === 1) {
+                finBtn.disabled = false;
+                finBtn.className = 'w-full bg-[#5b4ef5] text-white py-3 rounded-lg text-[13px] font-bold hover:bg-[#4b3ed5] mt-4 cursor-pointer shadow-sm transition-colors flex flex-col items-center leading-tight';
+            } else {
+                finBtn.disabled = true;
+                finBtn.className = 'w-full bg-gray-200 text-gray-500 py-3 rounded-lg text-[13px] font-bold cursor-not-allowed mt-4 flex flex-col items-center leading-tight shadow-sm';
+            }
+        }
+    }
+
+    function openPiuFor(id) {
+        window.currentOpenedAppId = id;
+        window.setAvailableTabs(['pane-piu', 'pane-approved']);
+        document.getElementById('applicationModal').classList.remove('hidden');
+        document.querySelector('.tab-btn[data-target="pane-piu"]').click();
+    }
+
+    function togglePiuForm(id) {
+        const form = document.getElementById('form-' + id);
+        if (form) form.classList.toggle('hidden');
+    }
+
+    function setPiuDecision(id, dec) {
+        const app = window.getApp(window.currentPiuAppId);
+        if (!app) return;
+        app.piuDecisions[id] = dec;
+
+        const okBtn = document.getElementById('btn-app-' + id);
+        const revBtn = document.getElementById('btn-rev-' + id);
+        const commentBlock = document.getElementById('piu-comment-block-' + id);
+        okBtn.className = 'flex-1 py-2 border rounded-lg text-xs hover:bg-gray-50 flex flex-col items-center leading-tight transition-colors';
+        revBtn.className = 'flex-1 py-2 border rounded-lg text-xs hover:bg-gray-50 flex flex-col items-center leading-tight transition-colors';
+
+        if (dec === 'approve') {
+            okBtn.className = 'flex-1 py-2 border rounded-lg text-xs border-[#41c79a] bg-[#e6f8f1] text-[#41c79a] font-bold flex flex-col items-center leading-tight transition-colors';
+            commentBlock.classList.add('hidden');
+        } else if (dec === 'resubmit') {
+            revBtn.className = 'flex-1 py-2 border rounded-lg text-xs border-amber-400 bg-amber-50 text-amber-700 font-bold flex flex-col items-center leading-tight transition-colors';
+            commentBlock.classList.remove('hidden');
+        }
+
+        const showUpload = Object.values(app.piuDecisions).includes('resubmit');
+        if (showUpload) document.getElementById('piu-revision-files').classList.remove('hidden');
+        else document.getElementById('piu-revision-files').classList.add('hidden');
+    }
+
+    function savePiuCard(id) {
+        const app = window.getApp(window.currentPiuAppId);
+        if (!app) return;
+        if (!app.piuDecisions[id]) {
+            alert('Қарорро интихоб кунед / Выберите решение');
+            return;
+        }
+        if (app.piuDecisions[id] === 'resubmit' && !document.getElementById('piu-comment-' + id).value.trim()) {
+            alert('Лутфан сабаби баргардониданро нависед!');
+            return;
+        }
+        app.piuStatus[id] = 'completed';
+        app.piuComment = document.getElementById('piu-comment-' + id).value;
+        togglePiuForm(id);
+        document.getElementById('piu-trigger-' + id).className = 'text-slate-500 text-[12px] font-bold px-3 py-1 bg-slate-100 rounded hover:bg-slate-200 transition-colors';
+        document.getElementById('piu-trigger-' + id).innerHTML = "Таҳрир <span class='ru'>/ Изменить</span>";
+
+        const count = Object.values(app.piuStatus).filter(function (s) { return s === 'completed'; }).length;
+        document.getElementById('piu-counter').textContent = count + '/1';
+        if (count === 1) {
+            const btn = document.getElementById('finalize-piu-btn');
+            btn.disabled = false;
+            btn.className = 'w-full bg-[#5b4ef5] text-white py-3 rounded-lg text-[13px] font-bold hover:bg-[#4b3ed5] mt-4 cursor-pointer shadow-sm transition-colors flex flex-col items-center leading-tight';
+        }
+    }
+
+    function finalizePiu() {
+        const app = window.getApp(window.currentPiuAppId);
+        if (!app) return;
+        app.date = window.getCurrentDateTime();
+
+        const hasRev = Object.values(app.piuDecisions).includes('resubmit');
+        const combinedComments = [];
+        [1].forEach(function (i) {
+            const c = document.getElementById('piu-comment-' + i).value.trim();
+            if (c && app.piuDecisions[i] === 'resubmit') combinedComments.push(c);
+        });
+        const finalComment = combinedComments.join(' | ');
+
+        if (hasRev) {
+            app.status = 'gmc_revision';
+            window.addLog(app, 'ГРП / PIU', 'Бо эродҳо ба ШИГ баргашт', 'Возвращено с комментариями в КУГ', 'amber', 'alert-triangle', finalComment);
+        } else {
+            app.status = 'gmc_preparation';
+            window.addLog(app, 'ГРП / PIU', 'Баҳогузории иҷтимоӣ-экологӣ гузашт', 'Социально-экологическая оценка пройдена', 'emerald', 'check-circle');
+        }
+        document.getElementById('piu-evaluation-content').classList.add('hidden');
+        window.renderAllCards();
+        document.getElementById('applicationModal').classList.add('hidden');
+    }
+
+    window.AppFeatures.piu = {
+        ready: true,
+        loadPiuForm,
+        openPiuFor,
+        togglePiuForm,
+        setPiuDecision,
+        savePiuCard,
+        finalizePiu
+    };
+
+    // Legacy compatibility while migrating code out of grant.html
+    window.loadPiuForm = loadPiuForm;
+    window.openPiuFor = openPiuFor;
+    window.togglePiuForm = togglePiuForm;
+    window.setPiuDecision = setPiuDecision;
+    window.savePiuCard = savePiuCard;
+    window.finalizePiu = finalizePiu;
+})();

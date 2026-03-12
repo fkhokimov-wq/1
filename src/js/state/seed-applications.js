@@ -1,0 +1,127 @@
+(function initSeedApplications() {
+    if (window.__grantSeedApplicationsLoaded) return;
+    window.__grantSeedApplicationsLoaded = true;
+
+    const perf = window.seedPerfTemplates || {};
+    const perfGmc = perf.gmc || {};
+    const perfPiu = perf.piuStatus || {};
+    const perfPiuDec = perf.piuDecision || {};
+
+    window.seedProtocols = [
+        { id: 'ПР-7777', date: '01.03.2026', exactTime: '10:00', okCount: 3, rejCount: 1, revCount: 0, totalAmount: 34000, apps: [{ id: '10010', decision: 'ok' }, { id: '10013', decision: 'ok' }] }
+    ];
+
+    window.seedApplications = [
+        { id: '10002', name: 'Раҳмонов Далер Ҷамшедович', sector: 'Истеҳсолот <span class="ru">/ Производство</span>', amount: '20 000', date: '09.03.2026, 09:15', status: 'draft', auditLog: [{ date: '09.03.2026, 09:15', actor: 'Фасилитатор', action: 'Сиёҳнавис сохта шуд', actionRu: 'Создан черновик', color: 'slate', icon: 'edit-3' }] },
+        { id: '10001', name: 'Саидова Мадина Алиевна', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '5 000', date: '09.03.2026, 10:20', status: 'gmc_review', auditLog: [{ date: '09.03.2026, 10:20', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' }] },
+        { id: '10030', name: 'Расулов Умед', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '14 000', date: '12.03.2026, 09:30', status: 'gmc_review', auditLog: [{ date: '12.03.2026, 09:30', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' }] },
+        {
+            id: '10008', name: 'Азизова Зарина', sector: 'Ороишгар <span class="ru">/ Визажист</span>', amount: '7 500', date: '06.03.2026, 15:10', status: 'fac_revision', revisionCount: 2, auditLog: [
+                { date: '01.03.2026, 10:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '03.03.2026, 15:10', actor: 'ШИГ / КУГ', action: 'Барои такмил ба Фасилитатор баргашт (1/3)', actionRu: 'Возвращено на доработку Фасилитатору (1/3)', color: 'amber', icon: 'corner-down-left', comment: 'Лутфан ҳисоботи молиявиро дақиқ кунед.' },
+                { date: '05.03.2026, 09:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '06.03.2026, 15:10', actor: 'ШИГ / КУГ', action: 'Барои такмил ба Фасилитатор баргашт (2/3)', actionRu: 'Возвращено на доработку Фасилитатору (2/3)', color: 'amber', icon: 'corner-down-left', comment: 'Суратҳо нокифояанд.' }
+            ]
+        },
+        {
+            id: '10034', name: 'Умаров Фарҳод', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '6 000', date: '12.03.2026, 10:15', status: 'fac_revision', revisionCount: 1, auditLog: [
+                { date: '11.03.2026, 09:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '12.03.2026, 10:15', actor: 'ШИГ / КУГ', action: 'Барои такмил ба Фасилитатор баргашт (1/3)', actionRu: 'Возвращено на доработку Фасилитатору (1/3)', color: 'amber', icon: 'corner-down-left', comment: 'Хароҷотҳоро дақиқ нависед.' }
+            ]
+        },
+        {
+            id: '10020', name: 'Маҳмудов Алишер', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '12 000', date: '01.03.2026, 11:00', status: 'postponed', revisionCount: 3, auditLog: [
+                { date: '25.02.2026, 10:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '01.03.2026, 11:00', actor: 'Система', action: 'Лимити такмил ба охир расид. Ба таъхир гузошта шуд (3 моҳ)', actionRu: 'Лимит доработок исчерпан. Отложено на 3 месяца', color: 'red', icon: 'clock', comment: 'Идея тиҷоратӣ заиф аст.' }
+            ]
+        },
+        {
+            id: '10021', name: 'Ахмедов Тимур', sector: 'Истеҳсолот <span class="ru">/ Производство</span>', amount: '18 000', date: '11.03.2026, 09:00', status: 'fac_revision', revisionCount: 0, reactivated: true, auditLog: [
+                { date: '11.12.2025, 10:00', actor: 'Система', action: 'Лимити такмил ба охир расид. Ба таъхир гузошта шуд (3 моҳ)', actionRu: 'Лимит доработок исчерпан. Отложено на 3 месяца', color: 'red', icon: 'clock' },
+                { date: '11.03.2026, 09:00', actor: 'Система', action: 'Дархост дубора фаъол шуд', actionRu: 'Заявка снова активна для подачи', color: 'purple', icon: 'refresh-ccw' }
+            ]
+        },
+        {
+            id: '10004', name: 'Иванов Иван Иванович', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '8 000', date: '08.03.2026, 16:20', status: 'piu_review', gmcEvaluation: perfGmc, piuDecisions: { 1: null }, piuStatus: { 1: 'pending' }, auditLog: [
+                { date: '06.03.2026, 11:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '08.03.2026, 16:20', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' }
+            ]
+        },
+        {
+            id: '10035', name: 'Шарипова Лайло', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '9 500', date: '12.03.2026, 09:40', status: 'piu_review', gmcEvaluation: perfGmc, piuDecisions: { 1: null }, piuStatus: { 1: 'pending' }, auditLog: [
+                { date: '10.03.2026, 11:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '12.03.2026, 09:40', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' }
+            ]
+        },
+        {
+            id: '10031', name: 'Носирова Нигина', sector: 'Истеҳсолот <span class="ru">/ Производство</span>', amount: '16 000', date: '11.03.2026, 15:20', status: 'gmc_revision', gmcEvaluation: perfGmc, piuStatus: { 1: 'completed' }, piuDecisions: { 1: 'resubmit' }, piuComment: 'Хавфи экологӣ вуҷуд дорад', auditLog: [
+                { date: '09.03.2026, 11:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '10.03.2026, 14:00', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '11.03.2026, 15:20', actor: 'ГРП / PIU', action: 'Бо эродҳо ба ШИГ баргашт', actionRu: 'Возвращено с комментариями в КУГ', color: 'amber', icon: 'alert-triangle', comment: 'Хавфи экологӣ вуҷуд дорад' }
+            ]
+        },
+        {
+            id: '10010', name: 'Мирзоева Ситора', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '9 000', date: '01.03.2026, 11:00', status: 'approved', protocolId: 'ПР-7777', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '20.02.2026, 09:15', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '22.02.2026, 14:00', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '25.02.2026, 16:30', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' },
+                { date: '26.02.2026, 09:00', actor: 'ШИГ / КУГ', action: 'Барои Комитет омода шуд', actionRu: 'Заявка подготовлена для реестра Комитета', color: 'blue', icon: 'list-checks' },
+                { date: '01.03.2026, 11:00', actor: 'Кумита / Комитет', action: 'Грант тасдиқ шуд (Протокол № ПР-7777 аз 01.03.2026)', actionRu: 'Грант утвержден (Протокол № ПР-7777 от 01.03.2026)', color: 'emerald', icon: 'award' }
+            ]
+        },
+        {
+            id: '10013', name: 'Фотимаи Зариф', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '10 000', date: '01.02.2026, 14:00', status: 'approved', protocolId: 'ПР-7777', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '15.01.2026, 09:15', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '18.01.2026, 14:00', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '25.01.2026, 16:30', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' },
+                { date: '27.01.2026, 12:00', actor: 'ШИГ / КУГ', action: 'Барои Комитет омода шуд', actionRu: 'Заявка подготовлена для реестра Комитета', color: 'blue', icon: 'list-checks' },
+                { date: '01.02.2026, 14:00', actor: 'Кумита / Комитет', action: 'Грант тасдиқ шуд (Протокол № ПР-7777 аз 01.03.2026)', actionRu: 'Грант утвержден (Протокол № ПР-7777 от 01.03.2026)', color: 'emerald', icon: 'award' }
+            ]
+        },
+        {
+            id: '10007', name: 'Бобоев Али', sector: 'Истеҳсолот <span class="ru">/ Производство</span>', amount: '15 000', date: '11.03.2026, 12:45', status: 'gmc_preparation', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '01.03.2026, 09:30', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '03.03.2026, 14:15', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '11.03.2026, 12:45', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' }
+            ]
+        },
+        {
+            id: '10032', name: 'Қодиров Зафар', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '12 500', date: '12.03.2026, 08:45', status: 'gmc_preparation', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '08.03.2026, 09:30', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '10.03.2026, 14:15', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '12.03.2026, 08:45', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' }
+            ]
+        },
+        {
+            id: '10022', name: 'Сайфуллоев Олим', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '8 500', date: '12.03.2026, 09:10', status: 'gmc_ready_for_registry', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '05.03.2026, 09:30', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '07.03.2026, 14:15', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '10.03.2026, 12:45', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' },
+                { date: '12.03.2026, 09:10', actor: 'ШИГ / КУГ', action: 'Барои Комитет омода шуд', actionRu: 'Заявка подготовлена для реестра Комитета', color: 'blue', icon: 'list-checks' }
+            ]
+        },
+        {
+            id: '10017', name: 'Шарипов Сомон', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '11 000', date: '12.03.2026, 09:00', status: 'gmc_ready_for_registry', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '01.03.2026, 09:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '03.03.2026, 10:00', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '08.03.2026, 14:00', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' },
+                { date: '12.03.2026, 09:00', actor: 'ШИГ / КУГ', action: 'Барои Комитет омода шуд', actionRu: 'Заявка подготовлена для реестра Комитета', color: 'blue', icon: 'list-checks' }
+            ]
+        },
+        {
+            id: '10040', name: 'Тоиров Бахтиёр', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '10 500', date: '12.03.2026, 10:00', status: 'com_review', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+                { date: '05.03.2026, 09:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '06.03.2026, 10:00', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
+                { date: '08.03.2026, 14:00', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' },
+                { date: '10.03.2026, 09:00', actor: 'ШИГ / КУГ', action: 'Барои Комитет омода шуд', actionRu: 'Заявка подготовлена для реестра Комитета', color: 'blue', icon: 'list-checks' },
+                { date: '12.03.2026, 10:00', actor: 'ШИГ / КУГ', action: 'Ба Комитет дар ҳайати реестр фиристода шуд', actionRu: 'Отправлено в Комитет в составе реестра', color: 'blue', icon: 'arrow-right' }
+            ]
+        },
+        {
+            id: '10042', name: 'Неъматов Сӯҳроб', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '22 000', date: '10.03.2026, 11:30', status: 'rejected', auditLog: [
+                { date: '09.03.2026, 09:00', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
+                { date: '10.03.2026, 11:30', actor: 'ШИГ / КУГ', action: 'Дархост рад шуд', actionRu: 'Заявка отклонена', color: 'red', icon: 'x-circle', comment: 'Таҷрибаи корӣ тамоман мувофиқ нест.' }
+            ]
+        }
+    ];
+})();

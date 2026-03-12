@@ -1,0 +1,80 @@
+body {
+    background-color: #F8F9FA;
+    font-family: 'Inter', sans-serif;
+}
+
+.modal-container {
+    width: 100%;
+    max-width: 1100px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 24px 32px;
+}
+
+.ru {
+    font-size: 0.85em;
+    opacity: 0.75;
+    font-weight: 400;
+}
+
+.ru-block {
+    font-size: 0.85em;
+    opacity: 0.75;
+    font-weight: 400;
+    display: block;
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+.score-radio {
+    accent-color: #3b82f6;
+    cursor: pointer;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.elig-radio {
+    accent-color: #10b981;
+    cursor: pointer;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.elig-radio-no {
+    accent-color: #ef4444;
+    cursor: pointer;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.placeholder-red-500::placeholder {
+    color: #ef4444;
+    opacity: 0.8;
+    font-size: 12px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+}
