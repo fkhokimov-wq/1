@@ -2,38 +2,130 @@
     window.AppFeatures = window.AppFeatures || {};
     if (window.AppFeatures.facilitator) return;
 
+    function getSearchDatabase() {
+        return window.beneficiarySearchDatabase || window.mockDatabase || {};
+    }
+
+    function normalizeValue(v) {
+        return String(v == null ? '' : v).toLowerCase().replace(/\s+/g, ' ').trim();
+    }
+
+    function getExistingAppProfiles(excludeAppId) {
+        const db = getSearchDatabase();
+        const fallbackDb = window.mockDatabase || {};
+        return (window.state && window.state.applications ? window.state.applications : [])
+            .filter(function (app) { return !excludeAppId || app.id !== excludeAppId; })
+            .map(function (app) {
+                const beneficiaryId = app.beneficiaryId || app.id;
+                const source = db[beneficiaryId] || fallbackDb[beneficiaryId] || {};
+                return {
+                    appId: String(app.id || ''),
+                    beneficiaryId: String(beneficiaryId || ''),
+                    name: normalizeValue(app.beneficiaryName || app.name || source['full-name']),
+                    inn: normalizeValue(app.inn || source.inn),
+                    contacts: normalizeValue(app.contacts || source.contacts)
+                };
+            });
+    }
+
+    function getDuplicateDetails(candidate, excludeAppId) {
+        const cId = normalizeValue(candidate.id);
+        const cName = normalizeValue(candidate.name);
+        const cInn = normalizeValue(candidate.inn);
+        const cContacts = normalizeValue(candidate.contacts);
+        const fields = [];
+        const matches = [];
+
+        getExistingAppProfiles(excludeAppId).forEach(function (p) {
+            const matchedFields = [];
+            if (cId && p.beneficiaryId && cId === p.beneficiaryId) matchedFields.push('ID');
+            if (cName && p.name && cName === p.name) matchedFields.push('ФИО');
+            if (cInn && p.inn && cInn === p.inn) matchedFields.push('ИНН');
+            if (cContacts && p.contacts && cContacts === p.contacts) matchedFields.push('Телефон');
+            if (!matchedFields.length) return;
+            matchedFields.forEach(function (f) {
+                if (!fields.includes(f)) fields.push(f);
+            });
+            matches.push({ appId: p.appId, fields: matchedFields });
+        });
+
+        return { fields: fields, matches: matches };
+    }
+
+    function showDuplicateWarning(targetEl, details) {
+        if (!targetEl) return;
+        if (!details || !details.fields || details.fields.length === 0) {
+            targetEl.classList.add('hidden');
+            targetEl.textContent = '';
+            return;
+        }
+        const hitIds = details.matches.slice(0, 3).map(function (m) { return '#' + m.appId; });
+        const tail = details.matches.length > 3 ? ' +' + (details.matches.length - 3) : '';
+        targetEl.textContent = 'Ёфт шуд такрор: ' + details.fields.join(', ') + '. Совпадение в заявках: ' + hitIds.join(', ') + tail + '.';
+        targetEl.classList.remove('hidden');
+    }
+
+    function generateUniqueApplicationId() {
+        const list = (window.state && window.state.applications) ? window.state.applications : [];
+        let maxNumericId = 49999;
+        list.forEach(function (app) {
+            const id = String(app.id || '');
+            if (!/^\d+$/.test(id)) return;
+            const n = parseInt(id, 10);
+            if (n > maxNumericId) maxNumericId = n;
+        });
+        return String(maxNumericId + 1);
+    }
+
     function fillFacilitatorForm(id) {
-        const data = (window.mockDatabase || {})[id];
-        if (!data) return;
-        document.getElementById('id-input').value = id;
-        document.getElementById('display-id').textContent = id;
-        document.getElementById('full-name').value = data['full-name'];
-        document.getElementById('display-fullname').textContent = data['full-name'];
-        document.getElementById('inn').value = data.inn;
-        document.getElementById('display-inn').textContent = data.inn;
-        document.getElementById('display-birthdate').textContent = data['birth-date'] || '—';
-        document.getElementById('display-gender').textContent = data.gender || '—';
-        document.getElementById('display-contacts').textContent = data.contacts || '—';
-        document.getElementById('display-address').textContent = data.address || '—';
-        document.getElementById('display-category').textContent = data.category || '—';
-        document.getElementById('display-education').textContent = data.education || '—';
+        const app = window.getApp(id);
+        const db = getSearchDatabase();
+        const fallbackDb = window.mockDatabase || {};
+        const beneficiaryId = app && app.beneficiaryId ? app.beneficiaryId : id;
+        const source = db[beneficiaryId] || fallbackDb[beneficiaryId] || {};
+
+        const fullName = (app && (app.beneficiaryName || app.name)) || source['full-name'] || '—';
+        const inn = (app && app.inn) || source.inn || '—';
+        const contacts = (app && app.contacts) || source.contacts || '—';
+        const applicationId = app ? String(app.id) : generateUniqueApplicationId();
+
+        document.getElementById('id-input').value = applicationId;
+        document.getElementById('beneficiary-id-input').value = beneficiaryId || '';
+        document.getElementById('display-id').textContent = beneficiaryId || '—';
+        document.getElementById('full-name').value = fullName;
+        document.getElementById('display-fullname').textContent = fullName;
+        document.getElementById('inn').value = inn;
+        document.getElementById('display-inn').textContent = inn;
+        document.getElementById('display-birthdate').textContent = source['birth-date'] || '—';
+        document.getElementById('display-gender').textContent = source.gender || '—';
+        document.getElementById('contacts-input').value = contacts;
+        document.getElementById('display-contacts').textContent = contacts;
+        document.getElementById('display-address').textContent = source.address || '—';
+        document.getElementById('display-category').textContent = source.category || '—';
+        document.getElementById('display-education').textContent = source.education || '—';
         document.getElementById('course').value = '';
-        document.getElementById('display-course').textContent = data.course || '—';
+        document.getElementById('display-course').textContent = source.course || '—';
     }
 
     function saveToDraft() {
-        const id = document.getElementById('id-input').value;
-        if (!id) return;
+        const appId = document.getElementById('id-input').value;
+        if (!appId) return;
+        const beneficiaryId = document.getElementById('beneficiary-id-input').value;
         const sectorSelect = document.getElementById('sector-input');
         const sectorText = sectorSelect.options[sectorSelect.selectedIndex].text;
         const amount = document.getElementById('amount-input').value;
         const timestamp = window.getCurrentDateTime();
         const sanitize = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
-        let app = window.getApp(id);
+        let app = window.getApp(appId);
         if (!app) {
-            app = { id: id, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
+            app = { id: appId, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
             window.state.applications.push(app);
         }
+        app.beneficiaryId = beneficiaryId || app.beneficiaryId || '';
+        app.beneficiaryName = sanitize(document.getElementById('full-name').value);
+        app.name = app.beneficiaryName;
+        app.inn = sanitize(document.getElementById('inn').value);
+        app.contacts = sanitize(document.getElementById('contacts-input').value);
         app.sector = sectorText || 'Номаълум';
         app.amount = sanitize(amount || '0');
         app.date = timestamp;
@@ -45,23 +137,30 @@
     }
 
     function submitToGmc() {
-        const id = document.getElementById('id-input').value;
-        if (!id) return;
+        const appId = document.getElementById('id-input').value;
+        if (!appId) return;
+        const beneficiaryId = document.getElementById('beneficiary-id-input').value;
         const sectorSelect = document.getElementById('sector-input');
         const sectorText = sectorSelect.options[sectorSelect.selectedIndex].text;
+        const sectorValue = sectorSelect.value;
         const amount = document.getElementById('amount-input').value;
-        if (!sectorText || !amount) {
+        if (!sectorValue || !amount) {
             alert('Бахш ва маблағро пур кунед!');
             return;
         }
 
         const timestamp = window.getCurrentDateTime();
         const sanitize = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
-        let app = window.getApp(id);
+        let app = window.getApp(appId);
         if (!app) {
-            app = { id: id, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
+            app = { id: appId, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
             window.state.applications.push(app);
         }
+        app.beneficiaryId = beneficiaryId || app.beneficiaryId || '';
+        app.beneficiaryName = sanitize(document.getElementById('full-name').value);
+        app.name = app.beneficiaryName;
+        app.inn = sanitize(document.getElementById('inn').value);
+        app.contacts = sanitize(document.getElementById('contacts-input').value);
         app.sector = sectorText;
         app.amount = sanitize(amount);
         app.date = timestamp;
@@ -91,26 +190,79 @@
         const searchDropdownList = document.getElementById('searchDropdownList');
         const selectedBeneficiary = document.getElementById('selectedBeneficiary');
         const submitApplicationBtn = document.getElementById('submitApplicationBtn');
-        if (!toggleBtn || !formBlock || !clearSelectionBtn || !searchInput || !searchDropdownList || !selectedBeneficiary || !submitApplicationBtn) return;
+        const duplicateWarning = document.getElementById('beneficiary-duplicate-warning');
+        if (!toggleBtn || !formBlock || !clearSelectionBtn || !searchInput || !searchDropdownList || !selectedBeneficiary || !submitApplicationBtn || !duplicateWarning) return;
 
         let isFormVisible = false;
-        let selectedMockId = null;
+        let selectedBeneficiaryId = null;
+        let selectedBeneficiaryData = null;
+
+        function setSubmitEnabled(isEnabled) {
+            if (isEnabled) {
+                submitApplicationBtn.classList.remove('bg-[#A499F5]', 'pointer-events-none');
+                submitApplicationBtn.classList.add('bg-primary', 'cursor-pointer');
+                return;
+            }
+            submitApplicationBtn.className = 'bg-[#A499F5] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium transition-colors pointer-events-none shadow-sm';
+        }
+
+        function updateSelectedDuplicateWarning() {
+            if (!selectedBeneficiaryId || !selectedBeneficiaryData) {
+                showDuplicateWarning(duplicateWarning, null);
+                return;
+            }
+            const details = getDuplicateDetails({
+                id: selectedBeneficiaryId,
+                name: selectedBeneficiaryData['full-name'],
+                inn: selectedBeneficiaryData.inn,
+                contacts: selectedBeneficiaryData.contacts
+            }, null);
+            showDuplicateWarning(duplicateWarning, details);
+        }
+
+        function updateQueryDuplicateWarning(query) {
+            const q = normalizeValue(query);
+            if (!q || q.length < 3 || selectedBeneficiaryId) {
+                if (!selectedBeneficiaryId) showDuplicateWarning(duplicateWarning, null);
+                return;
+            }
+            const fields = [];
+            const matches = [];
+            getExistingAppProfiles(null).forEach(function (p) {
+                const hit = [];
+                if (p.beneficiaryId && p.beneficiaryId === q) hit.push('ID');
+                if (p.inn && p.inn === q) hit.push('ИНН');
+                if (p.contacts && p.contacts === q) hit.push('Телефон');
+                if (p.name && p.name.includes(q)) hit.push('ФИО');
+                if (!hit.length) return;
+                hit.forEach(function (f) {
+                    if (!fields.includes(f)) fields.push(f);
+                });
+                matches.push({ appId: p.appId, fields: hit });
+            });
+            showDuplicateWarning(duplicateWarning, { fields: fields, matches: matches });
+        }
 
         function populateDropdown(query) {
             const q = query || '';
             const esc = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
             searchDropdownList.innerHTML = '';
-            Object.entries(window.mockDatabase || {}).forEach(function (entry) {
+            Object.entries(getSearchDatabase()).forEach(function (entry) {
                 const id = entry[0];
                 const user = entry[1];
-                if (q && !user['full-name'].toLowerCase().includes(q.toLowerCase()) && !id.includes(q)) return;
+                const nq = q.toLowerCase();
+                const name = String(user['full-name'] || '').toLowerCase();
+                const inn = String(user.inn || '').toLowerCase();
+                const contacts = String(user.contacts || '').toLowerCase();
+                if (q && !name.includes(nq) && !id.toLowerCase().includes(nq) && !inn.includes(nq) && !contacts.includes(nq)) return;
                 const initials = user['full-name'].substring(0, 2).toUpperCase();
                 const badgeColor = user.certStatus === 'certified' ? 'bg-emerald-100 text-emerald-600' : (user.certStatus === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600');
                 const item = document.createElement('div');
                 item.className = 'p-3 hover:bg-slate-50 cursor-pointer flex justify-between border-b border-slate-100 last:border-0 transition-colors';
                 item.innerHTML = '<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">' + esc(initials) + '</div><div class="flex flex-col"><span class="text-[13px] font-medium">' + esc(user['full-name']) + '</span><span class="text-[11px] text-gray-500">ID: ' + esc(id) + '</span></div></div><span class="' + badgeColor + ' px-2 py-1 rounded text-[10px] font-bold h-max">' + esc(user.certStatus) + '</span>';
                 item.addEventListener('click', function () {
-                    selectedMockId = id;
+                    selectedBeneficiaryId = id;
+                    selectedBeneficiaryData = user;
                     document.getElementById('searchDropdown').classList.add('hidden');
                     searchInput.classList.add('hidden');
                     selectedBeneficiary.classList.remove('hidden');
@@ -120,13 +272,8 @@
                     const selectedBadgeColor = user.certStatus === 'certified' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600';
                     selectedBeneficiary.querySelector('.selected-badge').className = selectedBadgeColor + ' px-1.5 py-0.5 rounded text-[10px] font-semibold w-max leading-none selected-badge';
                     selectedBeneficiary.querySelector('.selected-badge').textContent = user.certStatus;
-                    if (user.certStatus === 'certified') {
-                        submitApplicationBtn.classList.remove('bg-[#A499F5]', 'pointer-events-none');
-                        submitApplicationBtn.classList.add('bg-primary', 'cursor-pointer');
-                    } else {
-                        submitApplicationBtn.classList.add('bg-[#A499F5]', 'pointer-events-none');
-                        submitApplicationBtn.classList.remove('bg-primary', 'cursor-pointer');
-                    }
+                    setSubmitEnabled(user.certStatus === 'certified');
+                    updateSelectedDuplicateWarning();
                 });
                 searchDropdownList.appendChild(item);
             });
@@ -156,22 +303,27 @@
         searchInput.addEventListener('focus', function () {
             populateDropdown(searchInput.value);
             document.getElementById('searchDropdown').classList.remove('hidden');
+            updateQueryDuplicateWarning(searchInput.value);
         });
         searchInput.addEventListener('input', function (e) {
             populateDropdown(e.target.value);
             document.getElementById('searchDropdown').classList.remove('hidden');
+            updateQueryDuplicateWarning(e.target.value);
         });
 
         clearSelectionBtn.addEventListener('click', function () {
-            selectedMockId = null;
+            selectedBeneficiaryId = null;
+            selectedBeneficiaryData = null;
             selectedBeneficiary.classList.add('hidden');
             selectedBeneficiary.classList.remove('flex');
             searchInput.classList.remove('hidden');
             searchInput.value = '';
-            submitApplicationBtn.className = 'bg-[#A499F5] text-white px-5 py-2.5 rounded-lg text-[13px] font-medium transition-colors pointer-events-none shadow-sm';
+            setSubmitEnabled(false);
+            showDuplicateWarning(duplicateWarning, null);
         });
 
         submitApplicationBtn.addEventListener('click', function () {
+            if (!selectedBeneficiaryId) return;
             window.setAvailableTabs(['pane-facilitator']);
             document.getElementById('applicationModal').classList.remove('hidden');
             document.querySelector('.tab-btn[data-target="pane-facilitator"]').click();
@@ -179,7 +331,7 @@
             document.getElementById('amount-input').value = '';
             document.getElementById('sector-input').selectedIndex = 0;
             document.getElementById('experience').value = '';
-            fillFacilitatorForm(selectedMockId);
+            fillFacilitatorForm(selectedBeneficiaryId);
             if (window.lucide) window.lucide.createIcons();
         });
     }

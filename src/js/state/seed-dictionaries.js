@@ -68,6 +68,35 @@
         };
     }
 
+    // Separate demo dataset used only in the "new application" beneficiary search.
+    // It intentionally does not overlap with already loaded application identities.
+    window.beneficiarySearchDatabase = {
+        '50001': { 'full-name': 'Демо номзад 1', 'birth-date': '11.01.1994', gender: 'Зан', contacts: '+992 90 410 1101', address: 'ш. Душанбе', inn: '9100001001', category: 'Корҷӯй', education: 'Олӣ', course: 'Савдо', certStatus: 'certified' },
+        '50002': { 'full-name': 'Демо номзад 2', 'birth-date': '14.02.1991', gender: 'Мард', contacts: '+992 90 410 1102', address: 'ш. Хуҷанд', inn: '9100001002', category: 'Бекор', education: 'Миёнаи махсус', course: 'Кафшергарӣ', certStatus: 'certified' },
+        '50003': { 'full-name': 'Демо номзад 3', 'birth-date': '23.03.1996', gender: 'Зан', contacts: '+992 90 410 1103', address: 'ш. Бохтар', inn: '9100001003', category: 'Бевазан', education: 'Олӣ', course: 'Муҳосиб', certStatus: 'certified' },
+        '50004': { 'full-name': 'Демо номзад 4', 'birth-date': '08.04.1993', gender: 'Мард', contacts: '+992 90 410 1104', address: 'ш. Кӯлоб', inn: '9100001004', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'pending' },
+        '50005': { 'full-name': 'Демо номзад 5', 'birth-date': '30.05.1990', gender: 'Зан', contacts: '+992 90 410 1105', address: 'ш. Ҳисор', inn: '9100001005', category: 'Корҷӯй', education: 'Олӣ', course: 'Ороишгар', certStatus: 'certified' }
+    };
+
+    for (let i = 6; i <= 80; i++) {
+        const id = String(50000 + i);
+        const dd = String((i % 28) + 1).padStart(2, '0');
+        const mm = String(((i + 5) % 12) + 1).padStart(2, '0');
+        const yy = String(1987 + (i % 13));
+        window.beneficiarySearchDatabase[id] = {
+            'full-name': 'Демо номзад ' + i,
+            'birth-date': dd + '.' + mm + '.' + yy,
+            gender: i % 2 === 0 ? 'Мард' : 'Зан',
+            contacts: '+992 90 41' + String(10000 + i).slice(-5),
+            address: i % 2 === 0 ? 'ш. Душанбе' : 'ш. Хуҷанд',
+            inn: String(9100001000 + i),
+            category: syntheticCategories[i % syntheticCategories.length],
+            education: i % 3 === 0 ? 'Олӣ' : 'Миёнаи махсус',
+            course: syntheticCourses[i % syntheticCourses.length],
+            certStatus: i % 9 === 0 ? 'pending' : 'certified'
+        };
+    }
+
     window.seedPerfTemplates = {
         gmc: { el1: 'yes', el2: 'yes', el3: 'yes', q1: '4', q2: '4', q3: '4', q4: '4', q5: '4', q6: '4', q7: '4', q8: '4', q9: '4', q10: '4', q11: '4', q12: '4', q13: '4', q14: '4', q15: '4', comment: 'Ҳамаи ҳуҷҷатҳо дурустанд / Все документы корректны' },
         piuStatus: { 1: 'completed' },

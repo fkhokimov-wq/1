@@ -91,6 +91,9 @@
                     class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 overflow-hidden max-h-64 overflow-y-auto hide-scrollbar">
                     <div id="searchDropdownList"></div>
                 </div>
+                <div id="beneficiary-duplicate-warning"
+                    class="hidden mt-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg p-3 text-[12px]">
+                </div>
             </div>
             <div class="flex items-center gap-3">
                 <button id="submitApplicationBtn"
@@ -684,8 +687,9 @@
                                 ба ШИГ</span><span class="ru">Отправить в КУГ</span></button>
                     </div>
                 </div>
-                <div class="hidden"><input type="text" id="id-input"><input type="text" id="full-name"><input
-                        type="text" id="inn"><input type="text" id="course"></div>
+                <div class="hidden"><input type="text" id="id-input"><input type="text" id="beneficiary-id-input"><input
+                        type="text" id="full-name"><input type="text" id="inn"><input type="text"
+                        id="contacts-input"><input type="text" id="course"></div>
             </div>
 
             <!-- PANE: GMC (ШИГ) ОЦЕНКА -->
