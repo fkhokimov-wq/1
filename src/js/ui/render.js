@@ -320,7 +320,7 @@
         let aHtml = '';
         let bClass = '';
         let badgeHtmlList = '';
-        const revisionText = (app.revisionCount && app.revisionCount > 0 && ['fac_revision', 'postponed'].includes(status)) ? '<div class="text-[10px] text-amber-600 font-bold mt-1"><i data-lucide="refresh-cw" class="w-3 h-3 inline"></i> Доработка: ' + app.revisionCount + '/3</div>' : '';
+        const revisionText = (app.revisionCount && app.revisionCount > 0 && ['fac_revision', 'postponed'].includes(status)) ? '<span class="bg-amber-100 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Миқдори такмил / Доработка: ' + app.revisionCount + '/3"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-0.5"></i>' + app.revisionCount + '/3</span>' : '';
         const protocolHtml = app.protocolId ? '<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Тасдиқшуда тариқи протокол / Утверждено протоколом"><i data-lucide="layers" class="w-3 h-3 inline mr-0.5"></i>' + app.protocolId + '</span>' : '';
 
         let checkboxHtmlCard = '';
