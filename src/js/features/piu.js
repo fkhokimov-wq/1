@@ -92,6 +92,7 @@
     }
 
     function openPiuFor(id) {
+        if (typeof window.canOpenInCurrentContext === 'function' && !window.canOpenInCurrentContext(id)) return;
         window.currentOpenedAppId = id;
         window.setAvailableTabs(['pane-piu', 'pane-approved']);
         document.getElementById('applicationModal').classList.remove('hidden');

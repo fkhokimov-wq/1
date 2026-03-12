@@ -38,6 +38,7 @@
     }
 
     function openApprovedFor(id) {
+        if (typeof window.canOpenInCurrentContext === 'function' && !window.canOpenInCurrentContext(id)) return;
         window.currentOpenedAppId = id;
         window.currentApprovedAppId = id;
         const app = window.getApp(id);
@@ -55,6 +56,18 @@
     window.activeFacFilter = window.activeFacFilter || 'all_fac';
     window.activeStatFilter = window.activeStatFilter || 'all_stat';
     window.activeGmcFilter = window.activeGmcFilter || 'all_gmc';
+
+    function canOpenInCurrentContext(appOrId) {
+        const app = typeof appOrId === 'string' ? window.getApp(appOrId) : appOrId;
+        if (!app) return false;
+        if (window.activeMainFilter !== 'facilitator') return true;
+
+        const facilitatorOwnedStatuses = ['draft', 'fac_revision', 'postponed'];
+        if (facilitatorOwnedStatuses.includes(app.status)) return true;
+
+        alert('Ин марҳила кори Фасилитатор нест. Танҳо дидан мумкин аст.\nЭто не зона работы Фасилитатора. Открытие недоступно.');
+        return false;
+    }
 
     function setAvailableTabs(tabsToShow) {
         const allTabs = ['pane-facilitator', 'pane-gmc', 'pane-piu', 'pane-committee', 'pane-gmc-registry-preview', 'pane-committee-batch', 'pane-approved', 'pane-monitoring'];
@@ -901,4 +914,5 @@
     window.openSelectedApprovedList = openSelectedApprovedList;
     window.setAvailableTabs = setAvailableTabs;
     window.getVisibleReadyRegistryIds = getVisibleReadyRegistryIds;
+    window.canOpenInCurrentContext = canOpenInCurrentContext;
 })();

@@ -91,6 +91,7 @@
     }
 
     function openGmcFor(id) {
+        if (typeof window.canOpenInCurrentContext === 'function' && !window.canOpenInCurrentContext(id)) return;
         window.currentOpenedAppId = id;
         window.setAvailableTabs(['pane-gmc', 'pane-approved']);
         document.getElementById('applicationModal').classList.remove('hidden');
