@@ -255,6 +255,28 @@
 
         if (window.selectedForRegistry.size > 0) btn.classList.remove('opacity-50', 'pointer-events-none');
         else btn.classList.add('opacity-50', 'pointer-events-none');
+
+        if (typeof window.updateAllBadges === 'function') window.updateAllBadges();
+    }
+
+    function toggleSelectAllReadyForRegistry() {
+        const visibleIds = typeof window.getVisibleReadyRegistryIds === 'function'
+            ? window.getVisibleReadyRegistryIds()
+            : window.filterApps(['gmc_ready_for_registry']).map(function (a) { return a.id; });
+
+        if (!visibleIds.length) return;
+
+        const allSelected = visibleIds.every(function (id) {
+            return window.selectedForRegistry.has(id);
+        });
+
+        visibleIds.forEach(function (id) {
+            if (allSelected) window.selectedForRegistry.delete(id);
+            else window.selectedForRegistry.add(id);
+        });
+
+        if (typeof window.renderAllCards === 'function') window.renderAllCards();
+        else if (typeof window.updateAllBadges === 'function') window.updateAllBadges();
     }
 
     function openRegistryPreview() {
@@ -328,6 +350,7 @@
         sendGmcToFacilitator,
         markReadyForRegistry,
         toggleRegistrySelection,
+        toggleSelectAllReadyForRegistry,
         openRegistryPreview,
         confirmAndSendRegistry
     };
@@ -342,6 +365,7 @@
     window.sendGmcToFacilitator = sendGmcToFacilitator;
     window.markReadyForRegistry = markReadyForRegistry;
     window.toggleRegistrySelection = toggleRegistrySelection;
+    window.toggleSelectAllReadyForRegistry = toggleSelectAllReadyForRegistry;
     window.openRegistryPreview = openRegistryPreview;
     window.confirmAndSendRegistry = confirmAndSendRegistry;
 })();

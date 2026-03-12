@@ -109,6 +109,21 @@
         if (window.lucide) window.lucide.createIcons();
     }
 
+    function getVisibleReadyRegistryIds() {
+        const selector = window.currentViewMode === 'list'
+            ? '#list-tbody > tr[data-status="gmc_ready_for_registry"]'
+            : '#mainDashboardGrid > div[data-status="gmc_ready_for_registry"]';
+
+        const ids = [];
+        document.querySelectorAll(selector).forEach(function (el) {
+            if (el.style.display !== 'none') {
+                const id = el.getAttribute('data-id');
+                if (id) ids.push(id);
+            }
+        });
+        return ids;
+    }
+
     function appendProtocolCard(prot) {
         const card = document.createElement('div');
         card.className = 'bg-teal-50 border border-teal-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-teal-400 relative overflow-hidden';
@@ -138,12 +153,9 @@
                 bHtml = '<div class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="list-checks" class="w-3 h-3 inline"></i> Дар реестр / В реестре</div>';
                 badgeHtmlList = bHtml;
                 aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-indigo-700 border border-indigo-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Дидан</button>';
-
-                if (window.activeMainFilter === 'gmc' && window.activeGmcFilter === 'ready_registry') {
-                    const isChecked = window.selectedForRegistry && window.selectedForRegistry.has(id) ? 'checked' : '';
-                    checkboxHtmlCard = '<input type="checkbox" class="w-4 h-4 mr-2.5 accent-[#059669] cursor-pointer" onclick="event.stopPropagation()" onchange="toggleRegistrySelection(\'' + id + '\', this)" ' + isChecked + '>';
-                    checkboxHtmlRow = '<input type="checkbox" class="w-4 h-4 mr-3 accent-[#059669] cursor-pointer inline-block align-middle" onclick="event.stopPropagation()" onchange="toggleRegistrySelection(\'' + id + '\', this)" ' + isChecked + '>';
-                }
+                const isChecked = window.selectedForRegistry && window.selectedForRegistry.has(id) ? 'checked' : '';
+                checkboxHtmlCard = '<input type="checkbox" class="w-4 h-4 mr-2.5 accent-[#059669] cursor-pointer" onclick="event.stopPropagation()" onchange="toggleRegistrySelection(\'' + id + '\', this)" ' + isChecked + '>';
+                checkboxHtmlRow = '<input type="checkbox" class="w-4 h-4 mr-3 accent-[#059669] cursor-pointer inline-block align-middle" onclick="event.stopPropagation()" onchange="toggleRegistrySelection(\'' + id + '\', this)" ' + isChecked + '>';
             } else if (status === 'gmc_preparation') {
                 bClass = 'bg-[#F4F7FF] border-[#C6D4FF]';
                 bHtml = '<div class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clipboard-check" class="w-3 h-3 inline"></i> Барои омодасозӣ</div>';
@@ -249,13 +261,33 @@
         setB('dash-com-badge', coms.length);
 
         const regBar = document.getElementById('gmc-registry-bar');
-        if (window.activeMainFilter === 'gmc' && window.activeGmcFilter === 'ready_registry') {
+        const hasRegistrySelection = window.selectedForRegistry && window.selectedForRegistry.size > 0;
+        const onReadyRegistryScreen = window.activeMainFilter === 'gmc' && window.activeGmcFilter === 'ready_registry';
+        if (onReadyRegistryScreen || hasRegistrySelection) {
             regBar.classList.remove('hidden');
             regBar.classList.add('flex', 'flex-col', 'sm:flex-row');
             const btn = document.getElementById('btn-create-registry');
+            const toggleBtn = document.getElementById('btn-toggle-select-registry');
+            const visibleReadyIds = getVisibleReadyRegistryIds();
+            const allVisibleSelected = visibleReadyIds.length > 0 && visibleReadyIds.every(function (id) {
+                return window.selectedForRegistry.has(id);
+            });
+
             document.getElementById('reg-sel-count').textContent = window.selectedForRegistry.size;
             if (window.selectedForRegistry.size > 0) btn.classList.remove('opacity-50', 'pointer-events-none');
             else btn.classList.add('opacity-50', 'pointer-events-none');
+
+            if (toggleBtn) {
+                if (visibleReadyIds.length === 0) {
+                    toggleBtn.classList.add('opacity-50', 'pointer-events-none');
+                } else {
+                    toggleBtn.classList.remove('opacity-50', 'pointer-events-none');
+                }
+
+                toggleBtn.innerHTML = allVisibleSelected
+                    ? '<span>Бекор кардани интихоб</span><span class="ru-block">Снять все</span>'
+                    : '<span>Интихоби ҳама</span><span class="ru-block">Выбрать все</span>';
+            }
         } else {
             regBar.classList.add('hidden');
             regBar.classList.remove('flex', 'flex-col', 'sm:flex-row');
@@ -527,4 +559,5 @@
     window.updateAllBadges = updateAllBadges;
     window.updateDashboardFilter = updateDashboardFilter;
     window.setAvailableTabs = setAvailableTabs;
+    window.getVisibleReadyRegistryIds = getVisibleReadyRegistryIds;
 })();
