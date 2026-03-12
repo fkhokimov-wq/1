@@ -796,8 +796,9 @@
 
                 const t = function (id, show) {
                     const el = document.getElementById(id);
-                    if (el) el.classList.toggle('hidden', !show);
-                    if (el && show) el.classList.add('flex');
+                    if (!el) return;
+                    if (show) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
                 };
                 t('approved-filters-bar', window.activeMainFilter === 'approved_registry');
                 t('facilitator-filters-bar', window.activeMainFilter === 'facilitator');
