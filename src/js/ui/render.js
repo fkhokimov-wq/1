@@ -626,6 +626,59 @@
         }
     }
 
+    function updateActiveModeIndicator() {
+        const titleEl = document.getElementById('active-mode-title');
+        const descEl = document.getElementById('active-mode-desc');
+        if (!titleEl || !descEl) return;
+
+        const mainLabels = {
+            facilitator: 'Фасилитатор',
+            gmc: 'ШИГ / КУГ',
+            piu: 'ГРП / PIU',
+            committee: 'Кумита / Комитет',
+            approved_registry: 'Тасдиқшуда / Одобренные',
+            statuses: 'Аз рӯи статус / По статусам'
+        };
+
+        const facLabels = {
+            all_fac: 'Ҳама / Все',
+            draft: 'Сиёҳнавис / Черновики',
+            fac_revision: 'Дар ҳоли такмил / На доработке',
+            sent: 'Дар баррасӣ / На рассмотрении',
+            completed: 'Ба анҷом расида / Завершенные',
+            postponed: 'Мавқуф / Отложенные'
+        };
+
+        const statLabels = {
+            all_stat: 'Ҳама / Все',
+            draft: 'Сиёҳнавис / Черновики',
+            revision: 'Дар ҳоли такмил / На доработке',
+            review: 'Дар баррасӣ / На рассмотрении',
+            approved: 'Тасдиқшуда / Одобренные',
+            postponed: 'Мавқуф / Отложенные',
+            rejected: 'Радшуда / Отклоненные'
+        };
+
+        const gmcLabels = {
+            all_gmc: 'Ҳама / Все',
+            new: 'Аз Фасилитатор / От Фасилитатора',
+            returned: 'Бозрасии такрорӣ / Повторное рассмотрение',
+            preparation: 'Барои омодасозӣ / На подготовку',
+            ready_registry: 'Омода барои реестр / Готовы для реестра'
+        };
+
+        const mainFilter = window.activeMainFilter || 'statuses';
+        let subLabel = '';
+        if (mainFilter === 'facilitator') subLabel = facLabels[window.activeFacFilter] || facLabels.all_fac;
+        if (mainFilter === 'statuses') subLabel = statLabels[window.activeStatFilter] || statLabels.all_stat;
+        if (mainFilter === 'gmc') subLabel = gmcLabels[window.activeGmcFilter] || gmcLabels.all_gmc;
+        if (mainFilter === 'committee') subLabel = 'Рӯйхат / Список';
+
+        const mainLabel = mainLabels[mainFilter] || mainLabels.statuses;
+        titleEl.textContent = 'Режим: ' + mainLabel + (subLabel ? ' • ' + subLabel : '');
+        descEl.textContent = 'Показываются заявки согласно выбранному фильтру.';
+    }
+
     function updateDashboardFilter() {
         if (window.activeMainFilter === 'committee') {
             const searchInput = document.getElementById('filter-search-issued');
@@ -779,6 +832,7 @@
                     updateDashboardFilter();
                     updateAllBadges();
                 }
+                updateActiveModeIndicator();
             });
         });
     }
@@ -813,6 +867,7 @@
                     updateDashboardFilter();
                     updateApprovedInsights();
                 }
+                updateActiveModeIndicator();
             });
         });
 
@@ -932,6 +987,7 @@
             renderAllCards();
             const defaultMainBtn = document.querySelector('.filter-btn[data-filter="' + window.activeMainFilter + '"]');
             if (defaultMainBtn) defaultMainBtn.click();
+            updateActiveModeIndicator();
         };
 
         if (document.readyState === 'loading') {
@@ -953,6 +1009,7 @@
         renderAllCards,
         updateAllBadges,
         updateDashboardFilter,
+        updateActiveModeIndicator,
         updateApprovedInsights,
         openSelectedApprovedList,
         setAvailableTabs,
@@ -966,6 +1023,7 @@
     window.renderAllCards = renderAllCards;
     window.updateAllBadges = updateAllBadges;
     window.updateDashboardFilter = updateDashboardFilter;
+    window.updateActiveModeIndicator = updateActiveModeIndicator;
     window.updateApprovedInsights = updateApprovedInsights;
     window.openSelectedApprovedList = openSelectedApprovedList;
     window.setAvailableTabs = setAvailableTabs;
