@@ -154,7 +154,7 @@
 
     function saveGmcDecision() {
         if (!window.currentGmcChoice) {
-            alert('Қарорро интихоб кунед');
+            alert('Қарорро интихоб кунед / Выберите решение');
             return;
         }
 
@@ -282,7 +282,7 @@
 
     function openRegistryPreview() {
         if (!window.selectedForRegistry || window.selectedForRegistry.size === 0) {
-            alert('Выберите хотя бы одну заявку!');
+            alert('Ҳадди аққал як дархостро интихоб кунед! / Выберите хотя бы одну заявку!');
             return;
         }
 
@@ -305,7 +305,7 @@
             if (app) {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-emerald-50 transition-colors';
-                tr.innerHTML = '<td class="py-3 px-4 border-b border-emerald-100 align-middle"><div class="font-bold text-gray-800 text-[13px]">' + app.name + '</div><div class="text-[11px] text-gray-400">#' + app.id + '</div></td><td class="py-3 px-4 border-b border-emerald-100 align-middle"><div class="text-[12px] text-gray-600">' + app.sector + '</div><div class="font-black text-primary text-[12px] mt-0.5">' + app.amount + ' сом.</div></td><td class="py-3 px-4 border-b border-emerald-100 align-middle"><div class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-[10px] font-bold w-max"><i data-lucide="list-checks" class="w-3 h-3 inline"></i> Дар реестр</div></td>';
+                tr.innerHTML = '<td class="py-3 px-4 border-b border-emerald-100 align-middle"><div class="font-bold text-gray-800 text-[13px]">' + app.name + '</div><div class="text-[11px] text-gray-400">#' + app.id + '</div></td><td class="py-3 px-4 border-b border-emerald-100 align-middle"><div class="text-[12px] text-gray-600">' + app.sector + '</div><div class="font-black text-primary text-[12px] mt-0.5">' + app.amount + ' сом.</div></td><td class="py-3 px-4 border-b border-emerald-100 align-middle"><div class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-[10px] font-bold w-max"><i data-lucide="list-checks" class="w-3 h-3 inline"></i> Дар реестр <span class="ru font-normal">/ В реестре</span></div></td>';
                 tbody.appendChild(tr);
             }
         });

@@ -11,8 +11,8 @@
     }
 
     function certStatusLabel(status) {
-        if (status === 'certified') return 'Тасдиқшуда';
-        if (status === 'pending') return 'Дар интизор';
+        if (status === 'certified') return 'Тасдиқшуда / Сертифицирован';
+        if (status === 'pending') return 'Дар интизор / Ожидание';
         return String(status || '');
     }
 
@@ -76,7 +76,7 @@
         targetEl.classList.toggle('bg-amber-50', !isHard);
         targetEl.classList.toggle('border-amber-200', !isHard);
         targetEl.classList.toggle('text-amber-800', !isHard);
-        targetEl.textContent = (isHard ? 'Блокировка создания: ' : '') + 'Ёфт шуд такрор: ' + details.fields.join(', ') + '. Совпадение в заявках: ' + hitIds.join(', ') + tail + '.';
+        targetEl.textContent = (isHard ? 'Манъ / Блокировка: ' : '') + 'Такрор ёфт шуд / Найден дубль: ' + details.fields.join(', ') + '. Дар дархостҳо / Совпадение в заявках: ' + hitIds.join(', ') + tail + '.';
         targetEl.classList.remove('hidden');
     }
 
@@ -173,7 +173,7 @@
                 if (!fieldDef) return;
                 var el = document.querySelector(fieldDef.display);
                 if (el) {
-                    el.textContent = '❌ Маълумот нест';
+                    el.textContent = '❤ Маълумот нест / Данных нет';
                     el.classList.add('text-red-600', 'font-bold');
                     var parent = el.parentElement;
                     if (parent) parent.classList.add('bg-red-50', 'rounded-lg', 'ring-2', 'ring-red-300', 'p-1.5');
@@ -221,7 +221,7 @@
         app.name = app.beneficiaryName;
         app.inn = sanitize(document.getElementById('inn').value);
         app.contacts = sanitize(document.getElementById('contacts-input').value);
-        app.sector = sectorText || 'Номаълум';
+        app.sector = sectorText || 'Номаълум / Неизвестно';
         app.amount = sanitize(amount || '0');
         app.date = timestamp;
 
@@ -267,7 +267,8 @@
             contacts: document.getElementById('contacts-input').value
         }, appId);
         if (hardDuplicate) {
-            alert('Создание/отправка заблокированы: найден дубль по ИНН или телефону.');
+            alert('Эҷоди дархост блок шуд: такрор аз рӯи ИНН ё телефон ёфт шуд.
+Создание/отправка заблокированы: найден дубль по ИНН или телефону.');
             return;
         }
         const sectorSelect = document.getElementById('sector-input');
@@ -275,7 +276,7 @@
         const sectorValue = sectorSelect.value;
         const amount = document.getElementById('amount-input').value;
         if (!sectorValue || !amount) {
-            alert('Бахш ва маблағро пур кунед!');
+            alert('Бахш ва маблағро пур кунед! / Заполните сектор и сумму!');
             return;
         }
 
@@ -404,7 +405,7 @@
                 const badgeColor = user.certStatus === 'certified' ? 'bg-emerald-100 text-emerald-600' : (user.certStatus === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600');
                 var incompleteHtml = '';
                 if (!completeness.isComplete) {
-                    incompleteHtml = '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-medium ml-1" title="' + esc(completeness.missingFields.join(', ')) + '">⚠ нопурра</span>';
+                    incompleteHtml = '<span class="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-[10px] font-medium ml-1" title="' + esc(completeness.missingFields.join(', ')) + '">⚠ нопурра <span class="ru font-normal">/ неполные</span></span>';
                 }
                 const item = document.createElement('div');
                 item.className = 'p-3 hover:bg-slate-50 cursor-pointer flex justify-between border-b border-slate-100 last:border-0 transition-colors' + (!completeness.isComplete ? ' bg-orange-50/40' : '');
@@ -433,10 +434,10 @@
                         var missingLabels = selCompleteness.missingFields.join(', ');
                         duplicateWarning.classList.remove('hidden', 'bg-rose-50', 'border-rose-200', 'text-rose-800', 'bg-amber-50', 'border-amber-200', 'text-amber-800');
                         duplicateWarning.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-800');
-                        duplicateWarning.textContent = '⚠ Маълумоти бенефициар нопурра аст! Нопурра: ' + missingLabels + '.';
+                        duplicateWarning.textContent = '⚠ Маълумоти бенефициар нопурра аст! / Данные бенефициара неполные! Нопурра / Неполное: ' + missingLabels + '.';
                         if (details.fields.length > 0) {
                             var hitIds2 = details.matches.slice(0, 3).map(function (m) { return '#' + m.appId; });
-                            duplicateWarning.textContent += ' Инчунин ёфт шуд такрор: ' + details.fields.join(', ') + ' дар заявкаҳо: ' + hitIds2.join(', ') + '.';
+                            duplicateWarning.textContent += ' Инчунин ёфт шуд такрор / Также найден дубль: ' + details.fields.join(', ') + ' дар дархостҳо / в заявках: ' + hitIds2.join(', ') + '.';
                         }
                     } else {
                         duplicateWarning.classList.remove('bg-orange-50', 'border-orange-300', 'text-orange-800');
@@ -495,7 +496,8 @@
         submitApplicationBtn.addEventListener('click', function () {
             if (!selectedBeneficiaryId) return;
             if (selectedHasHardDuplicate) {
-                alert('Создание заблокировано: найден дубль по ИНН или телефону.');
+                alert('Эҷод блок шуд: такрор аз рӯи ИНН ё телефон ёфт шуд.
+Создание заблокировано: найден дубль по ИНН или телефону.');
                 return;
             }
             window.setAvailableTabs(['pane-facilitator']);

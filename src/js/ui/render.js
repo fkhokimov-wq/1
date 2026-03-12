@@ -218,7 +218,7 @@
         card.setAttribute('data-sector-values', sectors.join('|'));
         card.setAttribute('data-search', String(searchParts.join(' ')).toLowerCase());
         card.className = 'bg-teal-50 border border-teal-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-teal-400 relative overflow-hidden';
-        card.innerHTML = '<div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500"></div><div class="flex justify-between items-start mb-2 mt-1"><h3 class="font-bold text-[15px] text-teal-900 leading-tight">Рӯйхати воридшуда <br/><span class="text-[13px] text-teal-700">' + reg.id + '</span></h3><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold border border-teal-200"><i data-lucide="inbox" class="w-3 h-3 inline"></i> Аз GMS</div></div><div class="text-[11px] text-teal-600 font-medium mb-4 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Ворид шуд: ' + listDate + '</div><div class="grid grid-cols-2 gap-2 mb-4 bg-white/60 p-3 rounded-xl border border-teal-100"><div class="text-[11px] text-slate-600">Дар рӯйхат: <strong class="text-slate-700 text-[13px] block">' + appCount + '</strong></div><div class="text-[11px] text-slate-600">Маблағ: <strong class="text-teal-700 text-[13px] block">' + totalAmount + ' сом.</strong></div></div><div class="flex justify-end items-center mt-auto border-t border-teal-200/60 pt-4"><button onclick="openCommitteeBatch(\'' + reg.id + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">Интихоби рӯйхат <span class="ru font-normal">/ Выбрать список</span></button></div>';
+        card.innerHTML = '<div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500"></div><div class="flex justify-between items-start mb-2 mt-1"><h3 class="font-bold text-[15px] text-teal-900 leading-tight">Рӯйхати воридшуда <span class="ru font-normal">/ Входящий список</span> <br/><span class="text-[13px] text-teal-700">' + reg.id + '</span></h3><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold border border-teal-200"><i data-lucide="inbox" class="w-3 h-3 inline"></i> Аз GMS <span class="ru font-normal">/ Из GMS</span></div></div><div class="text-[11px] text-teal-600 font-medium mb-4 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Ворид шуд / Получено: ' + listDate + '</div><div class="grid grid-cols-2 gap-2 mb-4 bg-white/60 p-3 rounded-xl border border-teal-100"><div class="text-[11px] text-slate-600">Дар рӯйхат / В списке: <strong class="text-slate-700 text-[13px] block">' + appCount + '</strong></div><div class="text-[11px] text-slate-600">Маблағ / Сумма: <strong class="text-teal-700 text-[13px] block">' + totalAmount + ' сом.</strong></div></div><div class="flex justify-end items-center mt-auto border-t border-teal-200/60 pt-4"><button onclick="openCommitteeBatch(\'' + reg.id + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">Интихоби рӯйхат <span class="ru font-normal">/ Выбрать список</span></button></div>';
         card.onclick = function (e) {
             if (!e.target.closest('button')) window.openCommitteeBatch(reg.id);
         };
@@ -230,7 +230,7 @@
         row.setAttribute('data-sector-values', sectors.join('|'));
         row.setAttribute('data-search', String(searchParts.join(' ')).toLowerCase());
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in bg-teal-50/30';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-teal-500 align-middle"><div class="font-bold text-teal-900 text-[13px] mb-0.5">' + reg.id + '</div><div class="text-[11px] text-teal-600 font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ' + listDate + '</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">Воридшуда аз GMS / КУГ</td><td class="py-4 px-5 align-middle"><div class="font-black text-teal-700 text-[13px]">' + totalAmount + ' сомонӣ</div></td><td class="py-4 px-5 align-middle"><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-teal-200"><i data-lucide="inbox" class="w-3 h-3 inline"></i> Дар баррасии Кумита</div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openCommitteeBatch(\'' + reg.id + '\')" class="text-teal-600 text-[12px] font-bold hover:underline">Интихоб / Выбрать</button></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-teal-500 align-middle"><div class="font-bold text-teal-900 text-[13px] mb-0.5">' + reg.id + '</div><div class="text-[11px] text-teal-600 font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ' + listDate + '</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">Воридшуда аз GMS / КУГ</td><td class="py-4 px-5 align-middle"><div class="font-black text-teal-700 text-[13px]">' + totalAmount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle"><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-teal-200"><i data-lucide="inbox" class="w-3 h-3 inline"></i> Дар баррасии Кумита <span class="ru font-normal">/ На рассмотрении</span></div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openCommitteeBatch(\'' + reg.id + '\')" class="text-teal-600 text-[12px] font-bold hover:underline">Интихоб / Выбрать</button></td>';
         row.onclick = function (e) {
             if (!e.target.closest('button')) window.openCommitteeBatch(reg.id);
         };
@@ -290,7 +290,7 @@
         card.setAttribute('data-gender-values', genderValues.join('|'));
         card.setAttribute('data-search', clean(searchParts.join(' ')));
         card.className = 'bg-teal-50 border border-teal-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-teal-400 relative overflow-hidden';
-        card.innerHTML = '<div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500"></div><div class="flex justify-between items-start mb-1 mt-1"><h3 class="font-bold text-[15px] text-teal-900 leading-tight">Рӯйхат <br/><span class="text-[13px] text-teal-700">' + prot.id + '</span></h3><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда</div></div><div class="text-[11px] text-teal-600 font-medium mb-4 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Сформирован: ' + prot.date + ' (' + prot.exactTime + ')</div><div class="grid grid-cols-2 gap-2 mb-4 bg-white/60 p-3 rounded-xl border border-teal-100"><div class="text-[11px] text-slate-600">Дар рӯйхат: <strong class="text-slate-700 text-[13px] block">' + listCount + '</strong></div><div class="text-[11px] text-slate-600">Тасдиқ: <strong class="text-emerald-600 text-[13px] block">' + approvedCount + '</strong></div><div class="text-[11px] text-slate-600">Рад: <strong class="text-red-500 text-[13px] block">' + rejectedCount + '</strong></div><div class="text-[11px] text-slate-600">Маблағ: <strong class="text-teal-700 text-[13px] block">' + totalAmount + ' сом.</strong></div></div><div class="flex justify-end items-center mt-auto border-t border-teal-200/60 pt-4"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">Кушодан <span class="ru font-normal">/ Открыть список</span></button></div>';
+        card.innerHTML = '<div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500"></div><div class="flex justify-between items-start mb-1 mt-1"><h3 class="font-bold text-[15px] text-teal-900 leading-tight">Рӯйхат <span class="ru font-normal">/ Список</span> <br/><span class="text-[13px] text-teal-700">'' + prot.id + '</span></h3><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда <span class="ru font-normal">/ Утв.</span></div></div><div class="text-[11px] text-teal-600 font-medium mb-4 flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Тартибшуда / Сформирован: ' + prot.date + ' (' + prot.exactTime + ')</div><div class="grid grid-cols-2 gap-2 mb-4 bg-white/60 p-3 rounded-xl border border-teal-100"><div class="text-[11px] text-slate-600">Дар рӯйхат / В списке: <strong class="text-slate-700 text-[13px] block">' + listCount + '</strong></div><div class="text-[11px] text-slate-600">Тасдиқ / Одобр.: <strong class="text-emerald-600 text-[13px] block">' + approvedCount + '</strong></div><div class="text-[11px] text-slate-600">Рад / Откл.: <strong class="text-red-500 text-[13px] block">' + rejectedCount + '</strong></div><div class="text-[11px] text-slate-600">Маблағ / Сумма: <strong class="text-teal-700 text-[13px] block">'' + totalAmount + ' сом.</strong></div></div><div class="flex justify-end items-center mt-auto border-t border-teal-200/60 pt-4"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-teal-100 transition-colors shadow-sm">Кушодан <span class="ru font-normal">/ Открыть список</span></button></div>';
         card.onclick = function (e) {
             if (!e.target.closest('button')) {
                 if (typeof window.openCommitteeBatch === 'function') window.openCommitteeBatch(prot.id);
@@ -306,7 +306,7 @@
         row.setAttribute('data-gender-values', genderValues.join('|'));
         row.setAttribute('data-search', clean(searchParts.join(' ')));
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in bg-teal-50/30';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-teal-500 align-middle"><div class="font-bold text-teal-900 text-[13px] mb-0.5">Рӯйхат ' + prot.id + '</div><div class="text-[11px] text-teal-600 font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ' + prot.date + ' (' + prot.exactTime + ')</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">Дар рӯйхат: <b class="text-slate-700">' + listCount + '</b><br>Тасдиқ: <b class="text-emerald-600">' + approvedCount + '</b>, Рад: <b class="text-red-500">' + rejectedCount + '</b></td><td class="py-4 px-5 align-middle"><div class="font-black text-teal-700 text-[13px]">' + totalAmount + ' сомонӣ</div></td><td class="py-4 px-5 align-middle"><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда</div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="text-teal-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-teal-500 align-middle"><div class="font-bold text-teal-900 text-[13px] mb-0.5">Рӯйхат / Список ' + prot.id + '</div><div class="text-[11px] text-teal-600 font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ' + prot.date + ' (' + prot.exactTime + ')</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">Дар рӯйхат / В сп.: <b class="text-slate-700">' + listCount + '</b><br>Тасдиқ / Од.: <b class="text-emerald-600">' + approvedCount + '</b>, Рад / Откл.: <b class="text-red-500">' + rejectedCount + '</b></td><td class="py-4 px-5 align-middle"><div class="font-black text-teal-700 text-[13px]">' + totalAmount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle"><div class="bg-teal-100 text-teal-800 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-teal-200"><i data-lucide="layers" class="w-3 h-3 inline"></i> Тасдиқшуда <span class="ru font-normal">/ Утв.</span></div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openCommitteeBatch(\'' + prot.id + '\')" class="text-teal-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
         row.onclick = function (e) {
             if (!e.target.closest('button') && typeof window.openCommitteeBatch === 'function') {
                 window.openCommitteeBatch(prot.id);
@@ -331,66 +331,66 @@
                 bClass = 'bg-indigo-50 border-indigo-300';
                 bHtml = '<div class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="list-checks" class="w-3 h-3 inline"></i> Дар реестр / В реестре</div>';
                 badgeHtmlList = bHtml;
-                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-indigo-700 border border-indigo-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Дидан</button>';
+                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-indigo-700 border border-indigo-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Дидан <span class="ru font-normal">/ Просмотр</span></button>';
                 const isChecked = window.selectedForRegistry && window.selectedForRegistry.has(id) ? 'checked' : '';
                 checkboxHtmlCard = '<input type="checkbox" class="w-4 h-4 mr-2.5 accent-[#059669] cursor-pointer" onclick="event.stopPropagation()" onchange="toggleRegistrySelection(\'' + id + '\', this)" ' + isChecked + '>';
                 checkboxHtmlRow = '<input type="checkbox" class="w-4 h-4 mr-3 accent-[#059669] cursor-pointer inline-block align-middle" onclick="event.stopPropagation()" onchange="toggleRegistrySelection(\'' + id + '\', this)" ' + isChecked + '>';
             } else if (status === 'gmc_preparation') {
                 bClass = 'bg-[#F4F7FF] border-[#C6D4FF]';
-                bHtml = '<div class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clipboard-check" class="w-3 h-3 inline"></i> Барои омодасозӣ</div>';
+                bHtml = '<div class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clipboard-check" class="w-3 h-3 inline"></i> Барои омодасозӣ <span class="ru font-normal">/ На подготовке</span></div>';
                 badgeHtmlList = bHtml;
-                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-[#5B4AF0] border border-[#C6D4FF] text-[12px] font-bold px-3 py-1.5 rounded-lg">Омода кардан</button>';
+                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-[#5B4AF0] border border-[#C6D4FF] text-[12px] font-bold px-3 py-1.5 rounded-lg">Омода кардан <span class="ru font-normal">/ Подготовить</span></button>';
             } else if (status === 'gmc_revision') {
                 bClass = 'bg-amber-50 border-amber-300';
-                bHtml = '<div class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Аз ГРП баргашт</div>';
+                bHtml = '<div class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Аз ГРП баргашт <span class="ru font-normal">/ Возврат из ГРП</span></div>';
                 badgeHtmlList = bHtml;
-                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-amber-700 border border-amber-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Баррасӣ</button>';
+                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-amber-700 border border-amber-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Баррасӣ <span class="ru font-normal">/ Проверить</span></button>';
             } else {
                 bClass = 'bg-[#F4F7FF] border-[#C6D4FF]';
-                bHtml = '<div class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold">Ба ШИГ пешниҳод шуд</div>';
+                bHtml = '<div class="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[10px] font-bold">Ба ШИГ пешниҳод шуд <span class="ru font-normal">/ В КУГ</span></div>';
                 badgeHtmlList = bHtml;
-                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-[#5B4AF0] border border-[#C6D4FF] text-[12px] font-bold px-3 py-1.5 rounded-lg">Баҳогузорӣ</button>';
+                aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-[#5B4AF0] border border-[#C6D4FF] text-[12px] font-bold px-3 py-1.5 rounded-lg">Баҳогузорӣ <span class="ru font-normal">/ Оценить</span></button>';
             }
         } else if (status === 'piu_review') {
             bClass = 'bg-indigo-50 border-indigo-200';
-            bHtml = '<div class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md text-[10px] font-bold">Барои баррасӣ ба ГРП</div>';
+            bHtml = '<div class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md text-[10px] font-bold">Барои баррасӣ ба ГРП <span class="ru font-normal">/ В ГРП</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-indigo-600 text-[12px] font-bold cursor-pointer" onclick="openPiuFor(\'' + id + '\')">Санҷиши ГРП</span>';
+            aHtml = '<span class="text-indigo-600 text-[12px] font-bold cursor-pointer" onclick="openPiuFor(\'' + id + '\')">Санҷиши ГРП <span class="ru font-normal">/ Проверка ГРП</span></span>';
         } else if (status === 'com_review') {
             bClass = 'bg-teal-50 border-teal-200';
-            bHtml = '<div class="bg-teal-100 text-teal-700 px-2 py-1 rounded-md text-[10px] font-bold">Қарори Кумита</div>';
+            bHtml = '<div class="bg-teal-100 text-teal-700 px-2 py-1 rounded-md text-[10px] font-bold">Қарори Кумита <span class="ru font-normal">/ Решение Комитета</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-teal-600 text-[12px] font-bold cursor-pointer" onclick="openComFor(\'' + id + '\')">Тасдиқи ниҳоӣ</span>';
+            aHtml = '<span class="text-teal-600 text-[12px] font-bold cursor-pointer" onclick="openComFor(\'' + id + '\')">Тасдиқи ниҳоӣ <span class="ru font-normal">/ Утвердить</span></span>';
         } else if (status === 'approved') {
             bClass = 'bg-emerald-50 border-emerald-200';
             bHtml = '<div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Кушодан</span>';
+            aHtml = '<span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span>';
         } else if (status === 'rejected') {
             bClass = 'bg-red-50 border-red-200 opacity-70';
-            bHtml = '<div class="bg-red-100 text-red-700 px-2 py-1 rounded-md text-[10px] font-bold">Рад карда шуд</div>';
+            bHtml = '<div class="bg-red-100 text-red-700 px-2 py-1 rounded-md text-[10px] font-bold">Рад карда шуд <span class="ru font-normal">/ Отклонена</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-red-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Таърих</span>';
+            aHtml = '<span class="text-red-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Таърих <span class="ru font-normal">/ История</span></span>';
         } else if (status === 'fac_revision') {
             bClass = 'bg-red-50 border-red-300';
-            bHtml = '<div class="bg-red-100 text-red-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-circle" class="w-3 h-3 inline"></i> Амали Фасилитатор</div>';
+            bHtml = '<div class="bg-red-100 text-red-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-circle" class="w-3 h-3 inline"></i> Амали Фасилитатор <span class="ru font-normal">/ Действие Фас.</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-red-600 text-[12px] font-bold cursor-pointer" onclick="openRevFor(\'' + id + '\')">Ислоҳ кардан</span>';
+            aHtml = '<span class="text-red-600 text-[12px] font-bold cursor-pointer" onclick="openRevFor(\'' + id + '\')">Ислоҳ кардан <span class="ru font-normal">/ Исправить</span></span>';
         } else if (status === 'postponed') {
             bClass = 'bg-slate-100 border-slate-300 opacity-80';
-            bHtml = '<div class="bg-slate-200 text-slate-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> Мавқуф (3 моҳ)</div>';
+            bHtml = '<div class="bg-slate-200 text-slate-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> Мавқуф <span class="ru font-normal">/ Отложено (3 мес.)</span></div>';
             badgeHtmlList = bHtml;
             aHtml = '<span class="text-slate-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Таърих / История</span>';
         } else if (status === 'incomplete_data') {
             bClass = 'bg-orange-50 border-orange-300';
             bHtml = '<div class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Нопурра <span class="ru font-normal">/ Неполные</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-orange-600 text-[12px] font-bold cursor-pointer" onclick="openDraftFor(\'' + id + '\')">Пурра кардан</span>';
+            aHtml = '<span class="text-orange-600 text-[12px] font-bold cursor-pointer" onclick="openDraftFor(\'' + id + '\')">Пурра кардан <span class="ru font-normal">/ Дополнить</span></span>';
         } else if (status === 'draft') {
             bClass = 'bg-white border-slate-200';
-            bHtml = '<div class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md text-[10px] font-medium">Сиёҳнавис</div>';
+            bHtml = '<div class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md text-[10px] font-medium">Сиёҳнавис <span class="ru font-normal">/ Черновик</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-slate-500 text-[12px] font-bold cursor-pointer" onclick="openDraftFor(\'' + id + '\')">Кушодан</span>';
+            aHtml = '<span class="text-slate-500 text-[12px] font-bold cursor-pointer" onclick="openDraftFor(\'' + id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span>';
         }
 
         if (window.activeMainFilter === 'statuses') {
@@ -410,7 +410,7 @@
         card.setAttribute('data-id', id);
         card.setAttribute('data-status', status);
         card.className = bClass + ' rounded-2xl p-5 border shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer';
-        card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
+        card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
         card.onclick = function (e) {
             if (!e.target.closest('input')) {
                 const btn = card.querySelector('button, span[onclick]');
@@ -424,7 +424,7 @@
         row.setAttribute('data-id', id);
         row.setAttribute('data-status', status);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
         row.onclick = function (e) {
             if (!e.target.closest('button') && !e.target.closest('a') && !e.target.closest('svg') && !e.target.closest('select') && !e.target.closest('input')) {
                 const btn = row.querySelector('button, span[onclick]');
@@ -611,7 +611,7 @@
         if (protocols.length === 0) {
             const opt = document.createElement('option');
             opt.value = '';
-            opt.textContent = 'Списки отсутствуют';
+            opt.textContent = 'Рӯйхат нест / Списки отсутствуют';
             listSel.appendChild(opt);
             openListBtn.classList.add('opacity-50', 'pointer-events-none');
         } else {
@@ -684,8 +684,8 @@
         if (mainFilter === 'committee') subLabel = 'Рӯйхат / Список';
 
         const mainLabel = mainLabels[mainFilter] || mainLabels.statuses;
-        titleEl.textContent = 'Режим: ' + mainLabel + (subLabel ? ' • ' + subLabel : '');
-        descEl.textContent = 'Показываются заявки согласно выбранному фильтру.';
+        titleEl.textContent = 'Режим / Режим: ' + mainLabel + (subLabel ? ' • ' + subLabel : '');
+        descEl.textContent = 'Дархостҳо мувофиқи филтри интихобшуда намоиш дода мешаванд / Показываются заявки согласно выбранному фильтру.';
     }
 
     function updateDashboardFilter() {

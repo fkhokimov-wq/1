@@ -6,7 +6,7 @@
     window.currentComChoice = null;
 
     function getBusinessPlanButtonHtml(appId) {
-        return '<button type="button" onclick="downloadCommitteeBusinessPlan(\'' + appId + '\')" class="bg-white border border-indigo-200 text-indigo-700 py-1.5 px-3 rounded-lg text-[11px] font-bold hover:bg-indigo-50 transition-colors inline-flex items-center gap-1.5"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>Бизнес-план</span></button>';
+        return '<button type="button" onclick="downloadCommitteeBusinessPlan(\'' + appId + '\')" class="bg-white border border-indigo-200 text-indigo-700 py-1.5 px-3 rounded-lg text-[11px] font-bold hover:bg-indigo-50 transition-colors inline-flex items-center gap-1.5"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>Нақшаи тиҷоратӣ <span class="ru font-normal">/ Бизнес-план</span></span></button>';
     }
 
     function downloadCommitteeBusinessPlan(appId) {
@@ -18,14 +18,14 @@
 
         const cleanSector = String(app.sector || '').replace(/<[^>]*>?/gm, '').trim();
         const content = [
-            'БИЗНЕС-ПЛАН',
+            'НАҚШАИ ТИҶОРАТӢ / БИЗНЕС-ПЛАН',
             'ID: ' + app.id,
-            'Заявитель: ' + app.name,
-            'Сектор: ' + cleanSector,
-            'Сумма: ' + app.amount + ' сом.',
-            'Дата: ' + (app.date || ''),
+            'Аризадиҳанда / Заявитель: ' + app.name,
+            'Бахш / Сектор: ' + cleanSector,
+            'Маблағ / Сумма: ' + app.amount + ' сомонӣ',
+            'Сана / Дата: ' + (app.date || ''),
             '',
-            'Документ сформирован из системы.'
+            'Ҳуҷҷат аз система сохта шуд. / Документ сформирован из системы.'
         ].join('\n');
 
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
@@ -223,7 +223,7 @@
         }
         window.currentCommitteeRegistryId = null;
 
-        alert('Рӯйхат бомуваффақият тасдиқ шуд!\nСписок успешно утвержден!\n\nОдобрено: ' + newProtocol.okCount + '\nОтклонено: ' + newProtocol.rejCount);
+        alert('Рӯйхат бомуваффақият тасдиқ шуд!\nСписок успешно утвержден!\n\nТасдиқшуда / Одобрено: ' + newProtocol.okCount + '\nРадшуда / Отклонено: ' + newProtocol.rejCount);
         document.getElementById('applicationModal').classList.add('hidden');
         document.getElementById('modal-main-title').innerHTML = 'Дархост: Дастгирии грантии тиҷорат <span class="ru">/ Заявка: Грантовая поддержка бизнеса</span>';
 
@@ -241,7 +241,7 @@
         }
 
         let csvContent = '\uFEFF';
-        csvContent += 'ID;Аризадиҳанда (Заявитель);Бахш (Сектор);Маблағ (Сумма);Қарор (Решение);Бизнес-план\n';
+        csvContent += 'ID;Аризадиҳанда (Заявитель);Бахш (Сектор);Маблағ (Сумма);Қарор (Решение);Нақшаи тиҷоратӣ / Бизнес-план\n';
 
         prot.apps.forEach(function (a) {
             const app = window.getApp(a.id);

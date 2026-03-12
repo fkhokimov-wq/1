@@ -63,7 +63,7 @@ interface Application {
   status: ApplicationStatus;     // Текущий статус
 
   // === Доработка ===
-  revisionCount?: number;        // Счетчик доработок (0-3)
+  revisionCount?: number;        // Счетчик доработок (0-3). На карточке отображается как компактный бейдж "1/3" (inline <span>, не блочный)
   reactivated?: boolean;         // Реактивирована после 3 мес. паузы
   missingFields?: string[];      // Недостающие поля бенефициара (при status = incomplete_data)
 
@@ -110,8 +110,19 @@ interface CompletenessResult {
 }
 ```
 
-**9 обязательных полей бенефициара:**
-`full-name`, `birth-date`, `gender`, `contacts`, `address`, `inn`, `category`, `education`, `course`
+**9 обязательных полей бенефициара (двуязычные лейблы):**
+
+| Ключ | Лейбл (TJ / RU) |
+|------|-----------------|
+| `full-name` | ННШ / ФИО |
+| `birth-date` | Санаи таваллуд / Дата рождения |
+| `gender` | Ҷинс / Пол |
+| `contacts` | Тамос / Контакты |
+| `address` | Суроғаи пурра / Адрес |
+| `inn` | РМА (ИНН) |
+| `category` | Гурӯҳ / Категория |
+| `education` | Таҳсилот / Образование |
+| `course` | Ихтисос / Курс |
 
 Поле считается пустым, если значение: `undefined`, `null`, `""` или `"—"`.
 

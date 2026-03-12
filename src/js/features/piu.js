@@ -136,7 +136,7 @@
             return;
         }
         if (app.piuDecisions[id] === 'resubmit' && !document.getElementById('piu-comment-' + id).value.trim()) {
-            alert('Лутфан сабаби баргардониданро нависед!');
+            alert('Лутфан сабаби баргардониданро нависед! / Укажите причину возврата!');
             return;
         }
         app.piuStatus[id] = 'completed';

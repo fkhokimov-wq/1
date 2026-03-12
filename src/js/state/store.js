@@ -40,7 +40,7 @@
         { key: 'contacts', display: '#display-contacts', label: 'Тамос / Контакты' },
         { key: 'address', display: '#display-address', label: 'Суроғаи пурра / Адрес' },
         { key: 'inn', display: '#display-inn', label: 'РМА (ИНН)' },
-        { key: 'category', display: '#display-category', label: 'Категория' },
+        { key: 'category', display: '#display-category', label: 'Гурӯҳ / Категория' },
         { key: 'education', display: '#display-education', label: 'Таҳсилот / Образование' },
         { key: 'course', display: '#display-course', label: 'Ихтисос / Курс' }
     ];
