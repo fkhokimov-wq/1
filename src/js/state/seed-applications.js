@@ -68,12 +68,12 @@
             ]
         },
         {
-            id: '10013', name: 'Фотимаи Зариф', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '10 000', date: '01.02.2026, 14:00', status: 'approved', protocolId: 'СП-9001', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
+            id: '10013', name: 'Фотимаи Зариф', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '10 000', date: '01.03.2026, 14:00', status: 'approved', protocolId: 'СП-9001', gmcEvaluation: perfGmc, piuStatus: perfPiu, piuDecisions: perfPiuDec, auditLog: [
                 { date: '15.01.2026, 09:15', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' },
                 { date: '18.01.2026, 14:00', actor: 'ШИГ / КУГ', action: 'Тасдиқ шуд, ба ГРП равон шуд', actionRu: 'Одобрено КУГ, направлено в ГРП', color: 'emerald', icon: 'check' },
                 { date: '25.01.2026, 16:30', actor: 'ГРП / PIU', action: 'Баҳогузории иҷтимоӣ-экологӣ гузашт', actionRu: 'Социально-экологическая оценка пройдена', color: 'emerald', icon: 'check-circle' },
                 { date: '27.01.2026, 12:00', actor: 'ШИГ / КУГ', action: 'Барои Комитет омода шуд', actionRu: 'Заявка подготовлена для реестра Комитета', color: 'blue', icon: 'list-checks' },
-                { date: '01.02.2026, 14:00', actor: 'Кумита / Комитет', action: 'Грант тасдиқ шуд (Рӯйхат № СП-9001 аз 01.03.2026)', actionRu: 'Грант утвержден (Список № СП-9001 от 01.03.2026)', color: 'emerald', icon: 'award' }
+                { date: '01.03.2026, 14:00', actor: 'Кумита / Комитет', action: 'Грант тасдиқ шуд (Рӯйхат № СП-9001 аз 01.03.2026)', actionRu: 'Грант утвержден (Список № СП-9001 от 01.03.2026)', color: 'emerald', icon: 'award' }
             ]
         },
         {
@@ -193,6 +193,10 @@
         { id: 'СП-9003', date: '20.03.2026', exactTime: '15:40', baseAmount: 13000 }
     ];
 
+    const fixedApprovedByList = {
+        'СП-9001': ['10010', '10013']
+    };
+
     const sectors = [
         'Савдо <span class="ru">/ Торговля</span>',
         'Истеҳсолот <span class="ru">/ Производство</span>',
@@ -203,8 +207,18 @@
         const apps = [];
         let total = 0;
 
-        for (let i = 1; i <= 10; i++) {
-            const serial = listIndex * 10 + i;
+        const fixedIds = fixedApprovedByList[cfg.id] || [];
+        fixedIds.forEach(function (fixedId) {
+            const existing = window.seedApplications.find(function (a) { return a.id === fixedId && a.status === 'approved'; });
+            if (!existing) return;
+            const amount = parseInt(String(existing.amount || '').replace(/\D/g, '') || 0, 10);
+            total += amount;
+            apps.push({ id: fixedId, decision: 'ok' });
+        });
+
+        const generatedCount = 10 - fixedIds.length;
+        for (let i = 1; i <= generatedCount; i++) {
+            const serial = listIndex * 10 + fixedIds.length + i;
             const id = String(21000 + serial);
             const amount = cfg.baseAmount + i * 500;
             const amountText = amount.toLocaleString('ru-RU');
