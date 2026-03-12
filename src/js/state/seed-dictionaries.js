@@ -30,13 +30,22 @@
     // Synthetic beneficiaries for broad UI testing across filters and states.
     const syntheticCourses = ['Дӯзандагӣ', 'Кафшергарӣ', 'Муҳосиб', 'Савдо', 'Сартарош', 'Барномасоз'];
     const syntheticCategories = ['Корҷӯй', 'Бекор', 'Муҳоҷир', 'Бевазан'];
+    var firstNamesMale = ['Абдуллоҳ', 'Баҳром', 'Ғайрат', 'Давлат', 'Завқӣ', 'Исмоил', 'Комрон', 'Лутфулло', 'Мансур', 'Навруз', 'Олимҷон', 'Парвиз', 'Раҷаб', 'Сирочиддин', 'Тоҳир', 'Умед', 'Фарҳод', 'Ҳасан', 'Шамсиддин', 'Яҳё'];
+    var firstNamesFemale = ['Азиза', 'Барно', 'Гулноз', 'Дилафрӯз', 'Зарина', 'Истиқлол', 'Камола', 'Лайло', 'Мадина', 'Нодира', 'Озода', 'Парвина', 'Рухшона', 'Сарвиноз', 'Тахмина', 'Фотима', 'Ҳалима', 'Шаҳло', 'Зебо', 'Ёсуман'];
+    var lastNames = ['Аҳмадов', 'Бобоев', 'Ғафуров', 'Давлатов', 'Зоиров', 'Исматов', 'Каримов', 'Лоиқов', 'Мирзоев', 'Набиев', 'Олимов', 'Парвонаев', 'Раҳимов', 'Саидов', 'Турсунов', 'Умаров', 'Фозилов', 'Ҳамидов', 'Шарипов', 'Юсупов'];
+    var patronymsMale = ['Алиевич', 'Бобоевич', 'Ғафурович', 'Давлатович', 'Зоирович', 'Исматович', 'Каримович', 'Лоиқович', 'Мирзоевич', 'Набиевич'];
+    var patronymsFemale = ['Алиевна', 'Бобоевна', 'Ғафуровна', 'Давлатовна', 'Зоировна', 'Исматовна', 'Каримовна', 'Лоиқовна', 'Мирзоевна', 'Набиевна'];
     for (let i = 1; i <= 130; i++) {
         const id = String(20000 + i);
         const dd = String((i % 28) + 1).padStart(2, '0');
         const mm = String(((i + 2) % 12) + 1).padStart(2, '0');
         const yy = String(1988 + (i % 12));
+        const isFemale = i % 2 === 0;
+        const ln = lastNames[i % lastNames.length] + (isFemale ? 'а' : '');
+        const fn = isFemale ? firstNamesFemale[i % firstNamesFemale.length] : firstNamesMale[i % firstNamesMale.length];
+        const pt = isFemale ? patronymsFemale[i % patronymsFemale.length] : patronymsMale[i % patronymsMale.length];
         window.mockDatabase[id] = {
-            'full-name': 'Тестовый заявитель ' + i,
+            'full-name': ln + ' ' + fn + ' ' + pt,
             'birth-date': dd + '.' + mm + '.' + yy,
             gender: i % 2 === 0 ? 'Мард' : 'Зан',
             contacts: '+992 90 ' + String(1000000 + i).slice(-7),
@@ -54,8 +63,12 @@
         const dd = String((i % 28) + 1).padStart(2, '0');
         const mm = String(((i + 4) % 12) + 1).padStart(2, '0');
         const yy = String(1989 + (i % 11));
+        const isFemale2 = i % 2 === 0;
+        const ln2 = lastNames[(i + 5) % lastNames.length] + (isFemale2 ? 'а' : '');
+        const fn2 = isFemale2 ? firstNamesFemale[(i + 3) % firstNamesFemale.length] : firstNamesMale[(i + 3) % firstNamesMale.length];
+        const pt2 = isFemale2 ? patronymsFemale[(i + 2) % patronymsFemale.length] : patronymsMale[(i + 2) % patronymsMale.length];
         window.mockDatabase[id] = {
-            'full-name': 'Тестовый заявитель ' + (100 + i),
+            'full-name': ln2 + ' ' + fn2 + ' ' + pt2,
             'birth-date': dd + '.' + mm + '.' + yy,
             gender: i % 2 === 0 ? 'Мард' : 'Зан',
             contacts: '+992 91 ' + String(2000000 + i).slice(-7),
@@ -71,23 +84,32 @@
     // Separate demo dataset used only in the "new application" beneficiary search.
     // It intentionally does not overlap with already loaded application identities.
     window.beneficiarySearchDatabase = {
-        '50001': { 'full-name': 'Демо номзад 1', 'birth-date': '11.01.1994', gender: 'Зан', contacts: '+992 90 410 1101', address: 'ш. Душанбе', inn: '9100001001', category: 'Корҷӯй', education: 'Олӣ', course: 'Савдо', certStatus: 'certified' },
-        '50002': { 'full-name': 'Демо номзад 2', 'birth-date': '14.02.1991', gender: 'Мард', contacts: '+992 90 410 1102', address: 'ш. Хуҷанд', inn: '9100001002', category: 'Бекор', education: 'Миёнаи махсус', course: 'Кафшергарӣ', certStatus: 'certified' },
-        '50003': { 'full-name': 'Демо номзад 3', 'birth-date': '23.03.1996', gender: 'Зан', contacts: '+992 90 410 1103', address: 'ш. Бохтар', inn: '9100001003', category: 'Бевазан', education: 'Олӣ', course: 'Муҳосиб', certStatus: 'certified' },
-        '50004': { 'full-name': 'Демо номзад 4', 'birth-date': '08.04.1993', gender: 'Мард', contacts: '+992 90 410 1104', address: 'ш. Кӯлоб', inn: '9100001004', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'pending' },
-        '50005': { 'full-name': 'Демо номзад 5', 'birth-date': '30.05.1990', gender: 'Зан', contacts: '+992 90 410 1105', address: 'ш. Ҳисор', inn: '9100001005', category: 'Корҷӯй', education: 'Олӣ', course: 'Ороишгар', certStatus: 'certified' },
-        '50081': { 'full-name': 'Раҳимов Фирдавс', 'birth-date': '05.07.1995', gender: 'Мард', contacts: '+992 90 555 0081', address: '', inn: '', category: 'Бекор', education: '', course: 'Ҷӯшкорӣ', certStatus: 'certified' },
-        '50082': { 'full-name': 'Назарова Малика', 'birth-date': '', gender: 'Зан', contacts: '+992 90 555 0082', address: 'ш. Бохтар', inn: '9100009082', category: '', education: 'Олӣ', course: '', certStatus: 'certified' },
-        '50083': { 'full-name': 'Ҷумаев Абдулло', 'birth-date': '12.11.1988', gender: 'Мард', contacts: '', address: 'ш. Кӯлоб', inn: '', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'certified' }
+        '50001': { 'full-name': 'Саидова Фарангис Ҳасановна', 'birth-date': '11.01.1994', gender: 'Зан', contacts: '+992 90 410 1101', address: 'ш. Душанбе', inn: '9100001001', category: 'Корҷӯй', education: 'Олӣ', course: 'Савдо', certStatus: 'certified' },
+        '50002': { 'full-name': 'Раҳмонов Шерали Далерович', 'birth-date': '14.02.1991', gender: 'Мард', contacts: '+992 90 410 1102', address: 'ш. Хуҷанд', inn: '9100001002', category: 'Бекор', education: 'Миёнаи махсус', course: 'Кафшергарӣ', certStatus: 'certified' },
+        '50003': { 'full-name': 'Каримова Дилноза Рустамовна', 'birth-date': '23.03.1996', gender: 'Зан', contacts: '+992 90 410 1103', address: 'ш. Бохтар', inn: '9100001003', category: 'Бевазан', education: 'Олӣ', course: 'Муҳосиб', certStatus: 'certified' },
+        '50004': { 'full-name': 'Ҳасанов Баҳром Сафарович', 'birth-date': '08.04.1993', gender: 'Мард', contacts: '+992 90 410 1104', address: 'ш. Кӯлоб', inn: '9100001004', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'pending' },
+        '50005': { 'full-name': 'Расулова Нигора Умедовна', 'birth-date': '30.05.1990', gender: 'Зан', contacts: '+992 90 410 1105', address: 'ш. Ҳисор', inn: '9100001005', category: 'Корҷӯй', education: 'Олӣ', course: 'Ороишгар', certStatus: 'certified' },
+        '50081': { 'full-name': 'Раҳимов Фирдавс Ҳамидович', 'birth-date': '05.07.1995', gender: 'Мард', contacts: '+992 90 555 0081', address: '', inn: '', category: 'Бекор', education: '', course: 'Ҷӯшкорӣ', certStatus: 'certified' },
+        '50082': { 'full-name': 'Назарова Малика Ашуровна', 'birth-date': '', gender: 'Зан', contacts: '+992 90 555 0082', address: 'ш. Бохтар', inn: '9100009082', category: '', education: 'Олӣ', course: '', certStatus: 'certified' },
+        '50083': { 'full-name': 'Ҷумаев Абдулло Раҳматович', 'birth-date': '12.11.1988', gender: 'Мард', contacts: '', address: 'ш. Кӯлоб', inn: '', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'certified' }
     };
 
+    var searchFirstNamesMale = ['Фирдавсӣ', 'Бахтиёр', 'Ҷамшед', 'Сухроб', 'Анвар', 'Зафар', 'Шоҳин', 'Рустам', 'Далер', 'Тимур', 'Олим', 'Неъмат', 'Комрон', 'Муродалӣ', 'Шарифҷон', 'Аброр', 'Бобоҷон', 'Мирзо', 'Файзалӣ', 'Ҷовидон'];
+    var searchFirstNamesFemale = ['Манижа', 'Шабнам', 'Парвина', 'Гулчеҳра', 'Озода', 'Фируза', 'Ҳилола', 'Зулайхо', 'Тахмина', 'Мавлуда', 'Рухшона', 'Дилрабо', 'Зуҳро', 'Наргис', 'Сурайё', 'Лола', 'Мунира', 'Сабина', 'Замира', 'Ситора'];
+    var searchLastNames = ['Маҳмудов', 'Ҳакимов', 'Ғанизода', 'Ашуров', 'Тоҷиддинов', 'Муродов', 'Содиқов', 'Назаров', 'Ҷалолов', 'Раҳимов', 'Каримов', 'Сафаров', 'Қосимов', 'Ниёзов', 'Бобоев', 'Ғуломов', 'Турсунов', 'Валиев', 'Зокиров', 'Ваҳобов'];
+    var searchPatronymsMale = ['Аҳмадович', 'Раҳматович', 'Содиқович', 'Ҷамшедович', 'Алиевич', 'Зафарович', 'Муродович', 'Сафарович', 'Олимович', 'Неъматович'];
+    var searchPatronymsFemale = ['Аҳмадовна', 'Раҳматовна', 'Содиқовна', 'Ҷамшедовна', 'Алиевна', 'Зафаровна', 'Муродовна', 'Сафаровна', 'Олимовна', 'Неъматовна'];
     for (let i = 6; i <= 80; i++) {
         const id = String(50000 + i);
         const dd = String((i % 28) + 1).padStart(2, '0');
         const mm = String(((i + 5) % 12) + 1).padStart(2, '0');
         const yy = String(1987 + (i % 13));
+        const isFemale = i % 2 !== 0;
+        const lastName = searchLastNames[i % searchLastNames.length] + (isFemale ? 'а' : '');
+        const firstName = isFemale ? searchFirstNamesFemale[i % searchFirstNamesFemale.length] : searchFirstNamesMale[i % searchFirstNamesMale.length];
+        const patronym = isFemale ? searchPatronymsFemale[i % searchPatronymsFemale.length] : searchPatronymsMale[i % searchPatronymsMale.length];
         window.beneficiarySearchDatabase[id] = {
-            'full-name': 'Демо номзад ' + i,
+            'full-name': lastName + ' ' + firstName + ' ' + patronym,
             'birth-date': dd + '.' + mm + '.' + yy,
             gender: i % 2 === 0 ? 'Мард' : 'Зан',
             contacts: '+992 90 41' + String(10000 + i).slice(-5),

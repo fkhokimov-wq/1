@@ -14,7 +14,7 @@
         const db = getSearchDatabase();
         const fallbackDb = window.mockDatabase || {};
         return (window.state && window.state.applications ? window.state.applications : [])
-            .filter(function (app) { return !excludeAppId || app.id !== excludeAppId; })
+            .filter(function (app) { return (!excludeAppId || app.id !== excludeAppId) && app.status !== 'incomplete_data'; })
             .map(function (app) {
                 const beneficiaryId = app.beneficiaryId || app.id;
                 const source = db[beneficiaryId] || fallbackDb[beneficiaryId] || {};

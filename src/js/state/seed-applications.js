@@ -10,8 +10,8 @@
     window.seedProtocols = [];
 
     window.seedApplications = [
-        { id: '10050', beneficiaryId: '50081', name: 'Раҳимов Фирдавс', inn: '', contacts: '+992 90 555 0081', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '12 000', date: '10.03.2026, 11:20', status: 'incomplete_data', missingFields: ['inn', 'address', 'education'], auditLog: [{ date: '10.03.2026, 11:20', actor: 'Фасилитатор', action: 'Дархост бо маълумоти нопурра захира шуд', actionRu: 'Сохранено с неполными данными', color: 'amber', icon: 'alert-triangle' }] },
-        { id: '10051', beneficiaryId: '50082', name: 'Назарова Малика', inn: '9100009082', contacts: '+992 90 555 0082', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '8 500', date: '11.03.2026, 09:45', status: 'incomplete_data', missingFields: ['birth-date', 'category', 'course'], auditLog: [{ date: '11.03.2026, 09:45', actor: 'Фасилитатор', action: 'Дархост бо маълумоти нопурра захира шуд', actionRu: 'Сохранено с неполными данными', color: 'amber', icon: 'alert-triangle' }] },
+        { id: '10050', beneficiaryId: '50081', name: 'Раҳимов Фирдавс Ҳамидович', inn: '', contacts: '+992 90 555 0081', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '12 000', date: '10.03.2026, 11:20', status: 'incomplete_data', missingFields: ['inn', 'address', 'education'], auditLog: [{ date: '10.03.2026, 11:20', actor: 'Фасилитатор', action: 'Дархост бо маълумоти нопурра захира шуд', actionRu: 'Сохранено с неполными данными', color: 'amber', icon: 'alert-triangle' }] },
+        { id: '10051', beneficiaryId: '50082', name: 'Назарова Малика Ашуровна', inn: '9100009082', contacts: '+992 90 555 0082', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '8 500', date: '11.03.2026, 09:45', status: 'incomplete_data', missingFields: ['birth-date', 'category', 'course'], auditLog: [{ date: '11.03.2026, 09:45', actor: 'Фасилитатор', action: 'Дархост бо маълумоти нопурра захира шуд', actionRu: 'Сохранено с неполными данными', color: 'amber', icon: 'alert-triangle' }] },
         { id: '10002', name: 'Раҳмонов Далер Ҷамшедович', sector: 'Истеҳсолот <span class="ru">/ Производство</span>', amount: '20 000', date: '09.03.2026, 09:15', status: 'draft', auditLog: [{ date: '09.03.2026, 09:15', actor: 'Фасилитатор', action: 'Сиёҳнавис сохта шуд', actionRu: 'Создан черновик', color: 'slate', icon: 'edit-3' }] },
         { id: '10001', name: 'Саидова Мадина Алиевна', sector: 'Савдо <span class="ru">/ Торговля</span>', amount: '5 000', date: '09.03.2026, 10:20', status: 'gmc_review', auditLog: [{ date: '09.03.2026, 10:20', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' }] },
         { id: '10030', name: 'Расулов Умед', sector: 'Хизматрасонӣ <span class="ru">/ Услуги</span>', amount: '14 000', date: '12.03.2026, 09:30', status: 'gmc_review', auditLog: [{ date: '12.03.2026, 09:30', actor: 'Фасилитатор', action: 'Дархост бор карда шуд', actionRu: 'Заявка отправлена в КУГ', color: 'blue', icon: 'send' }] },
@@ -149,7 +149,7 @@
         const minute = String((i * 7) % 60).padStart(2, '0');
         const app = {
             id: id,
-            name: 'Тестовый заявитель ' + i,
+            name: (window.mockDatabase && window.mockDatabase[id]) ? window.mockDatabase[id]['full-name'] : 'Заявитель ' + i,
             sector: testSectors[i % testSectors.length],
             amount: (5000 + i * 350).toLocaleString('ru-RU'),
             date: '12.03.2026, ' + hour + ':' + minute,
@@ -228,7 +228,7 @@
 
             window.seedApplications.push({
                 id: id,
-                name: 'Тестовый заявитель ' + (100 + serial),
+                name: (window.mockDatabase && window.mockDatabase[id]) ? window.mockDatabase[id]['full-name'] : 'Заявитель ' + (100 + serial),
                 sector: sectors[serial % sectors.length],
                 amount: amountText,
                 date: cfg.date + ', ' + cfg.exactTime,
