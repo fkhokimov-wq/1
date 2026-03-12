@@ -61,23 +61,19 @@
     const roleRules = {
         facilitator: {
             label: 'Фасилитатор',
-            ownedStatuses: ['draft', 'fac_revision', 'postponed'],
-            allowedMainFilters: ['facilitator', 'statuses']
+            ownedStatuses: ['draft', 'fac_revision', 'postponed']
         },
         gmc: {
             label: 'ШИГ / КУГ',
-            ownedStatuses: ['gmc_review', 'gmc_revision', 'gmc_preparation', 'gmc_ready_for_registry'],
-            allowedMainFilters: ['gmc', 'statuses']
+            ownedStatuses: ['gmc_review', 'gmc_revision', 'gmc_preparation', 'gmc_ready_for_registry']
         },
         piu: {
             label: 'ГРП / PIU',
-            ownedStatuses: ['piu_review'],
-            allowedMainFilters: ['piu', 'statuses']
+            ownedStatuses: ['piu_review']
         },
         committee: {
             label: 'Кумита / Комитет',
-            ownedStatuses: ['com_review'],
-            allowedMainFilters: ['committee', 'statuses']
+            ownedStatuses: ['com_review']
         }
     };
 
@@ -397,6 +393,7 @@
             if (!e.target.closest('input')) {
                 const btn = card.querySelector('button, span[onclick]');
                 if (btn) btn.click();
+                else if (!isRoleOwnedStatus(status)) canOpenInCurrentContext(id);
             }
         };
         document.getElementById('mainDashboardGrid').appendChild(card);
@@ -410,6 +407,7 @@
             if (!e.target.closest('button') && !e.target.closest('a') && !e.target.closest('svg') && !e.target.closest('select') && !e.target.closest('input')) {
                 const btn = row.querySelector('button, span[onclick]');
                 if (btn) btn.click();
+                else if (!isRoleOwnedStatus(status)) canOpenInCurrentContext(id);
             }
         };
         document.getElementById('list-tbody').appendChild(row);
@@ -772,15 +770,6 @@
     function initializeDashboardFilters() {
         document.querySelectorAll('.filter-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
-                const rule = getRoleRule();
-                if (rule) {
-                    const targetFilter = btn.getAttribute('data-filter');
-                    if (!rule.allowedMainFilters.includes(targetFilter)) {
-                        alert('Барои ' + rule.label + ' ин бахш танҳо барои дидан дастрас аст.\nДля роли ' + rule.label + ' этот раздел недоступен для работы.');
-                        return;
-                    }
-                }
-
                 document.querySelectorAll('.filter-btn').forEach(function (b) {
                     b.classList.remove('bg-[#5b4ef5]', 'bg-primary', 'text-white', 'shadow-sm');
                     b.classList.add('text-slate-600', 'hover:bg-slate-200');
