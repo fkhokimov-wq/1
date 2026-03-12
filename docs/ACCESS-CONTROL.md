@@ -46,8 +46,8 @@ graph LR
 | Действие | Функция в коде | Условие |
 |----------|---------------|---------|
 | Создать заявку | `submitToGmc()` | Бенефициар certified, нет дубля по ИНН/тел. |
-| Фасилитатор | Сохранить черновик | `saveToDraft()` | Заявка в статусе `draft` или `incomplete_data` |
-| Отправить в ШИГ | `submitToGmc()` | Заполнены сектор + сумма |
+| Сохранить черновик | `saveToDraft()` | Заявка в статусе `draft` или `incomplete_data`. Если данные неполные → `status = 'incomplete_data'`, `missingFields = [...]` |
+| Отправить в ШИГ | `submitToGmc()` | Заполнены сектор + сумма, `isComplete === true`. Если неполные → alert + return (кнопка `#btn-submit-facilitator` disabled) |
 | Доработать заявку | `openRevFor()` | Статус `fac_revision` |
 | Проводить мониторинг | `saveMonitoringVisit()` | Статус `approved`, визит `active` |
 | Просмотр истории | `openApprovedFor()` | Любой статус |

@@ -248,9 +248,12 @@ flowchart TD
 ```
 
 **Поведение:**
+- В `fillFacilitatorForm()`: вызывается `applyCompletenessCheck(source)` → если `isComplete === false`:
+  - Кнопка `#btn-submit-facilitator` (Отправить в ШИГ) → `disabled`, `opacity-50`, `pointer-events-none`
+  - Кнопка «Сохранить черновик» остаётся активной
 - Поля с отсутствующими данными подсвечиваются: `ring-2 ring-red-300 bg-red-50`, текст → `❌ Маълумот нест`
-- Кнопка «Отправить в ШИГ» → `disabled`, `opacity-50`, `pointer-events-none`
-- При сохранении → статус `incomplete_data`, массив `missingFields` записывается в заявку
+- В `saveToDraft()`: если данные неполные → `app.status = 'incomplete_data'`, `app.missingFields = [...]`
+- В `submitToGmc()`: двойная защита — если `isComplete === false` → `alert('Маълумоти бенефициар нопурра аст!')` + `return`
 - При повторном открытии (`fillFacilitatorForm`) проверка выполняется заново из базы
 
 ---
