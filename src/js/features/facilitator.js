@@ -10,6 +10,12 @@
         return String(v == null ? '' : v).toLowerCase().replace(/\s+/g, ' ').trim();
     }
 
+    function certStatusLabel(status) {
+        if (status === 'certified') return 'Тасдиқшуда';
+        if (status === 'pending') return 'Дар интизор';
+        return String(status || '');
+    }
+
     function getExistingAppProfiles(excludeAppId) {
         const db = getSearchDatabase();
         const fallbackDb = window.mockDatabase || {};
@@ -402,7 +408,7 @@
                 }
                 const item = document.createElement('div');
                 item.className = 'p-3 hover:bg-slate-50 cursor-pointer flex justify-between border-b border-slate-100 last:border-0 transition-colors' + (!completeness.isComplete ? ' bg-orange-50/40' : '');
-                item.innerHTML = '<div class="flex gap-3"><div class="w-8 h-8 rounded-full ' + (!completeness.isComplete ? 'bg-orange-100 text-orange-600' : 'bg-indigo-100 text-indigo-600') + ' flex items-center justify-center font-bold text-sm">' + esc(initials) + '</div><div class="flex flex-col"><span class="text-[13px] font-medium">' + esc(user['full-name']) + incompleteHtml + '</span><span class="text-[11px] text-gray-500">ID: ' + esc(id) + '</span></div></div><span class="' + badgeColor + ' px-2 py-1 rounded text-[10px] font-bold h-max">' + esc(user.certStatus) + '</span>';
+                item.innerHTML = '<div class="flex gap-3"><div class="w-8 h-8 rounded-full ' + (!completeness.isComplete ? 'bg-orange-100 text-orange-600' : 'bg-indigo-100 text-indigo-600') + ' flex items-center justify-center font-bold text-sm">' + esc(initials) + '</div><div class="flex flex-col"><span class="text-[13px] font-medium">' + esc(user['full-name']) + incompleteHtml + '</span><span class="text-[11px] text-gray-500">ID: ' + esc(id) + '</span></div></div><span class="' + badgeColor + ' px-2 py-1 rounded text-[10px] font-bold h-max">' + esc(certStatusLabel(user.certStatus)) + '</span>';
                 item.addEventListener('click', function () {
                     selectedBeneficiaryId = id;
                     selectedBeneficiaryData = user;
@@ -414,7 +420,7 @@
                     selectedBeneficiary.querySelector('.avatar-initials').textContent = initials;
                     const selectedBadgeColor = user.certStatus === 'certified' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600';
                     selectedBeneficiary.querySelector('.selected-badge').className = selectedBadgeColor + ' px-1.5 py-0.5 rounded text-[10px] font-semibold w-max leading-none selected-badge';
-                    selectedBeneficiary.querySelector('.selected-badge').textContent = user.certStatus;
+                    selectedBeneficiary.querySelector('.selected-badge').textContent = certStatusLabel(user.certStatus);
                     const details = getDuplicateDetails({
                         id: selectedBeneficiaryId,
                         name: selectedBeneficiaryData['full-name'],
