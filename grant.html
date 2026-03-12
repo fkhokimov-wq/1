@@ -262,12 +262,12 @@
 
         <div id="approved-filters-bar"
             class="hidden bg-[#F4F5FC] rounded-xl p-4 shadow-sm border border-[#E1E4FA] mb-6 animate-fade-in">
-            <h3 class="text-[13px] font-bold text-primary mb-3">Реестри грантҳои тасдиқшуда <span
-                    class="ru font-normal">/ Реестр одобренных грантов</span></h3>
+            <h3 class="text-[13px] font-bold text-primary mb-3"><span class="filter-text"><span>Реестри грантҳои
+                        тасдиқшуда</span><span class="ru-block">Реестр одобренных грантов</span></span></h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Бахш <span class="ru font-normal">/
-                            Сектор</span></label>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1"><span
+                            class="filter-text"><span>Бахш</span><span class="ru-block">Сектор</span></span></label>
                     <select id="filter-sector"
                         class="w-full border border-gray-200 rounded-md text-[13px] px-3 py-2 focus:border-primary outline-none bg-white">
                         <option value="">Ҳама / Все</option>
@@ -278,8 +278,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Минтақа <span class="ru font-normal">/
-                            Регион</span></label>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1"><span
+                            class="filter-text"><span>Минтақа</span><span class="ru-block">Регион</span></span></label>
                     <select id="filter-region"
                         class="w-full border border-gray-200 rounded-md text-[13px] px-3 py-2 focus:border-primary outline-none bg-white">
                         <option value="">Ҳама / Все</option>
@@ -292,8 +292,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Ҷинс <span class="ru font-normal">/
-                            Пол</span></label>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1"><span
+                            class="filter-text"><span>Ҷинс</span><span class="ru-block">Пол</span></span></label>
                     <select id="filter-gender"
                         class="w-full border border-gray-200 rounded-md text-[13px] px-3 py-2 focus:border-primary outline-none bg-white">
                         <option value="">Ҳама / Все</option>
@@ -302,8 +302,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Ҷустуҷӯ <span class="ru font-normal">/
-                            Поиск</span></label>
+                    <label class="block text-[11px] font-bold text-gray-600 mb-1"><span
+                            class="filter-text"><span>Ҷустуҷӯ</span><span class="ru-block">Поиск</span></span></label>
                     <div class="relative"><input type="text" id="filter-search-issued"
                             placeholder="Ном ё ID / Имя или ID..."
                             class="w-full border border-gray-200 rounded-md text-[13px] pl-8 pr-3 py-2 focus:border-primary outline-none bg-white"><i
@@ -316,18 +316,18 @@
         <div id="gmc-registry-bar"
             class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-6 shadow-sm items-center justify-between animate-fade-in transition-all">
             <div>
-                <h3 class="text-[14px] font-bold text-emerald-900 leading-tight flex items-center gap-2"><i
-                        data-lucide="list-checks" class="w-4 h-4"></i> Омодасозии реестр <span class="ru font-normal">/
-                        Формирование реестра</span></h3>
-                <p class="text-[12px] text-emerald-700 mt-1">Дархостҳоро интихоб кунед <span class="ru font-normal">/
-                        Выберите заявки для отправки</span></p>
+                <h3 class="text-[14px] font-bold text-emerald-900 leading-tight flex items-start gap-2"><i
+                        data-lucide="list-checks" class="w-4 h-4 mt-0.5"></i><span class="filter-text"><span>Омодасозии
+                            реестр</span><span class="ru-block">Формирование реестра</span></span></h3>
+                <p class="text-[12px] text-emerald-700 mt-1"><span class="filter-text"><span>Дархостҳоро интихоб
+                            кунед</span><span class="ru-block">Выберите заявки для отправки</span></span></p>
             </div>
             <div class="flex items-center gap-3 mt-3 sm:mt-0">
                 <button id="btn-create-registry" onclick="openRegistryPreview()"
-                    class="bg-[#059669] text-white px-5 py-2.5 rounded-lg text-[13px] font-bold hover:bg-[#047857] transition-colors shadow-sm flex items-center gap-2 whitespace-nowrap opacity-50 pointer-events-none">
+                    class="bg-[#059669] text-white px-5 py-2.5 rounded-lg text-[13px] font-bold hover:bg-[#047857] transition-colors shadow-sm flex items-center gap-2 opacity-50 pointer-events-none">
                     <i data-lucide="layers" class="w-4 h-4"></i>
-                    <span>Сохтани реестр (<span id="reg-sel-count">0</span>)</span>
-                    <span class="ru font-normal border-l border-emerald-500 pl-2 ml-1">Создать реестр</span>
+                    <span class="filter-text"><span>Сохтани реестр (<span id="reg-sel-count">0</span>)</span><span
+                            class="ru-block">Создать реестр</span></span>
                 </button>
             </div>
         </div>
@@ -336,15 +336,16 @@
         <div id="committee-batch-bar"
             class="hidden bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6 shadow-sm items-center justify-between animate-fade-in transition-all">
             <div>
-                <h3 class="text-[14px] font-bold text-teal-900 leading-tight flex items-center gap-2"><i
-                        data-lucide="layers" class="w-4 h-4"></i> Рӯйхат барои тасдиқ <span class="ru font-normal">/
-                        Список на утверждение (Протокол)</span></h3>
+                <h3 class="text-[14px] font-bold text-teal-900 leading-tight flex items-start gap-2"><i
+                        data-lucide="layers" class="w-4 h-4 mt-0.5"></i><span class="filter-text"><span>Рӯйхат барои
+                            тасдиқ</span><span class="ru-block">Список на утверждение (Протокол)</span></span></h3>
                 <p class="text-[12px] text-teal-700 mt-1">Мунтазири қарор: <strong id="batch-count">0</strong> дархост
                     ба маблағи умумии <strong id="batch-total">0</strong> сомонӣ.</p>
             </div>
             <button onclick="openCommitteeBatch()"
-                class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-[13px] font-bold hover:bg-teal-700 transition-colors shadow-sm whitespace-nowrap">Кушодани
-                рӯйхат <span class="ru font-normal">/ Открыть список</span></button>
+                class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-[13px] font-bold hover:bg-teal-700 transition-colors shadow-sm"><span
+                    class="filter-text"><span>Кушодани рӯйхат</span><span class="ru-block">Открыть
+                        список</span></span></button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="mainDashboardGrid"></div>
@@ -355,11 +356,16 @@
                 <thead>
                     <tr
                         class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                        <th class="py-4 px-5">Аризадиҳанда <span class="ru font-normal">/ Заявитель</span></th>
-                        <th class="py-4 px-5">Бахш <span class="ru font-normal">/ Сектор</span></th>
-                        <th class="py-4 px-5">Маблағ <span class="ru font-normal">/ Сумма</span></th>
+                        <th class="py-4 px-5"><span class="filter-text"><span>Аризадиҳанда</span><span
+                                    class="ru-block">Заявитель</span></span></th>
+                        <th class="py-4 px-5"><span class="filter-text"><span>Бахш</span><span
+                                    class="ru-block">Сектор</span></span></th>
+                        <th class="py-4 px-5"><span class="filter-text"><span>Маблағ</span><span
+                                    class="ru-block">Сумма</span></span></th>
                         <th class="py-4 px-5">Статус</th>
-                        <th class="py-4 px-5 text-right">Амал <span class="ru font-normal">/ Действие</span></th>
+                        <th class="py-4 px-5 text-right"><span
+                                class="filter-text items-end text-right"><span>Амал</span><span
+                                    class="ru-block">Действие</span></span></th>
                     </tr>
                 </thead>
                 <tbody id="list-tbody" class="divide-y divide-slate-100 text-[13px]"></tbody>

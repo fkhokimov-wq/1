@@ -27,6 +27,14 @@ body {
     line-height: 1.2;
 }
 
+.filter-text {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    line-height: 1.2;
+}
+
 .score-radio {
     accent-color: #3b82f6;
     cursor: pointer;
