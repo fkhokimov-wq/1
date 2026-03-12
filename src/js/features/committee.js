@@ -155,8 +155,9 @@
                 const cleanSector = app.sector.replace(/<[^>]*>?/gm, '').trim();
                 const cleanAmount = app.amount.replace(/\s+/g, '');
                 const decisionText = a.decision === 'ok' ? 'Тасдиқ / Одобрено' : 'Рад шуд / Отклонено';
-                const comment = a.comment || '';
-                csvContent += app.id + ';"' + app.name + '";"' + cleanSector + '";' + cleanAmount + ';"' + decisionText + '";"' + comment + '"\n';
+                const toCsv = window.sanitizeCsvField || function (v) { return String(v == null ? '' : v).replace(/"/g, '""'); };
+                const comment = toCsv(a.comment || '');
+                csvContent += toCsv(app.id) + ';"' + toCsv(app.name) + '";"' + toCsv(cleanSector) + '";' + toCsv(cleanAmount) + ';"' + toCsv(decisionText) + '";"' + comment + '"\n';
             }
         });
 
@@ -174,8 +175,8 @@
         window.currentComAppId = id;
         const app = window.getApp(id);
         if (app) {
-            document.getElementById('com-app-name').innerHTML = app.name;
-            document.getElementById('com-app-id').innerHTML = app.id;
+            document.getElementById('com-app-name').textContent = app.name;
+            document.getElementById('com-app-id').textContent = app.id;
             document.getElementById('committee-evaluation-content').classList.remove('hidden');
             window.currentComChoice = null;
             document.getElementById('com-rejection-comment-block').classList.add('hidden');

@@ -8,17 +8,17 @@
         document.getElementById('id-input').value = id;
         document.getElementById('display-id').textContent = id;
         document.getElementById('full-name').value = data['full-name'];
-        document.getElementById('display-fullname').innerHTML = data['full-name'];
+        document.getElementById('display-fullname').textContent = data['full-name'];
         document.getElementById('inn').value = data.inn;
-        document.getElementById('display-inn').innerHTML = data.inn;
-        document.getElementById('display-birthdate').innerHTML = data['birth-date'] || '—';
-        document.getElementById('display-gender').innerHTML = data.gender || '—';
-        document.getElementById('display-contacts').innerHTML = data.contacts || '—';
-        document.getElementById('display-address').innerHTML = data.address || '—';
-        document.getElementById('display-category').innerHTML = data.category || '—';
-        document.getElementById('display-education').innerHTML = data.education || '—';
+        document.getElementById('display-inn').textContent = data.inn;
+        document.getElementById('display-birthdate').textContent = data['birth-date'] || '—';
+        document.getElementById('display-gender').textContent = data.gender || '—';
+        document.getElementById('display-contacts').textContent = data.contacts || '—';
+        document.getElementById('display-address').textContent = data.address || '—';
+        document.getElementById('display-category').textContent = data.category || '—';
+        document.getElementById('display-education').textContent = data.education || '—';
         document.getElementById('course').value = '';
-        document.getElementById('display-course').innerHTML = data.course || '—';
+        document.getElementById('display-course').textContent = data.course || '—';
     }
 
     function saveToDraft() {
@@ -28,13 +28,14 @@
         const sectorText = sectorSelect.options[sectorSelect.selectedIndex].text;
         const amount = document.getElementById('amount-input').value;
         const timestamp = window.getCurrentDateTime();
+        const sanitize = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
         let app = window.getApp(id);
         if (!app) {
-            app = { id: id, name: document.getElementById('full-name').value, auditLog: [] };
+            app = { id: id, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
             window.state.applications.push(app);
         }
         app.sector = sectorText || 'Номаълум';
-        app.amount = amount || '0';
+        app.amount = sanitize(amount || '0');
         app.date = timestamp;
         app.status = 'draft';
         window.addLog(app, 'Фасилитатор', 'Сиёҳнавис захира шуд', 'Сохранен черновик', 'slate', 'edit-3');
@@ -55,13 +56,14 @@
         }
 
         const timestamp = window.getCurrentDateTime();
+        const sanitize = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
         let app = window.getApp(id);
         if (!app) {
-            app = { id: id, name: document.getElementById('full-name').value, auditLog: [] };
+            app = { id: id, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
             window.state.applications.push(app);
         }
         app.sector = sectorText;
-        app.amount = amount;
+        app.amount = sanitize(amount);
         app.date = timestamp;
         app.status = 'gmc_review';
         window.addLog(app, 'Фасилитатор', 'Ба ШИГ фиристода шуд', 'Отправлено в КУГ', 'blue', 'send');
@@ -96,6 +98,7 @@
 
         function populateDropdown(query) {
             const q = query || '';
+            const esc = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
             searchDropdownList.innerHTML = '';
             Object.entries(window.mockDatabase || {}).forEach(function (entry) {
                 const id = entry[0];
@@ -105,7 +108,7 @@
                 const badgeColor = user.certStatus === 'certified' ? 'bg-emerald-100 text-emerald-600' : (user.certStatus === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600');
                 const item = document.createElement('div');
                 item.className = 'p-3 hover:bg-slate-50 cursor-pointer flex justify-between border-b border-slate-100 last:border-0 transition-colors';
-                item.innerHTML = '<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">' + initials + '</div><div class="flex flex-col"><span class="text-[13px] font-medium">' + user['full-name'] + '</span><span class="text-[11px] text-gray-500">ID: ' + id + '</span></div></div><span class="' + badgeColor + ' px-2 py-1 rounded text-[10px] font-bold h-max">' + user.certStatus + '</span>';
+                item.innerHTML = '<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">' + esc(initials) + '</div><div class="flex flex-col"><span class="text-[13px] font-medium">' + esc(user['full-name']) + '</span><span class="text-[11px] text-gray-500">ID: ' + esc(id) + '</span></div></div><span class="' + badgeColor + ' px-2 py-1 rounded text-[10px] font-bold h-max">' + esc(user.certStatus) + '</span>';
                 item.addEventListener('click', function () {
                     selectedMockId = id;
                     document.getElementById('searchDropdown').classList.add('hidden');

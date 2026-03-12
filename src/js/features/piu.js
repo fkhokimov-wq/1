@@ -9,8 +9,8 @@
         const app = window.getApp(id);
         if (!app) return;
 
-        document.getElementById('piu-app-name').innerHTML = app.name;
-        document.getElementById('piu-app-id').innerHTML = app.id;
+        document.getElementById('piu-app-name').textContent = app.name;
+        document.getElementById('piu-app-id').textContent = app.id;
         document.getElementById('piu-evaluation-content').classList.remove('hidden');
 
         if (!app.piuDecisions) app.piuDecisions = { 1: null };
