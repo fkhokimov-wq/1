@@ -56,7 +56,7 @@
         if (!targetEl) return;
         if (!details || !details.fields || details.fields.length === 0) {
             targetEl.classList.add('hidden');
-            targetEl.classList.remove('bg-rose-50', 'border-rose-200', 'text-rose-800');
+            targetEl.classList.remove('bg-rose-50', 'border-rose-200', 'text-rose-800', 'bg-orange-50', 'border-orange-300', 'text-orange-800');
             targetEl.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-800');
             targetEl.textContent = '';
             return;
@@ -422,8 +422,21 @@
                         contacts: selectedBeneficiaryData.contacts
                     }, null);
                     selectedHasHardDuplicate = hasHardDuplicate(details);
+                    var selCompleteness = window.checkBeneficiaryDataComplete ? window.checkBeneficiaryDataComplete(user) : { isComplete: true, missingFields: [] };
+                    if (!selCompleteness.isComplete) {
+                        var missingLabels = selCompleteness.missingFields.join(', ');
+                        duplicateWarning.classList.remove('hidden', 'bg-rose-50', 'border-rose-200', 'text-rose-800', 'bg-amber-50', 'border-amber-200', 'text-amber-800');
+                        duplicateWarning.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-800');
+                        duplicateWarning.textContent = '⚠ Маълумоти бенефициар нопурра аст! Нопурра: ' + missingLabels + '.';
+                        if (details.fields.length > 0) {
+                            var hitIds2 = details.matches.slice(0, 3).map(function (m) { return '#' + m.appId; });
+                            duplicateWarning.textContent += ' Инчунин ёфт шуд такрор: ' + details.fields.join(', ') + ' дар заявкаҳо: ' + hitIds2.join(', ') + '.';
+                        }
+                    } else {
+                        duplicateWarning.classList.remove('bg-orange-50', 'border-orange-300', 'text-orange-800');
+                        showDuplicateWarning(duplicateWarning, details);
+                    }
                     setSubmitEnabled(user.certStatus === 'certified' && !selectedHasHardDuplicate);
-                    showDuplicateWarning(duplicateWarning, details);
                 });
                 searchDropdownList.appendChild(item);
             });
