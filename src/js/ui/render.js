@@ -296,6 +296,10 @@
         const gmcReg = window.filterApps(['gmc_ready_for_registry']);
         const pius = window.filterApps(['piu_review']);
         const coms = window.filterApps(['com_review']);
+        const approved = window.filterApps(['approved']);
+        const rejected = window.filterApps(['rejected']);
+        const totalApps = (window.state && Array.isArray(window.state.applications)) ? window.state.applications.length : 0;
+        const submitted = Math.max(totalApps - drafts.length, 0);
 
         const setB = function (id, count) {
             const el = document.getElementById(id);
@@ -311,6 +315,13 @@
         setB('dash-gmc-badge', window.filterApps(['gmc_review', 'gmc_revision', 'gmc_preparation', 'gmc_ready_for_registry']).length);
         setB('dash-piu-badge', pius.length);
         setB('dash-com-badge', coms.length);
+
+        const submittedEl = document.getElementById('menu-submitted-count');
+        const approvedEl = document.getElementById('menu-approved-count');
+        const rejectedEl = document.getElementById('menu-rejected-count');
+        if (submittedEl) submittedEl.textContent = String(submitted);
+        if (approvedEl) approvedEl.textContent = String(approved.length);
+        if (rejectedEl) rejectedEl.textContent = String(rejected.length);
 
         const regBar = document.getElementById('gmc-registry-bar');
         const hasRegistrySelection = window.selectedForRegistry && window.selectedForRegistry.size > 0;
