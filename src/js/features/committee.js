@@ -33,6 +33,51 @@
         alert('Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
     }
 
+    function normalizeDecisionComment(value) {
+        return String(value == null ? '' : value).trim();
+    }
+
+    function getBatchDecisionComment(appId) {
+        var input = document.querySelector('.batch-comment-input[data-id="' + appId + '"]');
+        return input ? normalizeDecisionComment(input.value) : '';
+    }
+
+    function toggleBatchCommentVisibility(selectEl) {
+        if (!selectEl) return;
+        var wrap = selectEl.parentElement ? selectEl.parentElement.querySelector('.batch-comment-wrap') : null;
+        if (!wrap) return;
+        var shouldShow = selectEl.value === 'rej';
+        wrap.classList.toggle('hidden', !shouldShow);
+    }
+
+    function applyCommitteeRejection(app, protocolNum, formattedProtocolDate, exactTime, comment) {
+        var cycle = (app.committeeReturnsCount || 0) + 1;
+        var protocolTag = protocolNum || '—';
+
+        app.committeeReturnsCount = cycle;
+        app.lastReturnSource = 'committee';
+        app.lastCommitteeReturn = {
+            cycle: cycle,
+            protocolId: protocolTag,
+            protocolDate: formattedProtocolDate || '—',
+            protocolTime: exactTime || '—',
+            returnedAt: app.date,
+            returnedBy: 'Кумита / Комитет',
+            comment: comment
+        };
+        app.status = 'gmc_revision';
+
+        window.addLog(
+            app,
+            'Кумита / Комитет',
+            'Аз Кумита барои бозрасӣ ба ШИГ баргашт (давр ' + cycle + ')',
+            'Возвращено из Комитета в КУГ на доработку (цикл ' + cycle + ')',
+            'amber',
+            'undo-2',
+            'Протокол: ' + protocolTag + '. ' + comment
+        );
+    }
+
     function openCommitteeBatch(protocolId) {
         let targetProtocolId = protocolId || null;
         if (!targetProtocolId) {
@@ -111,7 +156,7 @@
                 comApps.forEach(function (app) {
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-slate-50 transition-colors';
-                    tr.innerHTML = '<td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="font-bold text-gray-800 text-[13px]">' + app.name + '</div><div class="text-[11px] text-gray-400">#' + app.id + '</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="text-[12px] text-gray-600">' + app.sector + '</div><div class="font-black text-primary text-[12px] mt-0.5">' + app.amount + ' сом.</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><select class="batch-decision border border-gray-300 rounded px-2 py-1.5 outline-none w-full text-[12px]" data-id="' + app.id + '"><option value="ok" selected>✅ Тасдиқ / Одобрить</option><option value="rej">❌ Рад кардан / Отклонить</option></select></td><td class="py-3 px-4 border-b border-gray-100 align-middle">' + getBusinessPlanButtonHtml(app.id) + '</td>';
+                    tr.innerHTML = '<td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="font-bold text-gray-800 text-[13px]">' + app.name + '</div><div class="text-[11px] text-gray-400">#' + app.id + '</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="text-[12px] text-gray-600">' + app.sector + '</div><div class="font-black text-primary text-[12px] mt-0.5">' + app.amount + ' сом.</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><select class="batch-decision border border-gray-300 rounded px-2 py-1.5 outline-none w-full text-[12px]" data-id="' + app.id + '"><option value="ok" selected>✅ Тасдиқ / Одобрить</option><option value="rej">❌ Рад кардан / Отклонить</option></select><div class="batch-comment-wrap hidden mt-2"><textarea class="batch-comment-input w-full border border-red-200 rounded-lg px-2 py-1.5 text-[11px] text-red-700" rows="2" data-id="' + app.id + '" placeholder="Сабаби рад кардан / Причина отклонения"></textarea></div></td><td class="py-3 px-4 border-b border-gray-100 align-middle">' + getBusinessPlanButtonHtml(app.id) + '</td>';
                     tbody.appendChild(tr);
                 });
             }
@@ -137,7 +182,7 @@
             comApps.forEach(function (app) {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-slate-50 transition-colors';
-                tr.innerHTML = '<td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="font-bold text-gray-800 text-[13px]">' + app.name + '</div><div class="text-[11px] text-gray-400">#' + app.id + '</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="text-[12px] text-gray-600">' + app.sector + '</div><div class="font-black text-primary text-[12px] mt-0.5">' + app.amount + ' сом.</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><select class="batch-decision border border-gray-300 rounded px-2 py-1.5 outline-none w-full text-[12px]" data-id="' + app.id + '"><option value="ok" selected>✅ Тасдиқ / Одобрить</option><option value="rej">❌ Рад кардан / Отклонить</option></select></td><td class="py-3 px-4 border-b border-gray-100 align-middle">' + getBusinessPlanButtonHtml(app.id) + '</td>';
+                tr.innerHTML = '<td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="font-bold text-gray-800 text-[13px]">' + app.name + '</div><div class="text-[11px] text-gray-400">#' + app.id + '</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><div class="text-[12px] text-gray-600">' + app.sector + '</div><div class="font-black text-primary text-[12px] mt-0.5">' + app.amount + ' сом.</div></td><td class="py-3 px-4 border-b border-gray-100 align-middle"><select class="batch-decision border border-gray-300 rounded px-2 py-1.5 outline-none w-full text-[12px]" data-id="' + app.id + '"><option value="ok" selected>✅ Тасдиқ / Одобрить</option><option value="rej">❌ Рад кардан / Отклонить</option></select><div class="batch-comment-wrap hidden mt-2"><textarea class="batch-comment-input w-full border border-red-200 rounded-lg px-2 py-1.5 text-[11px] text-red-700" rows="2" data-id="' + app.id + '" placeholder="Сабаби рад кардан / Причина отклонения"></textarea></div></td><td class="py-3 px-4 border-b border-gray-100 align-middle">' + getBusinessPlanButtonHtml(app.id) + '</td>';
                 tbody.appendChild(tr);
             });
         }
@@ -179,13 +224,26 @@
 
         const newProtocol = { id: protocolNum, date: formattedProtocolDate, exactTime: exactTime, apps: [], okCount: 0, rejCount: 0, totalAmount: 0 };
 
-        comApps.forEach(function (app) {
-            const decisionEl = document.querySelector('.batch-decision[data-id="' + app.id + '"]');
-            const decision = decisionEl ? decisionEl.value : 'ok';
-            let comment = '';
-            if (decision === 'rej') {
-                comment = window.prompt('Сабаби рад карданро ворид кунед / Укажите причину отклонения', '') || '';
+        var decisions = [];
+        for (var idx = 0; idx < comApps.length; idx++) {
+            var appForValidation = comApps[idx];
+            var decisionEl = document.querySelector('.batch-decision[data-id="' + appForValidation.id + '"]');
+            var decision = decisionEl ? decisionEl.value : 'ok';
+            var comment = decision === 'rej' ? getBatchDecisionComment(appForValidation.id) : '';
+
+            if (decision === 'rej' && !comment) {
+                alert('Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                return;
             }
+            decisions.push({ app: appForValidation, decision: decision, comment: comment });
+        }
+
+        decisions.forEach(function (entry) {
+            var app = entry.app;
+            var decision = entry.decision;
+            var comment = entry.comment;
+            const decisionEl = document.querySelector('.batch-decision[data-id="' + app.id + '"]');
+            if (decisionEl) toggleBatchCommentVisibility(decisionEl);
 
             app.date = window.getCurrentDateTime();
             app.protocolId = protocolNum;
@@ -198,8 +256,7 @@
                 newProtocol.totalAmount += parseInt(app.amount.replace(/\D/g, '') || 0, 10);
                 window.generateMonitoringFor(app.id, protocolDateInput);
             } else if (decision === 'rej') {
-                app.status = 'rejected';
-                window.addLog(app, 'Кумита / Комитет', 'Грант рад шуд (Рӯйхат ' + protocolLabel + ')', 'Грант отклонен (Список ' + protocolLabelRu + ')', 'red', 'x-circle', comment);
+                applyCommitteeRejection(app, protocolNum, formattedProtocolDate, exactTime, comment);
                 newProtocol.rejCount++;
             }
         });
@@ -423,13 +480,22 @@
             window.addLog(app, 'Кумита / Комитет', 'Грант тасдиқ шуд', 'Грант утвержден', 'emerald', 'award');
             window.generateMonitoringFor(app.id, new Date().toISOString().split('T')[0]);
         } else {
-            app.status = 'rejected';
-            window.addLog(app, 'Кумита / Комитет', 'Грант рад шуд', 'Грант отклонен', 'red', 'x-circle', comment);
+            if (!normalizeDecisionComment(comment)) {
+                alert('Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                return;
+            }
+            applyCommitteeRejection(app, app.protocolId || 'IND-' + app.id, app.date.split(',')[0], app.date.split(',')[1] || '', normalizeDecisionComment(comment));
         }
         document.getElementById('committee-evaluation-content').classList.add('hidden');
         window.renderAllCards();
         document.getElementById('applicationModal').classList.add('hidden');
     }
+
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.classList && e.target.classList.contains('batch-decision')) {
+            toggleBatchCommentVisibility(e.target);
+        }
+    });
 
     window.AppFeatures.committee = {
         ready: true,

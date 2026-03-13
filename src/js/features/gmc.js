@@ -22,6 +22,12 @@
         return input.files[0].name || '';
     }
 
+    function isCommitteeReturn(app) {
+        if (!app) return false;
+        if (app.lastReturnSource === 'committee') return true;
+        return !!(app.lastCommitteeReturn && app.status === 'gmc_revision');
+    }
+
     function loadGmcForm(id) {
         const app = window.getApp(id);
         if (!app) return;
@@ -96,12 +102,22 @@
             if (revisionUploadInput) revisionUploadInput.value = '';
             const lastLog = app.auditLog.slice().reverse().find(function (l) { return l.comment; });
             const commentEl = document.getElementById('gmc-dynamic-comment');
-            if (commentEl) commentEl.textContent = lastLog && lastLog.comment ? lastLog.comment : 'Бе эзоҳ / Без комментариев';
+            const isFromCommittee = isCommitteeReturn(app);
+            if (commentEl) {
+                if (isFromCommittee && app.lastCommitteeReturn) {
+                    var meta = app.lastCommitteeReturn;
+                    var metaLine = 'Комитет: ' + (meta.protocolId || '—') + ', ' + (meta.protocolDate || '—') + ' ' + (meta.protocolTime || '');
+                    var cycleLine = 'Цикл возврата: ' + (meta.cycle || app.committeeReturnsCount || 1);
+                    var reason = meta.comment || (lastLog && lastLog.comment ? lastLog.comment : 'Бе эзоҳ / Без комментариев');
+                    commentEl.textContent = metaLine + ' | ' + cycleLine + ' | ' + reason;
+                } else {
+                    commentEl.textContent = lastLog && lastLog.comment ? lastLog.comment : 'Бе эзоҳ / Без комментариев';
+                }
+            }
             const newCommentEl = document.getElementById('gmc-return-comment');
             if (newCommentEl) newCommentEl.value = '';
             const returnTitle = document.getElementById('gmc-return-title');
-            const lastActor = app.auditLog[app.auditLog.length - 1] ? app.auditLog[app.auditLog.length - 1].actor : '';
-            if (lastActor.includes('Кумита')) {
+            if (isFromCommittee) {
                 returnTitle.innerHTML = 'Аз Кумита барои бозрасӣ баргардонида шуд <span class="ru-block mt-1">Возвращено из Комитета на доработку</span>';
             } else {
                 returnTitle.innerHTML = 'Аз ГТЛ барои бозрасӣ баргардонида шуд <span class="ru-block mt-1">Возвращено из ГРП на доработку</span>';
@@ -267,13 +283,22 @@
             });
         }
 
+        var fromCommittee = isCommitteeReturn(app);
+        app.resubmitsToPiuCount = (app.resubmitsToPiuCount || 0) + 1;
         app.status = 'piu_review';
+        app.lastReturnSource = 'gmc';
         app.date = window.getCurrentDateTime();
+        var committeeSuffix = fromCommittee
+            ? ' пас аз бозгашти Кумита'
+            : '';
+        var committeeSuffixRu = fromCommittee
+            ? ' после возврата Комитета'
+            : '';
         window.addLog(
             app,
             'ШИГ / КУГ',
-            'Ислоҳот ворид шуд, Word V' + nextVersion + ' бор ва бозгашт ба ГТЛ',
-            'Внесены исправления, загружен Word V' + nextVersion + ', возвращено в ГРП',
+            'Ислоҳот ворид шуд, Word V' + nextVersion + ' бор ва бозгашт ба ГТЛ' + committeeSuffix + ' (шумора: ' + app.resubmitsToPiuCount + ')',
+            'Внесены исправления, загружен Word V' + nextVersion + ', возвращено в ГРП' + committeeSuffixRu + ' (счет: ' + app.resubmitsToPiuCount + ')',
             'blue',
             'refresh-cw'
         );
@@ -292,7 +317,9 @@
             return;
         }
 
+        var fromCommittee = isCommitteeReturn(app);
         app.revisionCount = (app.revisionCount || 0) + 1;
+        app.lastReturnSource = 'gmc';
         app.date = window.getCurrentDateTime();
 
         if (app.revisionCount >= 3) {
@@ -301,7 +328,8 @@
             alert('Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
         } else {
             app.status = 'fac_revision';
-            window.addLog(app, 'ШИГ / КУГ', 'Аз ГТЛ баргашт -> Ба Фасилитатор равон шуд (' + app.revisionCount + '/3)', 'Возврат из ГРП -> Направлено Фасилитатору (' + app.revisionCount + '/3)', 'amber', 'corner-down-left', comment);
+            var committeeCycle = fromCommittee && app.lastCommitteeReturn ? ' Комитет #' + app.lastCommitteeReturn.cycle : '';
+            window.addLog(app, 'ШИГ / КУГ', 'Аз ГТЛ баргашт -> Ба Фасилитатор равон шуд (' + app.revisionCount + '/3)' + committeeCycle, 'Возврат из ГРП -> Направлено Фасилитатору (' + app.revisionCount + '/3)' + committeeCycle, 'amber', 'corner-down-left', comment);
             alert('Дархост барои такмил ба Фасилитатор фиристода шуд (Кӯшиши ' + app.revisionCount + ' аз 3)!\nЗаявка отправлена Фасилитатору на доработку (Попытка ' + app.revisionCount + ' из 3)!');
         }
         window.renderAllCards();

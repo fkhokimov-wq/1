@@ -4,6 +4,8 @@
     function loadHistoryForm(id) {
         const app = window.getApp(id) || { auditLog: [] };
         const revisionsCount = app.revisionCount || 0;
+        const committeeReturnsCount = app.committeeReturnsCount || 0;
+        const resubmitsToPiuCount = app.resubmitsToPiuCount || 0;
         const createDate = app.auditLog && app.auditLog.length > 0 ? app.auditLog[0].date.split(',')[0] : '—';
         let currentStatusName = 'Дар баррасӣ / В процессе';
         if (['approved', 'issued'].includes(app.status)) currentStatusName = 'Тасдиқшуда / Одобрена';
@@ -36,7 +38,7 @@
                 timelineContainer.innerHTML = '<p class="text-[13px] text-gray-400 py-4 font-medium">Таърих холӣ аст / История пуста</p>';
                 return;
             }
-            let html = '';
+            let html = '<div class="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-xl"><div class="text-[11px] text-slate-700 font-medium">Доработки Фасилитатора: <b>' + revisionsCount + '/3</b> • Возвраты Комитета: <b>' + committeeReturnsCount + '</b> • Повторные отправки в ГТЛ/ГРП: <b>' + resubmitsToPiuCount + '</b></div></div>';
             app.auditLog.forEach(function (log, index) {
                 const isLast = index === app.auditLog.length - 1;
                 const esc = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
@@ -529,6 +531,9 @@
         const postLockBadgeRow = app.reactivated ? '<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Возвращена после 3-месячной блокировки"><i data-lucide="history" class="w-3 h-3 inline mr-0.5"></i>Пас аз 3 моҳ</span>' : '';
         const revisionBadgeRow = (displayRevisionCount > 0 && ['fac_revision', 'postponed'].includes(status)) ? '<span class="bg-amber-100 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Миқдори такмил / Доработка: ' + displayRevisionCount + '/3"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-0.5"></i>' + displayRevisionCount + '/3</span>' : '';
         const wordVersionBadgeCard = '<span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Current Word Version: V' + currentWordVersion + '"><i data-lucide="file-text" class="w-3 h-3 inline mr-0.5"></i>Word V' + currentWordVersion + '</span>';
+        const committeeMeta = app.lastCommitteeReturn || null;
+        const committeeCycleBadge = committeeMeta && committeeMeta.cycle ? '<span class="bg-rose-100 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Возврат из Комитета">Кумита #' + committeeMeta.cycle + ' <span class="ru font-normal">/ Комитет</span></span>' : '';
+        const committeeInfoLine = committeeMeta ? '<div class="mt-1 text-[10px] text-rose-700 font-medium">Кумита: ' + (committeeMeta.protocolId || '—') + ' • ' + (committeeMeta.protocolDate || '—') + ' ' + (committeeMeta.protocolTime || '') + '</div>' : '';
 
         let checkboxHtmlCard = '';
         let checkboxHtmlRow = '';
@@ -549,7 +554,9 @@
                 aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-[#5B4AF0] border border-[#C6D4FF] text-[12px] font-bold px-3 py-1.5 rounded-lg">Омода кардан <span class="ru font-normal">/ Подготовить</span></button>';
             } else if (status === 'gmc_revision') {
                 bClass = 'bg-amber-50 border-amber-300';
-                bHtml = '<div class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Аз ГТЛ баргашт <span class="ru font-normal">/ Возврат из ГРП</span></div>';
+                bHtml = committeeMeta
+                    ? '<div class="bg-rose-100 text-rose-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="undo-2" class="w-3 h-3 inline"></i> Аз Кумита баргашт <span class="ru font-normal">/ Возврат из Комитета</span></div>'
+                    : '<div class="bg-amber-100 text-amber-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Аз ГТЛ баргашт <span class="ru font-normal">/ Возврат из ГРП</span></div>';
                 badgeHtmlList = bHtml;
                 aHtml = '<button onclick="openGmcFor(\'' + id + '\')" class="bg-white text-amber-700 border border-amber-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Баррасӣ <span class="ru font-normal">/ Проверить</span></button>';
             } else {
@@ -628,7 +635,7 @@
         card.setAttribute('data-id', id);
         card.setAttribute('data-status', status);
         card.className = bClass + ' rounded-2xl p-5 border shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer';
-        card.innerHTML = '<div class="flex justify-between items-start gap-2 mb-2"><div class="flex items-center min-w-0">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800 leading-tight">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 leading-tight">#' + app.id + ' • ' + app.sector + '</div><div class="mt-2 flex flex-wrap items-center gap-1.5">' + protocolBadgeCard + wordVersionBadgeCard + revisionBadgeCard + postLockBadgeCard + '</div><div class="mt-5 mb-5 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
+        card.innerHTML = '<div class="flex justify-between items-start gap-2 mb-2"><div class="flex items-center min-w-0">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800 leading-tight">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 leading-tight">#' + app.id + ' • ' + app.sector + '</div>' + (status === 'gmc_revision' ? committeeInfoLine : '') + '<div class="mt-2 flex flex-wrap items-center gap-1.5">' + protocolBadgeCard + wordVersionBadgeCard + revisionBadgeCard + postLockBadgeCard + (status === 'gmc_revision' ? committeeCycleBadge : '') + '</div><div class="mt-5 mb-5 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
         card.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             const btn = card.querySelector('button, span[onclick]');
@@ -641,7 +648,7 @@
         row.setAttribute('data-id', id);
         row.setAttribute('data-status', status);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-start">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400">#' + app.id + ' • ' + app.date.split(',')[0] + '</div><div class="mt-1 flex flex-wrap items-center gap-1.5">' + protocolBadgeRow + wordVersionBadgeRow + revisionBadgeRow + postLockBadgeRow + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium leading-tight">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-start">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400">#' + app.id + ' • ' + app.date.split(',')[0] + '</div>' + (status === 'gmc_revision' ? '<div class="text-[10px] text-rose-700 mt-1">Кумита: ' + (committeeMeta && committeeMeta.protocolId ? committeeMeta.protocolId : '—') + ' • ' + (committeeMeta && committeeMeta.protocolDate ? committeeMeta.protocolDate : '—') + '</div>' : '') + '<div class="mt-1 flex flex-wrap items-center gap-1.5">' + protocolBadgeRow + wordVersionBadgeRow + revisionBadgeRow + postLockBadgeRow + (status === 'gmc_revision' ? committeeCycleBadge : '') + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium leading-tight">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
         row.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             const btn = row.querySelector('button, span[onclick]');
