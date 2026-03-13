@@ -152,6 +152,8 @@ interface CommitteeReturnMeta {
 interface GrantAgreement {
   uploaded: boolean;         // Файл загружен
   fileName: string;          // Имя файла
+  mimeType: string;          // MIME-тип исходного файла
+  fileDataUrl: string;       // Data URL исходного файла (in-memory)
   uploadedAt: string;        // Дата/время загрузки
   uploadedByRole: string;    // Роль загрузившего
   uploadedByName: string;    // Имя/лейбл загрузившего
@@ -171,6 +173,7 @@ interface GrantAgreement {
 - Загрузка выполняется только Фасилитатором.
 - Форматы: PDF/JPG/JPEG/PNG, до 10MB.
 - Каждая загрузка/обновление записывается в `auditLog`.
+- При наличии `fileDataUrl` скачивание возвращает исходный загруженный файл.
 
 ### ApplicationStatus (все возможные значения)
 
