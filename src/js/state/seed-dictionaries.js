@@ -91,7 +91,79 @@
         '50005': { 'full-name': 'Расулова Нигора Умедовна', 'birth-date': '30.05.1990', gender: 'Зан', contacts: '+992 90 410 1105', address: 'ш. Ҳисор', inn: '9100001005', category: 'Корҷӯй', education: 'Олӣ', course: 'Ороишгар', certStatus: 'certified' },
         '50081': { 'full-name': 'Раҳимов Фирдавс Ҳамидович', 'birth-date': '05.07.1995', gender: 'Мард', contacts: '+992 90 555 0081', address: '', inn: '', category: 'Бекор', education: '', course: 'Ҷӯшкорӣ', certStatus: 'certified' },
         '50082': { 'full-name': 'Назарова Малика Ашуровна', 'birth-date': '', gender: 'Зан', contacts: '+992 90 555 0082', address: 'ш. Бохтар', inn: '9100009082', category: '', education: 'Олӣ', course: '', certStatus: 'certified' },
-        '50083': { 'full-name': 'Ҷумаев Абдулло Раҳматович', 'birth-date': '12.11.1988', gender: 'Мард', contacts: '', address: 'ш. Кӯлоб', inn: '', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'certified' }
+        '50083': { 'full-name': 'Ҷумаев Абдулло Раҳматович', 'birth-date': '12.11.1988', gender: 'Мард', contacts: '', address: 'ш. Кӯлоб', inn: '', category: 'Муҳоҷир', education: 'Миёна', course: 'Устои барқ', certStatus: 'certified' },
+        '50084': {
+            'full-name': 'Саидова Маҳина Бахтиёровна',
+            'birth-date': '19.08.1997',
+            gender: 'Зан',
+            contacts: '+992 90 555 0084',
+            address: 'ш. Душанбе',
+            inn: '9100009084',
+            category: 'Бекор',
+            education: 'Миёнаи махсус',
+            course: 'Дӯзандагӣ',
+            certStatus: 'pending',
+            trainingSessions: {
+                infoSession: true,
+                selfKnowledge: false,
+                entrepreneurshipBasics: false,
+                softSkills: false
+            }
+        },
+        '50085': {
+            'full-name': 'Каримов Сорбон Раҳматович',
+            'birth-date': '02.01.1992',
+            gender: 'Мард',
+            contacts: '+992 90 555 0085',
+            address: 'ш. Хуҷанд',
+            inn: '9100009085',
+            category: 'Муҳоҷир',
+            education: 'Миёна',
+            course: 'Ҷӯшкорӣ',
+            certStatus: 'pending',
+            trainingSessions: {
+                infoSession: true,
+                selfKnowledge: true,
+                entrepreneurshipBasics: false,
+                softSkills: false
+            }
+        },
+        '50086': {
+            'full-name': 'Нурматова Гулнора Олимовна',
+            'birth-date': '27.04.1994',
+            gender: 'Зан',
+            contacts: '+992 90 555 0086',
+            address: 'ш. Бохтар',
+            inn: '9100009086',
+            category: 'Корҷӯй',
+            education: 'Олӣ',
+            course: 'Ороишгар',
+            certStatus: 'certified',
+            trainingSessions: {
+                infoSession: true,
+                selfKnowledge: true,
+                entrepreneurshipBasics: true,
+                softSkills: false
+            }
+        },
+        '50087': {
+            'full-name': 'Турсунов Шаҳбоз Комронович',
+            'birth-date': '14.10.1991',
+            gender: 'Мард',
+            contacts: '+992 90 555 0087',
+            address: 'ш. Кӯлоб',
+            inn: '9100009087',
+            category: 'Бекор',
+            education: 'Миёнаи махсус',
+            course: 'Устои барқ',
+            certStatus: 'pending',
+            trainingSessions: {
+                infoSession: false,
+                selfKnowledge: false,
+                entrepreneurshipBasics: false,
+                softSkills: true
+            }
+        }
     };
 
     var searchFirstNamesMale = ['Фирдавсӣ', 'Бахтиёр', 'Ҷамшед', 'Сухроб', 'Анвар', 'Зафар', 'Шоҳин', 'Рустам', 'Далер', 'Тимур', 'Олим', 'Неъмат', 'Комрон', 'Муродалӣ', 'Шарифҷон', 'Аброр', 'Бобоҷон', 'Мирзо', 'Файзалӣ', 'Ҷовидон'];

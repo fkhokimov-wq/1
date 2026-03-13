@@ -171,7 +171,10 @@
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
                 : 'bg-red-50 border-red-200 text-red-800';
             var icon = item.passed ? '✔' : '✖';
-            return '<div class="border rounded-lg px-3 py-2 text-[12px] font-medium ' + base + '"><span class="mr-1.5">' + icon + '</span>' + item.tj + ' <span class="ru">/ ' + item.ru + '</span></div>';
+            var statusText = item.passed
+                ? 'Гузашт / Пройдена'
+                : 'Нагузашт / Не пройдена';
+            return '<div class="border rounded-lg px-3 py-2 text-[12px] font-medium ' + base + '"><div class="flex items-start justify-between gap-2"><div><span class="mr-1.5">' + icon + '</span>' + item.tj + ' <span class="ru">/ ' + item.ru + '</span></div><span class="text-[11px] font-semibold whitespace-nowrap">' + statusText + '</span></div></div>';
         }).join('');
 
         if (state.isComplete) {
