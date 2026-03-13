@@ -500,11 +500,10 @@
         card.className = bClass + ' rounded-2xl p-5 border shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer';
         card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + postLockBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
         card.onclick = function (e) {
-            if (!e.target.closest('input')) {
-                const btn = card.querySelector('button, span[onclick]');
-                if (btn) btn.click();
-                else if (!isRoleOwnedStatus(status, getActiveRoleContext())) canOpenInCurrentContext(id);
-            }
+            if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
+            const btn = card.querySelector('button, span[onclick]');
+            if (btn) btn.click();
+            else if (!isRoleOwnedStatus(status, getActiveRoleContext())) canOpenInCurrentContext(id);
         };
         document.getElementById('mainDashboardGrid').appendChild(card);
 
@@ -514,11 +513,10 @@
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in';
         row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + postLockBadge + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
         row.onclick = function (e) {
-            if (!e.target.closest('button') && !e.target.closest('a') && !e.target.closest('svg') && !e.target.closest('select') && !e.target.closest('input')) {
-                const btn = row.querySelector('button, span[onclick]');
-                if (btn) btn.click();
-                else if (!isRoleOwnedStatus(status, getActiveRoleContext())) canOpenInCurrentContext(id);
-            }
+            if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
+            const btn = row.querySelector('button, span[onclick]');
+            if (btn) btn.click();
+            else if (!isRoleOwnedStatus(status, getActiveRoleContext())) canOpenInCurrentContext(id);
         };
         document.getElementById('list-tbody').appendChild(row);
     }
