@@ -51,16 +51,18 @@ graph LR
 | Доработать заявку | `openRevFor()` | Статус `fac_revision` |
 | Проводить мониторинг | `saveMonitoringVisit()` | Статус `approved`, визит `active` |
 | Просмотр истории | `openApprovedFor()` | Любой статус |
+| Загрузить подписанный договор | `uploadGrantAgreementFromModal()` | Только `approved`, только Фасилитатор |
+| Скачать подписанный договор | `downloadCurrentGrantAgreementFromModal()` | Если договор загружен |
 
 ### ШИГ / КУГ (gmc)
 
 | Действие | Функция в коде | Условие |
 |----------|---------------|---------|
 | Оценить заявку (скоринг) | `loadGmcForm()`, `saveGmcDecision()` | Статус `gmc_review` |
-| Рекомендовать в ГРП | `saveGmcDecision()` (ok) | Балл ≥ 45 |
+| Рекомендовать в ГТЛ / ГРП | `saveGmcDecision()` (ok) | Балл ≥ 45 |
 | Вернуть на доработку | `saveGmcDecision()` (rev) | Балл 30-44 |
 | Отклонить | `saveGmcDecision()` (rej) | Балл < 30 или el = "no" |
-| Анализ возврата из ГРП | `sendGmcBackToPiu()`, `sendGmcToFacilitator()` | Статус `gmc_revision` |
+| Анализ возврата из ГРП/Комитета | `sendGmcBackToPiu()`, `sendGmcToFacilitator()` | Статус `gmc_revision` |
 | Добавить в реестр | `markReadyForRegistry()` | Статус `gmc_preparation` |
 | Выбрать для реестра | `toggleRegistrySelection()` | Статус `gmc_ready_for_registry` |
 | Создать реестр | `openRegistryPreview()` | Выбрана ≥ 1 заявка |
@@ -224,7 +226,7 @@ flowchart TD
 
     subgraph "Комитет"
         V9["Дата протокола заполнена<br/>→ иначе alert"]
-        V10["Комментарий при отклонении<br/>→ window.prompt"]
+        V10["Комментарий при отклонении<br/>→ inline textarea (обязателен)"]
     end
 
     subgraph "Мониторинг"

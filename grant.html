@@ -1550,17 +1550,41 @@
                             <div
                                 class="bg-white border border-emerald-200 rounded-xl p-4 flex items-center justify-between shadow-sm relative overflow-hidden hover:shadow-md transition-shadow">
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-400"></div>
-                                <div class="flex items-center gap-3 pl-2">
-                                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg"><i
-                                            data-lucide="file-signature" class="w-5 h-5"></i></div>
-                                    <div>
-                                        <p class="text-[13px] font-bold text-emerald-900 leading-tight">Шартномаи
-                                            имзошуда <span class="ru font-normal">/ Подписанный договор</span></p>
+                                <div class="w-full pl-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-lg"><i
+                                                data-lucide="file-signature" class="w-5 h-5"></i></div>
+                                        <div>
+                                            <p class="text-[13px] font-bold text-emerald-900 leading-tight">Шартномаи
+                                                имзошуда <span class="ru font-normal">/ Подписанный договор</span></p>
+                                            <div id="grant-agreement-meta" class="text-[11px] text-slate-500 mt-1">Файл
+                                                не загружен / Файл бор нашудааст</div>
+                                        </div>
+                                    </div>
+                                    <p id="grant-agreement-hint" class="text-[10px] text-slate-500 mt-2">Загрузка
+                                        доступна только Фасилитатору и только в статусе approved.</p>
+                                    <input type="file" id="grant-agreement-upload" accept=".pdf,.jpg,.jpeg,.png"
+                                        class="hidden">
+                                    <textarea id="grant-agreement-note" rows="2"
+                                        class="mt-2 w-full border border-emerald-200 rounded-lg px-2 py-1.5 text-[11px] text-slate-700"
+                                        placeholder="Эзоҳ / Комментарий (ихтиёрӣ / необязательно)"></textarea>
+                                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                                        <button type="button" onclick="openGrantAgreementPicker()"
+                                            class="bg-white border border-emerald-200 text-emerald-700 py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-1.5"><i
+                                                data-lucide="paperclip" class="w-3.5 h-3.5"></i><span>Интихоби файл
+                                                <span class="ru font-normal">/ Выбрать файл</span></span></button>
+                                        <button type="button" id="btn-upload-grant-agreement"
+                                            onclick="uploadGrantAgreementFromModal()"
+                                            class="bg-emerald-600 text-white py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-emerald-700 transition-colors inline-flex items-center gap-1.5"><i
+                                                data-lucide="upload" class="w-3.5 h-3.5"></i><span>Бор кардан <span
+                                                    class="ru font-normal">/ Загрузить</span></span></button>
+                                        <button type="button" id="btn-download-grant-agreement"
+                                            onclick="downloadCurrentGrantAgreementFromModal()"
+                                            class="bg-white border border-emerald-200 text-emerald-600 py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-emerald-50 transition-colors inline-flex items-center gap-1.5"><i
+                                                data-lucide="download" class="w-3.5 h-3.5"></i><span>Боргирӣ <span
+                                                    class="ru font-normal">/ Скачать</span></span></button>
                                     </div>
                                 </div>
-                                <button onclick="alert('Боргирӣ... / Скачивание...')"
-                                    class="bg-white border border-emerald-200 text-emerald-600 p-2 rounded-lg hover:bg-emerald-50 transition-colors"><i
-                                        data-lucide="download" class="w-4 h-4"></i></button>
                             </div>
                         </div>
                     </div>

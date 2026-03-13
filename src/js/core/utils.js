@@ -163,6 +163,76 @@
         return null;
     }
 
+    function ensureGrantAgreement(app) {
+        if (!app) return null;
+        if (!app.grantAgreement) {
+            app.grantAgreement = {
+                uploaded: false,
+                fileName: '',
+                uploadedAt: '',
+                uploadedByRole: '',
+                uploadedByName: '',
+                note: '',
+                replaceCount: 0
+            };
+        }
+        return app.grantAgreement;
+    }
+
+    function registerGrantAgreement(app, payload) {
+        if (!app || !payload || !payload.fileName) return null;
+        var agreement = ensureGrantAgreement(app);
+        if (!agreement) return null;
+
+        var isReplacing = !!agreement.uploaded;
+        agreement.uploaded = true;
+        agreement.fileName = sanitizeText(payload.fileName);
+        agreement.uploadedAt = getCurrentDateTime();
+        agreement.uploadedByRole = sanitizeText(payload.uploadedByRole || 'Фасилитатор');
+        agreement.uploadedByName = sanitizeText(payload.uploadedByName || 'Фасилитатор');
+        agreement.note = sanitizeText(payload.note || '');
+        agreement.replaceCount = isReplacing ? (agreement.replaceCount || 0) + 1 : 0;
+        return agreement;
+    }
+
+    function downloadGrantAgreementFile(appId) {
+        var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
+        if (!app) {
+            alert('Заявка не найдена / Дархост ёфт нашуд');
+            return;
+        }
+
+        var agreement = ensureGrantAgreement(app);
+        if (!agreement || !agreement.uploaded || !agreement.fileName) {
+            alert('Подписанный договор еще не загружен / Шартномаи имзошуда ҳанӯз бор нашудааст');
+            return;
+        }
+
+        var lines = [
+            'SIGNED GRANT AGREEMENT / ПОДПИСАННЫЙ ДОГОВОР О ГРАНТЕ',
+            'ID: ' + app.id,
+            'Заявитель: ' + sanitizeText(app.name || ''),
+            'Файл: ' + sanitizeText(agreement.fileName),
+            'Загружен: ' + sanitizeText(agreement.uploadedAt || '—'),
+            'Роль: ' + sanitizeText(agreement.uploadedByRole || '—'),
+            'Пользователь: ' + sanitizeText(agreement.uploadedByName || '—')
+        ];
+
+        if (agreement.note) {
+            lines.push('Комментарий: ' + sanitizeText(agreement.note));
+        }
+
+        var blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'GrantAgreement_' + app.id + '.txt');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
     function downloadBusinessPlanFile(appId) {
         var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
         if (!app) {
@@ -292,6 +362,9 @@
         registerBaseDocuments,
         registerWordVersion,
         getCurrentWordVersionInfo,
+        ensureGrantAgreement,
+        registerGrantAgreement,
+        downloadGrantAgreementFile,
         downloadBusinessPlanFile,
         downloadBusinessPlanPdfFile,
         downloadBusinessPlanPhotoPack
@@ -312,6 +385,9 @@
     window.registerBaseDocuments = registerBaseDocuments;
     window.registerWordVersion = registerWordVersion;
     window.getCurrentWordVersionInfo = getCurrentWordVersionInfo;
+    window.ensureGrantAgreement = ensureGrantAgreement;
+    window.registerGrantAgreement = registerGrantAgreement;
+    window.downloadGrantAgreementFile = downloadGrantAgreementFile;
     window.downloadBusinessPlanFile = downloadBusinessPlanFile;
     window.downloadBusinessPlanPdfFile = downloadBusinessPlanPdfFile;
     window.downloadBusinessPlanPhotoPack = downloadBusinessPlanPhotoPack;

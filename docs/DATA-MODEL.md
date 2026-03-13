@@ -84,6 +84,9 @@ interface Application {
 
   // === Протокол Комитета ===
   protocolId?: string;           // ID протокола ("СП-9001")
+  committeeReturnsCount?: number; // Сколько раз Комитет возвращал заявку на доработку
+  lastReturnSource?: string;      // Последний источник возврата: committee | piu | gmc
+  lastCommitteeReturn?: CommitteeReturnMeta | null; // Последний возврат из Комитета
 
   // === Оценки ===
   gmcEvaluation?: GmcEvaluation; // Результат скоринга ШИГ / КУГ
@@ -93,6 +96,9 @@ interface Application {
 
   // === Документы бизнес-плана ===
   documents?: DocumentBundle;    // Word-версии + фиксированные PDF/фото
+
+  // === Подписанный договор ===
+  grantAgreement?: GrantAgreement; // Скан подписанного договора после approved
 
   // === Аудит ===
   auditLog: AuditLogEntry[];     // История действий
@@ -132,6 +138,26 @@ interface BasePhotoEntry {
   uploadedByRole: string;
   uploadedByName: string;
 }
+
+interface CommitteeReturnMeta {
+  cycle: number;             // Номер цикла возврата из Комитета
+  protocolId: string;        // Номер протокола/списка
+  protocolDate: string;      // Дата протокола
+  protocolTime: string;      // Время протокола
+  returnedAt: string;        // Когда возвращено
+  returnedBy: string;        // "Кумита / Комитет"
+  comment: string;           // Причина возврата
+}
+
+interface GrantAgreement {
+  uploaded: boolean;         // Файл загружен
+  fileName: string;          // Имя файла
+  uploadedAt: string;        // Дата/время загрузки
+  uploadedByRole: string;    // Роль загрузившего
+  uploadedByName: string;    // Имя/лейбл загрузившего
+  note?: string;             // Опциональный комментарий
+  replaceCount?: number;     // Сколько раз договор обновлялся
+}
 ```
 
 Инварианты документного пакета:
@@ -139,6 +165,12 @@ interface BasePhotoEntry {
 - `wordVersions` пополняется при первичной подаче и при корректировках ШИГ / КУГ после возврата ГРП.
 - `basePdf` и `basePhotos` не перезаписываются на последующих этапах.
 - UI-индикатор `Current Word Version: Vn` берется из `documents.currentWordVersion`.
+
+Инварианты подписанного договора:
+- Договор загружается только после перехода заявки в `approved`.
+- Загрузка выполняется только Фасилитатором.
+- Форматы: PDF/JPG/JPEG/PNG, до 10MB.
+- Каждая загрузка/обновление записывается в `auditLog`.
 
 ### ApplicationStatus (все возможные значения)
 

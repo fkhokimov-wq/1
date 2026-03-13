@@ -31,6 +31,8 @@
             }
         }
 
+        renderGrantAgreementPanel(app);
+
         const timelineContainer = document.getElementById('dynamic-timeline');
         if (timelineContainer) {
             timelineContainer.innerHTML = '';
@@ -90,6 +92,126 @@
             return;
         }
         alert('Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
+    }
+
+    function isValidAgreementFile(file) {
+        if (!file) return false;
+        var allowed = ['pdf', 'jpg', 'jpeg', 'png'];
+        var ext = String(file.name || '').split('.').pop().toLowerCase();
+        if (!allowed.includes(ext)) return false;
+        var maxBytes = 10 * 1024 * 1024;
+        if (file.size > maxBytes) return false;
+        return true;
+    }
+
+    function canUploadAgreementForApp(app) {
+        if (!app || app.status !== 'approved') return false;
+        return getActiveRoleContext() === 'facilitator';
+    }
+
+    function renderGrantAgreementPanel(app) {
+        var inputEl = document.getElementById('grant-agreement-upload');
+        var uploadBtn = document.getElementById('btn-upload-grant-agreement');
+        var downloadBtn = document.getElementById('btn-download-grant-agreement');
+        var metaEl = document.getElementById('grant-agreement-meta');
+        var noteEl = document.getElementById('grant-agreement-note');
+        var hintEl = document.getElementById('grant-agreement-hint');
+        if (!inputEl || !uploadBtn || !downloadBtn || !metaEl || !noteEl || !hintEl) return;
+
+        var agreement = typeof window.ensureGrantAgreement === 'function' ? window.ensureGrantAgreement(app) : null;
+        var canUpload = canUploadAgreementForApp(app);
+        var hasAgreement = !!(agreement && agreement.uploaded && agreement.fileName);
+
+        inputEl.value = '';
+        inputEl.disabled = !canUpload;
+        noteEl.disabled = !canUpload;
+        uploadBtn.disabled = !canUpload;
+        uploadBtn.classList.toggle('opacity-50', !canUpload);
+        uploadBtn.classList.toggle('pointer-events-none', !canUpload);
+
+        downloadBtn.disabled = !hasAgreement;
+        downloadBtn.classList.toggle('opacity-50', !hasAgreement);
+        downloadBtn.classList.toggle('pointer-events-none', !hasAgreement);
+
+        if (hasAgreement) {
+            metaEl.innerHTML = '<div class="text-[12px] text-emerald-700 font-bold">' + agreement.fileName + '</div><div class="text-[11px] text-slate-500 mt-1">' + agreement.uploadedAt + ' • ' + agreement.uploadedByRole + '</div>';
+        } else {
+            metaEl.innerHTML = '<div class="text-[12px] text-slate-500">Файл не загружен / Файл бор нашудааст</div>';
+        }
+
+        if (canUpload) {
+            hintEl.textContent = 'Фасилитатор метавонад скани шартномаи имзошударо бор кунад. / Фасилитатор может загрузить скан подписанного договора.';
+        } else {
+            hintEl.textContent = 'Боркунӣ танҳо барои Фасилитатор ва танҳо дар статуси approved дастрас аст. / Загрузка доступна только Фасилитатору и только в статусе approved.';
+        }
+    }
+
+    function openGrantAgreementPicker() {
+        var inputEl = document.getElementById('grant-agreement-upload');
+        if (!inputEl || inputEl.disabled) return;
+        inputEl.click();
+    }
+
+    function uploadGrantAgreementFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) {
+            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            return;
+        }
+        var app = window.getApp(id);
+        if (!app) return;
+        if (!canUploadAgreementForApp(app)) {
+            alert('Ин амал танҳо барои Фасилитатор дастрас аст. / Это действие доступно только Фасилитатору.');
+            return;
+        }
+
+        var inputEl = document.getElementById('grant-agreement-upload');
+        if (!inputEl || !inputEl.files || !inputEl.files.length) {
+            alert('Лутфан файлро интихоб кунед / Пожалуйста, выберите файл');
+            return;
+        }
+        var file = inputEl.files[0];
+        if (!isValidAgreementFile(file)) {
+            alert('Фақат PDF/JPG/PNG то 10MB қабул мешавад. / Допустимы только PDF/JPG/PNG до 10MB.');
+            return;
+        }
+
+        var noteEl = document.getElementById('grant-agreement-note');
+        var note = noteEl ? String(noteEl.value || '').trim() : '';
+        var agreement = null;
+        if (typeof window.registerGrantAgreement === 'function') {
+            agreement = window.registerGrantAgreement(app, {
+                fileName: file.name,
+                uploadedByRole: 'Фасилитатор',
+                uploadedByName: 'Фасилитатор',
+                note: note
+            });
+        }
+        if (!agreement) return;
+
+        var actionTj = agreement.replaceCount > 0
+            ? 'Шартномаи имзошуда аз нав бор шуд (' + agreement.fileName + ')'
+            : 'Шартномаи имзошуда бор шуд (' + agreement.fileName + ')';
+        var actionRu = agreement.replaceCount > 0
+            ? 'Подписанный договор обновлен (' + agreement.fileName + ')'
+            : 'Загружен подписанный договор (' + agreement.fileName + ')';
+        window.addLog(app, 'Фасилитатор', actionTj, actionRu, 'emerald', 'file-signature', note);
+
+        renderGrantAgreementPanel(app);
+        window.renderAllCards();
+    }
+
+    function downloadCurrentGrantAgreementFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) {
+            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            return;
+        }
+        if (typeof window.downloadGrantAgreementFile === 'function') {
+            window.downloadGrantAgreementFile(id);
+            return;
+        }
+        alert('Функсияи боргирии шартнома дастрас нест. / Функция скачивания договора недоступна.');
     }
 
     function openApprovedFor(id) {
@@ -475,6 +597,10 @@
         const docs = (typeof window.ensureDocumentBundle === 'function') ? window.ensureDocumentBundle(app) : null;
         const currentWordVersion = docs && docs.currentWordVersion ? docs.currentWordVersion : 0;
         const wordVersionBadge = '<span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Current Word Version: V' + currentWordVersion + '"><i data-lucide="file-text" class="w-3 h-3 inline mr-0.5"></i>Word V' + currentWordVersion + '</span>';
+        const agreement = typeof window.ensureGrantAgreement === 'function' ? window.ensureGrantAgreement(app) : null;
+        const agreementBadge = agreement && agreement.uploaded
+            ? '<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap"><i data-lucide="file-signature" class="w-3 h-3 inline mr-0.5"></i>Шартнома / Договор</span>'
+            : '<span class="bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap"><i data-lucide="file-warning" class="w-3 h-3 inline mr-0.5"></i>Бе шартнома / Без договора</span>';
 
         const card = document.createElement('div');
         card.setAttribute('data-status', 'approved_item');
@@ -485,7 +611,7 @@
         card.setAttribute('data-gender-values', genderValue);
         card.setAttribute('data-search', searchHaystack);
         card.className = 'bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-emerald-400';
-        card.innerHTML = '<div class="flex justify-between items-start mb-1"><h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolBadge + wordVersionBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-emerald-700 font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + String((app.date || '').split(',')[0] || '—') + '</span><span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + app.id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span></div>';
+        card.innerHTML = '<div class="flex justify-between items-start mb-1"><h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolBadge + wordVersionBadge + agreementBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-emerald-700 font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + String((app.date || '').split(',')[0] || '—') + '</span><span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + app.id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span></div>';
         card.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             window.openApprovedFor(app.id);
@@ -501,7 +627,7 @@
         row.setAttribute('data-gender-values', genderValue);
         row.setAttribute('data-search', searchHaystack);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in bg-emerald-50/40';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-emerald-500 align-middle"><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400">#' + app.id + ' • ' + String((app.date || '').split(',')[0] || '—') + '</div><div class="mt-1">' + wordVersionBadge + '</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium leading-tight">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-emerald-700 text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle"><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-emerald-200">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openApprovedFor(\'' + app.id + '\')" class="text-emerald-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-emerald-500 align-middle"><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400">#' + app.id + ' • ' + String((app.date || '').split(',')[0] || '—') + '</div><div class="mt-1">' + wordVersionBadge + agreementBadge + '</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium leading-tight">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-emerald-700 text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle"><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-emerald-200">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openApprovedFor(\'' + app.id + '\')" class="text-emerald-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
         row.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             window.openApprovedFor(app.id);
@@ -531,6 +657,13 @@
         const postLockBadgeRow = app.reactivated ? '<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Возвращена после 3-месячной блокировки"><i data-lucide="history" class="w-3 h-3 inline mr-0.5"></i>Пас аз 3 моҳ</span>' : '';
         const revisionBadgeRow = (displayRevisionCount > 0 && ['fac_revision', 'postponed'].includes(status)) ? '<span class="bg-amber-100 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Миқдори такмил / Доработка: ' + displayRevisionCount + '/3"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-0.5"></i>' + displayRevisionCount + '/3</span>' : '';
         const wordVersionBadgeCard = '<span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Current Word Version: V' + currentWordVersion + '"><i data-lucide="file-text" class="w-3 h-3 inline mr-0.5"></i>Word V' + currentWordVersion + '</span>';
+        const agreementMeta = typeof window.ensureGrantAgreement === 'function' ? window.ensureGrantAgreement(app) : null;
+        const agreementBadgeCard = status === 'approved'
+            ? (agreementMeta && agreementMeta.uploaded
+                ? '<span class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap"><i data-lucide="file-signature" class="w-3 h-3 inline mr-0.5"></i>Договор</span>'
+                : '<span class="bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap"><i data-lucide="file-warning" class="w-3 h-3 inline mr-0.5"></i>Без договора</span>')
+            : '';
+        const agreementBadgeRow = agreementBadgeCard;
         const committeeMeta = app.lastCommitteeReturn || null;
         const committeeCycleBadge = committeeMeta && committeeMeta.cycle ? '<span class="bg-rose-100 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap" title="Возврат из Комитета">Кумита #' + committeeMeta.cycle + ' <span class="ru font-normal">/ Комитет</span></span>' : '';
         const committeeInfoLine = committeeMeta ? '<div class="mt-1 text-[10px] text-rose-700 font-medium">Кумита: ' + (committeeMeta.protocolId || '—') + ' • ' + (committeeMeta.protocolDate || '—') + ' ' + (committeeMeta.protocolTime || '') + '</div>' : '';
@@ -635,7 +768,7 @@
         card.setAttribute('data-id', id);
         card.setAttribute('data-status', status);
         card.className = bClass + ' rounded-2xl p-5 border shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer';
-        card.innerHTML = '<div class="flex justify-between items-start gap-2 mb-2"><div class="flex items-center min-w-0">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800 leading-tight">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 leading-tight">#' + app.id + ' • ' + app.sector + '</div>' + (status === 'gmc_revision' ? committeeInfoLine : '') + '<div class="mt-2 flex flex-wrap items-center gap-1.5">' + protocolBadgeCard + wordVersionBadgeCard + revisionBadgeCard + postLockBadgeCard + (status === 'gmc_revision' ? committeeCycleBadge : '') + '</div><div class="mt-5 mb-5 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
+        card.innerHTML = '<div class="flex justify-between items-start gap-2 mb-2"><div class="flex items-center min-w-0">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800 leading-tight">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 leading-tight">#' + app.id + ' • ' + app.sector + '</div>' + (status === 'gmc_revision' ? committeeInfoLine : '') + '<div class="mt-2 flex flex-wrap items-center gap-1.5">' + protocolBadgeCard + wordVersionBadgeCard + revisionBadgeCard + postLockBadgeCard + (status === 'gmc_revision' ? committeeCycleBadge : '') + agreementBadgeCard + '</div><div class="mt-5 mb-5 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
         card.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             const btn = card.querySelector('button, span[onclick]');
@@ -648,7 +781,7 @@
         row.setAttribute('data-id', id);
         row.setAttribute('data-status', status);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-start">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400">#' + app.id + ' • ' + app.date.split(',')[0] + '</div>' + (status === 'gmc_revision' ? '<div class="text-[10px] text-rose-700 mt-1">Кумита: ' + (committeeMeta && committeeMeta.protocolId ? committeeMeta.protocolId : '—') + ' • ' + (committeeMeta && committeeMeta.protocolDate ? committeeMeta.protocolDate : '—') + '</div>' : '') + '<div class="mt-1 flex flex-wrap items-center gap-1.5">' + protocolBadgeRow + wordVersionBadgeRow + revisionBadgeRow + postLockBadgeRow + (status === 'gmc_revision' ? committeeCycleBadge : '') + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium leading-tight">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-start">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400">#' + app.id + ' • ' + app.date.split(',')[0] + '</div>' + (status === 'gmc_revision' ? '<div class="text-[10px] text-rose-700 mt-1">Кумита: ' + (committeeMeta && committeeMeta.protocolId ? committeeMeta.protocolId : '—') + ' • ' + (committeeMeta && committeeMeta.protocolDate ? committeeMeta.protocolDate : '—') + '</div>' : '') + '<div class="mt-1 flex flex-wrap items-center gap-1.5">' + protocolBadgeRow + wordVersionBadgeRow + revisionBadgeRow + postLockBadgeRow + (status === 'gmc_revision' ? committeeCycleBadge : '') + agreementBadgeRow + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium leading-tight">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
         row.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             const btn = row.querySelector('button, span[onclick]');
@@ -1357,7 +1490,10 @@
         markAllUnlockNotificationsProcessed,
         downloadCurrentBusinessPlanFromModal,
         downloadCurrentPdfFromModal,
-        downloadCurrentPhotoPackFromModal
+        downloadCurrentPhotoPackFromModal,
+        openGrantAgreementPicker,
+        uploadGrantAgreementFromModal,
+        downloadCurrentGrantAgreementFromModal
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -1378,4 +1514,7 @@
     window.downloadCurrentBusinessPlanFromModal = downloadCurrentBusinessPlanFromModal;
     window.downloadCurrentPdfFromModal = downloadCurrentPdfFromModal;
     window.downloadCurrentPhotoPackFromModal = downloadCurrentPhotoPackFromModal;
+    window.openGrantAgreementPicker = openGrantAgreementPicker;
+    window.uploadGrantAgreementFromModal = uploadGrantAgreementFromModal;
+    window.downloadCurrentGrantAgreementFromModal = downloadCurrentGrantAgreementFromModal;
 })();
