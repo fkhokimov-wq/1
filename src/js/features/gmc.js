@@ -152,6 +152,30 @@
         else document.getElementById('gmc-revision-files').classList.add('hidden');
     }
 
+    function lockApplicationForThreeMonths(app, comment) {
+        const now = new Date();
+        const until = typeof window.addMonths === 'function' ? window.addMonths(now, 3) : new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+        const toIso = typeof window.toIsoDate === 'function'
+            ? window.toIsoDate
+            : function (dt) { return new Date(dt).toISOString().slice(0, 10); };
+
+        app.status = 'postponed';
+        app.postponedAtISO = toIso(now);
+        app.postponedUntilISO = toIso(until);
+        delete app.unlockNoticeProcessedAtISO;
+        app.date = window.getCurrentDateTime();
+
+        window.addLog(
+            app,
+            'Система',
+            '3-ю неодобрение: заявка заблокирована на 3 месяца',
+            '3-е неодобрение: заявка заблокирована на 3 месяца',
+            'red',
+            'clock',
+            comment
+        );
+    }
+
     function saveGmcDecision() {
         if (!window.currentGmcChoice) {
             alert('Қарорро интихоб кунед / Выберите решение');
@@ -180,9 +204,9 @@
         } else if (window.currentGmcChoice === 'rev') {
             app.revisionCount = (app.revisionCount || 0) + 1;
             if (app.revisionCount >= 3) {
-                app.status = 'postponed';
-                window.addLog(app, 'Система', 'Лимити такмил (3/3) ба охир расид. Ба таъхир гузошта шуд (3 моҳ)', 'Лимит доработок (3/3) исчерпан. Отложено на 3 месяца', 'red', 'clock', comment);
-                alert('Шумо наметавонед дархостро барои бори 4-ум ба такмил фиристед.\nТавсия дода мешавад, ки довталаб пас аз 3 моҳ дубора пешниҳод кунад.\n\nВы не можете отправить заявку на доработку в 4-й раз. Рекомендуется подать заявку через 3 месяца.');
+                lockApplicationForThreeMonths(app, comment);
+                const untilRu = typeof window.formatIsoDateRu === 'function' ? window.formatIsoDateRu(app.postponedUntilISO) : app.postponedUntilISO;
+                alert('Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
             } else {
                 app.status = 'fac_revision';
                 window.addLog(app, 'ШИГ / КУГ', 'Барои такмил ба Фасилитатор баргашт (' + app.revisionCount + '/3)', 'Возвращено на доработку Фасилитатору (' + app.revisionCount + '/3)', 'amber', 'corner-down-left', comment);
@@ -224,9 +248,9 @@
         app.date = window.getCurrentDateTime();
 
         if (app.revisionCount >= 3) {
-            app.status = 'postponed';
-            window.addLog(app, 'Система', 'Лимити такмил (3/3) ба охир расид. Ба таъхир гузошта шуд (3 моҳ)', 'Лимит доработок (3/3) исчерпан. Отложено на 3 месяца', 'red', 'clock', comment);
-            alert('Шумо наметавонед дархостро барои бори 4-ум ба такмил фиристед.\nТавсия дода мешавад, ки довталаб пас аз 3 моҳ дубора пешниҳод кунад.\n\nВы не можете отправить заявку на доработку в 4-й раз. Рекомендуется подать заявку через 3 месяца.');
+            lockApplicationForThreeMonths(app, comment);
+            const untilRu = typeof window.formatIsoDateRu === 'function' ? window.formatIsoDateRu(app.postponedUntilISO) : app.postponedUntilISO;
+            alert('Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
         } else {
             app.status = 'fac_revision';
             window.addLog(app, 'ШИГ / КУГ', 'Аз ГРП баргашт -> Ба Фасилитатор равон шуд (' + app.revisionCount + '/3)', 'Возврат из ГРП -> Направлено Фасилитатору (' + app.revisionCount + '/3)', 'amber', 'corner-down-left', comment);

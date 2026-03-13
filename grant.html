@@ -70,7 +70,8 @@
                                 <span class="text-[13px] font-medium text-slate-800 leading-none mb-1 selected-name">Ном
                                     Насаб</span>
                                 <span
-                                    class="bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded text-[10px] font-semibold w-max leading-none selected-badge">Тасдиқшуда <span class="ru font-normal">/ Сертиф.</span></span>
+                                    class="bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded text-[10px] font-semibold w-max leading-none selected-badge">Тасдиқшуда
+                                    <span class="ru font-normal">/ Сертиф.</span></span>
                             </div>
                         </div>
                         <button id="clearSelection"
@@ -166,13 +167,37 @@
                         title="Тӯри кортҳо / Сетка карточек"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
                     <button onclick="setViewMode('list')" id="btn-view-list"
                         class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-white transition-colors"
-                        title="Ҷадвали уфуқӣ / Горизонтальная таблица"><i data-lucide="list" class="w-4 h-4"></i></button>
+                        title="Ҷадвали уфуқӣ / Горизонтальная таблица"><i data-lucide="list"
+                            class="w-4 h-4"></i></button>
+                </div>
+                <div class="relative">
+                    <button id="btn-unlock-notifications"
+                        class="relative p-2.5 rounded-2xl bg-slate-100 border border-slate-200 text-slate-600 hover:bg-white hover:text-slate-800 transition-colors shadow-sm"
+                        title="Оповещения по разблокировке / Оповещения">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        <span id="unlock-notifications-badge"
+                            class="hidden flex absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold items-center justify-center">0</span>
+                    </button>
+                    <div id="unlock-notifications-panel"
+                        class="hidden absolute right-0 top-12 z-40 w-[360px] max-w-[92vw] bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between gap-2">
+                            <div class="text-[12px] font-bold text-slate-800">Оповещения разблокировки</div>
+                            <div class="flex items-center gap-2">
+                                <button id="btn-mark-all-unlock-processed"
+                                    class="text-[11px] text-slate-500 hover:text-slate-700 font-medium">Отметить
+                                    все</button>
+                                <button id="btn-close-unlock-notifications"
+                                    class="text-[11px] text-slate-500 hover:text-slate-700 font-medium">Закрыть</button>
+                            </div>
+                        </div>
+                        <div id="unlock-notifications-list" class="max-h-[320px] overflow-y-auto"></div>
+                    </div>
                 </div>
                 <div class="menu-kpi-flip" aria-label="Омори дархостҳо / Сводка заявок">
-                    <span id="menu-submitted-count" title="Пешниҳодшуда / Подано заявок" aria-label="Пешниҳодшуда / Подано"
-                        class="menu-flip-cell menu-flip-submitted">0</span>
-                    <span id="menu-approved-count" title="Тасдиқшуда / Утвержденные" aria-label="Тасдиқшуда / Утвержденные"
-                        class="menu-flip-cell menu-flip-approved">0</span>
+                    <span id="menu-submitted-count" title="Пешниҳодшуда / Подано заявок"
+                        aria-label="Пешниҳодшуда / Подано" class="menu-flip-cell menu-flip-submitted">0</span>
+                    <span id="menu-approved-count" title="Тасдиқшуда / Утвержденные"
+                        aria-label="Тасдиқшуда / Утвержденные" class="menu-flip-cell menu-flip-approved">0</span>
                     <span id="menu-rejected-count" title="Радшуда / Отклоненные" aria-label="Радшуда / Отклоненные"
                         class="menu-flip-cell menu-flip-rejected">0</span>
                 </div>
@@ -215,7 +240,30 @@
                 class="fac-filter-btn bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-[12px] font-bold whitespace-nowrap hover:bg-slate-50 transition-colors flex items-center gap-2"><span
                     class="filter-text"><span>Мавқуф</span><span class="ru-block">Отложенные</span></span><span
                     id="sub-pos-badge"
-                    class="bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded text-[10px] hidden">0</span></button>
+                    class="bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded text-[10px] hidden">0</span><span
+                    id="sub-pos-ready-badge"
+                    class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] hidden">0</span></button>
+        </div>
+
+        <div id="facilitator-unlock-notice"
+            class="hidden mb-6 bg-emerald-50 border border-emerald-200 rounded-xl p-4 shadow-sm animate-fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div class="flex items-start gap-2.5">
+                    <i data-lucide="bell-ring" class="w-5 h-5 text-emerald-700 mt-0.5"></i>
+                    <div>
+                        <div class="text-[13px] font-bold text-emerald-900">Дархостҳои омода барои кушодан: <span
+                                id="facilitator-unlock-ready-count">0</span><span class="ru-block">Заявки, готовые к
+                                разблокировке: <span id="facilitator-unlock-ready-count-ru">0</span></span></div>
+                        <p class="text-[12px] text-emerald-800 mt-1">Пас аз 3 моҳ танҳо Фасилитатор метавонад
+                            блокировкаро бардорад ва ба таҳрир баргардонад.<span class="ru-block mt-0.5">После 3
+                                месяцев только Фасилитатор снимает блокировку вручную и возвращает заявку в
+                                редактирование.</span></p>
+                    </div>
+                </div>
+                <button id="btn-open-unlock-ready"
+                    class="bg-white border border-emerald-300 text-emerald-700 px-4 py-2 rounded-lg text-[12px] font-bold hover:bg-emerald-100 transition-colors w-full sm:w-auto">Кушодан
+                    <span class="ru">/ Открыть список</span></button>
+            </div>
         </div>
 
         <!-- Саб-фильтры для ШИГ / GMC -->
@@ -393,7 +441,8 @@
                         <select id="approved-list-select"
                             class="w-full border border-gray-200 rounded-md text-[12px] px-2 py-1.5 focus:border-primary outline-none bg-white"></select>
                         <button id="btn-open-approved-list" onclick="openSelectedApprovedList()"
-                            class="bg-indigo-600 text-white px-3 py-1.5 rounded-md text-[11px] font-bold hover:bg-indigo-700 transition-colors whitespace-nowrap">Кушодан <span class="ru font-normal">/ Открыть</span></button>
+                            class="bg-indigo-600 text-white px-3 py-1.5 rounded-md text-[11px] font-bold hover:bg-indigo-700 transition-colors whitespace-nowrap">Кушодан
+                            <span class="ru font-normal">/ Открыть</span></button>
                     </div>
                 </div>
             </div>
@@ -474,8 +523,10 @@
         <div id="empty-state"
             class="hidden flex-col items-center justify-center py-16 w-full text-slate-400 animate-fade-in">
             <i data-lucide="inbox" class="w-12 h-12 mb-3 opacity-50 text-indigo-300"></i>
-            <p class="text-[14px] font-medium text-slate-600" id="empty-state-title">Дархостҳо ёфт нашуданд <span class="ru">/ Заявки не найдены</span></p>
-            <p class="text-[12px] mt-1 text-slate-400" id="empty-state-desc">Дархостҳо мувофиқи филтрҳо ёфт нашуданд <span class="ru">/ По выбранным фильтрам не найдено</span></p>
+            <p class="text-[14px] font-medium text-slate-600" id="empty-state-title">Дархостҳо ёфт нашуданд <span
+                    class="ru">/ Заявки не найдены</span></p>
+            <p class="text-[12px] mt-1 text-slate-400" id="empty-state-desc">Дархостҳо мувофиқи филтрҳо ёфт нашуданд
+                <span class="ru">/ По выбранным фильтрам не найдено</span></p>
         </div>
 
     </div>
@@ -545,13 +596,16 @@
                     <div class="flex items-start gap-3">
                         <i data-lucide="refresh-ccw" class="w-6 h-6 text-purple-600 mt-0.5 flex-shrink-0"></i>
                         <div class="w-full">
-                            <h3 class="text-[14px] font-bold text-purple-900 leading-tight">Дархост пас аз 3 моҳ дубора
-                                фаъол шуд <span class="ru-block text-purple-700 mt-0.5">Заявка реактивирована после 3
-                                    месяцев паузы</span></h3>
+                            <h3 class="text-[14px] font-bold text-purple-900 leading-tight">Блокировка дастӣ бардошта
+                                шуд
+                                <span class="ru-block text-purple-700 mt-0.5">Заявка разблокирована вручную
+                                    Фасилитатором</span>
+                            </h3>
                             <p class="text-[12px] text-purple-800 mt-2 leading-tight">Ин дархост қаблан 3 маротиба
                                 баргардонида шуда буд. Лутфан таърихи қаблиро ба назар гиред ва версияи нави комилро бор
                                 кунед. <span class="ru-block mt-0.5">Ранее эта заявка исчерпала лимит доработок (3
-                                    раза). Ознакомьтесь с историями ошибок и загрузите новый бизнес-план.</span></p>
+                                    раза). Блокировка снята вручную. Ознакомьтесь с историями ошибок и загрузите новый
+                                    бизнес-план.</span></p>
                         </div>
                     </div>
                 </div>
@@ -593,9 +647,12 @@
                         <div class="w-full">
                             <h3 class="text-[14px] font-bold text-orange-900 leading-tight">Маълумоти нопурра <span
                                     class="ru-block text-orange-700 mt-0.5">Неполные данные</span></h3>
-                            <p class="text-[12px] text-orange-800 mt-1 leading-tight">Баъзе маълумот дар базаи асосӣ мавҷуд нест. Дархостро метавонед захира кунед,
+                            <p class="text-[12px] text-orange-800 mt-1 leading-tight">Баъзе маълумот дар базаи асосӣ
+                                мавҷуд нест. Дархостро метавонед захира кунед,
                                 вале ба ШИГ фиристодан имконпазир аст.
-                                <span class="ru-block mt-0.5">Некоторые данные отсутствуют в основной базе. Можно сохранить, но нельзя отправить в ШИГ.</span></p>
+                                <span class="ru-block mt-0.5">Некоторые данные отсутствуют в основной базе. Можно
+                                    сохранить, но нельзя отправить в ШИГ.</span>
+                            </p>
                             <div id="incomplete-fields-list" class="mt-2 text-[11px] text-orange-700"></div>
                         </div>
                     </div>
@@ -608,11 +665,13 @@
                             <div id="display-application-number" class="text-[13px] font-medium text-primary">—</div>
                         </div>
                         <div>
-                            <div class="text-[12px] text-[#8b92a5] mb-1">Бенефитсиар (ННШ) <span class="ru">/ Бенефициар (ФИО)</span></div>
+                            <div class="text-[12px] text-[#8b92a5] mb-1">Бенефитсиар (ННШ) <span class="ru">/ Бенефициар
+                                    (ФИО)</span></div>
                             <div id="display-fullname" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
-                            <div class="text-[12px] text-[#8b92a5] mb-1">Рақами ID <span class="ru">/ Номер ID</span></div>
+                            <div class="text-[12px] text-[#8b92a5] mb-1">Рақами ID <span class="ru">/ Номер ID</span>
+                            </div>
                             <div id="display-id" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
@@ -620,7 +679,8 @@
                             <div id="display-inn" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
-                            <div class="text-[12px] text-[#8b92a5] mb-1">Санаи таваллуд <span class="ru">/ Дата рождения</span></div>
+                            <div class="text-[12px] text-[#8b92a5] mb-1">Санаи таваллуд <span class="ru">/ Дата
+                                    рождения</span></div>
                             <div id="display-birthdate" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
@@ -632,15 +692,18 @@
                             <div id="display-contacts" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
-                            <div class="text-[12px] text-[#8b92a5] mb-1">Суроғаи пурра <span class="ru">/ Полный адрес</span></div>
+                            <div class="text-[12px] text-[#8b92a5] mb-1">Суроғаи пурра <span class="ru">/ Полный
+                                    адрес</span></div>
                             <div id="display-address" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
-                            <div class="text-[12px] text-[#8b92a5] mb-1">Категория <span class="ru">/ Категория</span></div>
+                            <div class="text-[12px] text-[#8b92a5] mb-1">Категория <span class="ru">/ Категория</span>
+                            </div>
                             <div id="display-category" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
-                            <div class="text-[12px] text-[#8b92a5] mb-1">Таҳсилот <span class="ru">/ Образование</span></div>
+                            <div class="text-[12px] text-[#8b92a5] mb-1">Таҳсилот <span class="ru">/ Образование</span>
+                            </div>
                             <div id="display-education" class="text-[13px] font-medium text-gray-900">—</div>
                         </div>
                         <div>
@@ -737,7 +800,10 @@
                                         <p class="text-[13px] text-amber-800 mb-4">Дархост бо эродҳо баргардонд. Лутфан
                                             сабабҳоро таҳлил кунед. Агар хатогӣ аз ҷониби ШИГ бошад, онро худатон ислоҳ
                                             карда, дубора ба марҳилаи қаблӣ фиристед. Агар хатогӣ дар нақшаи тиҷоратӣ
-                                            бошад, онро ба Фасилитатор равон кунед. <span class="ru-block mt-1">Заявка возвращена с комментариями. Проанализируйте причины. Если ошибка со стороны КУГ — исправьте сами. Если в бизнес-плане — направьте Фасилитатору.</span></p>
+                                            бошад, онро ба Фасилитатор равон кунед. <span class="ru-block mt-1">Заявка
+                                                возвращена с комментариями. Проанализируйте причины. Если ошибка со
+                                                стороны КУГ — исправьте сами. Если в бизнес-плане — направьте
+                                                Фасилитатору.</span></p>
 
                                         <div
                                             class="mb-5 text-[12px] text-amber-900 bg-white/60 p-4 rounded-xl border border-amber-200 font-medium shadow-sm">
@@ -806,32 +872,40 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-300 text-[12px]">
                                     <div class="bg-white p-3"><span
                                             class="text-gray-500 block text-[10px] mb-0.5">Рақами ID
-                                            довталаб <span class="ru">/ ID заявителя</span></span><strong id="gmc-hdr-id">—</strong></div>
+                                            довталаб <span class="ru">/ ID заявителя</span></span><strong
+                                            id="gmc-hdr-id">—</strong></div>
                                     <div class="bg-white p-3"><span class="text-gray-500 block text-[10px] mb-0.5">ННШ-и
-                                            довталаб <span class="ru">/ ФИО заявителя</span></span><strong id="gmc-hdr-name">—</strong></div>
+                                            довталаб <span class="ru">/ ФИО заявителя</span></span><strong
+                                            id="gmc-hdr-name">—</strong></div>
                                     <div class="bg-white p-3"><span
-                                            class="text-gray-500 block text-[10px] mb-0.5">Намуди тиҷорат <span class="ru">/ Вид бизнеса</span></span><strong
+                                            class="text-gray-500 block text-[10px] mb-0.5">Намуди тиҷорат <span
+                                                class="ru">/ Вид бизнеса</span></span><strong
                                             id="gmc-hdr-sector">—</strong></div>
                                     <div class="bg-white p-3"><span
-                                            class="text-gray-500 block text-[10px] mb-0.5">Намуди фаъолият <span class="ru">/ Вид деятельности</span></span><strong
+                                            class="text-gray-500 block text-[10px] mb-0.5">Намуди фаъолият <span
+                                                class="ru">/ Вид деятельности</span></span><strong
                                             id="gmc-hdr-activity">—</strong></div>
                                     <div class="bg-white p-3"><span
-                                            class="text-gray-500 block text-[10px] mb-0.5">Ҷойгиршавӣ <span class="ru">/ Местоположение</span></span><strong
-                                            id="gmc-hdr-location">—</strong></div>
+                                            class="text-gray-500 block text-[10px] mb-0.5">Ҷойгиршавӣ <span class="ru">/
+                                                Местоположение</span></span><strong id="gmc-hdr-location">—</strong>
+                                    </div>
                                     <div class="bg-white p-3"><span
                                             class="text-gray-500 block text-[10px] mb-0.5">Маблағи
-                                            дархостшуда <span class="ru">/ Запр. сумма</span></span><strong id="gmc-hdr-amount">—</strong></div>
+                                            дархостшуда <span class="ru">/ Запр. сумма</span></span><strong
+                                            id="gmc-hdr-amount">—</strong></div>
                                 </div>
                             </div>
 
                             <div class="border border-gray-300 rounded-xl overflow-hidden shadow-sm text-[12px]">
                                 <div class="bg-blue-50 border-b border-gray-300 p-3 leading-tight">
-                                    <div class="font-bold text-blue-900">1. Мувофиқат ба меъёрҳо <span class="ru font-normal">/ Соответствие критериям</span></div>
+                                    <div class="font-bold text-blue-900">1. Мувофиқат ба меъёрҳо <span
+                                            class="ru font-normal">/ Соответствие критериям</span></div>
                                 </div>
                                 <div class="bg-white divide-y divide-gray-100">
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight">Довталаб ба рӯйхати Корти баҳогузории
-                                            осебпазирӣ мувофиқ аст <span class="ru">/ Заявитель соответствует Карте оценки уязвимости</span></span>
+                                            осебпазирӣ мувофиқ аст <span class="ru">/ Заявитель соответствует Карте
+                                                оценки уязвимости</span></span>
                                         <div class="w-1/4 flex gap-3 justify-end text-[11px]"><label
                                                 class="flex items-center cursor-pointer whitespace-nowrap"><input
                                                     type="radio" name="el1" value="yes" class="elig-radio mr-1"> Ҳа /
@@ -842,7 +916,8 @@
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight">Шаҳодатномаҳои ҳатмӣ ва баҳои осебпазирӣ
-                                            дар платформаи EIP мавҷуданд <span class="ru">/ Сертификаты и оценка уязвимости загружены в EIP</span></span>
+                                            дар платформаи EIP мавҷуданд <span class="ru">/ Сертификаты и оценка
+                                                уязвимости загружены в EIP</span></span>
                                         <div class="w-1/4 flex gap-3 justify-end text-[11px]"><label
                                                 class="flex items-center cursor-pointer whitespace-nowrap"><input
                                                     type="radio" name="el2" value="yes" class="elig-radio mr-1"> Ҳа /
@@ -853,7 +928,8 @@
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight">Хавфҳои назарраси амалиётӣ муайян
-                                            нашудаанд <span class="ru">/ Значительные операционные риски не выявлены</span></span>
+                                            нашудаанд <span class="ru">/ Значительные операционные риски не
+                                                выявлены</span></span>
                                         <div class="w-1/4 flex gap-3 justify-end text-[11px]"><label
                                                 class="flex items-center cursor-pointer whitespace-nowrap"><input
                                                     type="radio" name="el3" value="yes" class="elig-radio mr-1"> Ҳа /
@@ -866,13 +942,15 @@
 
                                 <div
                                     class="bg-blue-50 border-y border-gray-300 p-3 font-bold text-blue-900 flex justify-between items-center leading-tight">
-                                    <span>2. Консепсияи тиҷорат <span class="ru font-normal">/ Концепция бизнеса</span></span><span
+                                    <span>2. Консепсияи тиҷорат <span class="ru font-normal">/ Концепция
+                                            бизнеса</span></span><span
                                         class="text-[11px] font-normal whitespace-nowrap ml-4">Хол / Балл 1-4</span>
                                 </div>
                                 <div class="bg-white divide-y divide-gray-100">
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight"><b>1.</b> Идеяи тиҷоратӣ равшан тавсиф
-                                            шудааст ва ба шароит мувофиқ аст <span class="ru">/ Бизнес-идея описана и соответствует условиям</span></span>
+                                            шудааст ва ба шароит мувофиқ аст <span class="ru">/ Бизнес-идея описана и
+                                                соответствует условиям</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q1"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q1" value="2" class="gmc-score-input">
@@ -882,7 +960,8 @@
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight"><b>2.</b> Мизоҷони мақсаднок/бозор равшан
-                                            муайян шудаанд <span class="ru">/ Целевые клиенты/рынок определены</span></span>
+                                            муайян шудаанд <span class="ru">/ Целевые клиенты/рынок
+                                                определены</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q2"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q2" value="2" class="gmc-score-input">
@@ -891,7 +970,8 @@
                                                     name="q2" value="4" class="gmc-score-input"> 4</label></div>
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
-                                            class="w-3/4 pr-4 leading-tight"><b>3.</b> Рақибон муайян шудаанд <span class="ru">/ Конкуренты определены</span></span>
+                                            class="w-3/4 pr-4 leading-tight"><b>3.</b> Рақибон муайян шудаанд <span
+                                                class="ru">/ Конкуренты определены</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q3"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q3" value="2" class="gmc-score-input">
@@ -901,7 +981,8 @@
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight"><b>4.</b> Афзалиятҳои рақобатӣ тавсиф
-                                            шудаанд ва онҳо мувофиқанд <span class="ru">/ Конкурентные преимущества описаны</span></span>
+                                            шудаанд ва онҳо мувофиқанд <span class="ru">/ Конкурентные преимущества
+                                                описаны</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q4"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q4" value="2" class="gmc-score-input">
@@ -921,7 +1002,8 @@
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight"><b>6.</b> Чораҳои паст кардани хавфҳо
-                                            пешниҳод шудаанд <span class="ru">/ Меры по снижению рисков предложены</span></span>
+                                            пешниҳод шудаанд <span class="ru">/ Меры по снижению рисков
+                                                предложены</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q6"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q6" value="2" class="gmc-score-input">
@@ -933,12 +1015,14 @@
 
                                 <div
                                     class="bg-blue-50 border-y border-gray-300 p-3 font-bold text-blue-900 flex justify-between items-center leading-tight">
-                                    <span>3. Имконияти техникӣ <span class="ru font-normal">/ Технические возможности</span></span><span
+                                    <span>3. Имконияти техникӣ <span class="ru font-normal">/ Технические
+                                            возможности</span></span><span
                                         class="text-[11px] font-normal whitespace-nowrap ml-4">Хол / Балл 1-4</span>
                                 </div>
                                 <div class="bg-white divide-y divide-gray-100">
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
-                                            class="w-3/4 pr-4 leading-tight"><b>1.</b> Доштани донишҳои зарурӣ <span class="ru">/ Наличие необходимых знаний</span></span>
+                                            class="w-3/4 pr-4 leading-tight"><b>1.</b> Доштани донишҳои зарурӣ <span
+                                                class="ru">/ Наличие необходимых знаний</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q7"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q7" value="2" class="gmc-score-input">
@@ -957,7 +1041,8 @@
                                                     name="q8" value="4" class="gmc-score-input"> 4</label></div>
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
-                                            class="w-3/4 pr-4 leading-tight"><b>3.</b> Таҷҳизоти зарурӣ <span class="ru">/ Необходимое оборудование</span></span>
+                                            class="w-3/4 pr-4 leading-tight"><b>3.</b> Таҷҳизоти зарурӣ <span
+                                                class="ru">/ Необходимое оборудование</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q9"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q9" value="2" class="gmc-score-input">
@@ -969,7 +1054,8 @@
 
                                 <div
                                     class="bg-blue-50 border-y border-gray-300 p-3 font-bold text-blue-900 flex justify-between items-center leading-tight">
-                                    <span>4. Қобилияти молиявӣ <span class="ru font-normal">/ Финансовые возможности</span></span><span
+                                    <span>4. Қобилияти молиявӣ <span class="ru font-normal">/ Финансовые
+                                            возможности</span></span><span
                                         class="text-[11px] font-normal whitespace-nowrap ml-4">Хол / Балл 1-4</span>
                                 </div>
                                 <div class="bg-white divide-y divide-gray-100">
@@ -1004,7 +1090,8 @@
                                                     name="q12" value="4" class="gmc-score-input"> 4</label></div>
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
-                                            class="w-3/4 pr-4 leading-tight"><b>4.</b> Сатҳи безарарӣ дастрас аст <span class="ru">/ Уровень безубыточности достижим</span></span>
+                                            class="w-3/4 pr-4 leading-tight"><b>4.</b> Сатҳи безарарӣ дастрас аст <span
+                                                class="ru">/ Уровень безубыточности достижим</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q13"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q13" value="2" class="gmc-score-input">
@@ -1014,7 +1101,8 @@
                                     </div>
                                     <div class="flex justify-between items-center p-3 hover:bg-gray-50"><span
                                             class="w-3/4 pr-4 leading-tight"><b>5.</b> Пешгӯиҳои 3-6-12-моҳа
-                                            мувофиқанд <span class="ru">/ Прогнозы на 3-6-12 мес. согласованы</span></span>
+                                            мувофиқанд <span class="ru">/ Прогнозы на 3-6-12 мес.
+                                                согласованы</span></span>
                                         <div class="w-1/4 flex gap-2 justify-end"><label><input type="radio" name="q14"
                                                     value="1" class="gmc-score-input"> 1</label><label><input
                                                     type="radio" name="q14" value="2" class="gmc-score-input">
@@ -1060,7 +1148,8 @@
                                         class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-[13px] font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                                         <span class="flex items-center gap-3 text-left leading-tight"><i
                                                 data-lucide="check-square" class="w-5 h-5 flex-shrink-0"></i>
-                                            <span><b>Тавсия дода мешавад <span class="ru font-normal">/ Рекомендовать</span></b></span></span><span
+                                            <span><b>Тавсия дода мешавад <span class="ru font-normal">/
+                                                        Рекомендовать</span></b></span></span><span
                                             class="text-[10px] text-gray-400 font-normal text-right whitespace-nowrap ml-2">хол/балл
                                             ≥ 45</span>
                                     </button>
@@ -1068,7 +1157,8 @@
                                         class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-[13px] font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                                         <span class="flex items-center gap-3 text-left leading-tight"><i
                                                 data-lucide="corner-down-right" class="w-5 h-5 flex-shrink-0"></i>
-                                            <span><b>Барои такмил <span class="ru font-normal">/ На доработку</span></b></span></span><span
+                                            <span><b>Барои такмил <span class="ru font-normal">/ На
+                                                        доработку</span></b></span></span><span
                                             class="text-[10px] text-gray-400 font-normal text-right whitespace-nowrap ml-2">хол/балл
                                             30–44</span>
                                     </button>
@@ -1076,14 +1166,16 @@
                                         class="w-full flex items-center justify-between px-4 py-3 rounded-lg text-[13px] font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                                         <span class="flex items-center gap-3 text-left leading-tight"><i data-lucide="x"
                                                 class="w-5 h-5 flex-shrink-0"></i> <span><b>Тавсия дода
-                                                    намешавад <span class="ru font-normal">/ Отклонить</span></b></span></span><span
+                                                    намешавад <span class="ru font-normal">/
+                                                        Отклонить</span></b></span></span><span
                                             class="text-[10px] text-gray-400 font-normal text-right whitespace-nowrap ml-2">хол/балл
                                             < 30</span>
                                     </button>
                                 </div>
                                 <div id="gmc-revision-files"
                                     class="hidden mt-4 p-4 bg-red-50 border border-red-300 rounded-xl flex flex-col gap-3">
-                                    <h4 class="text-[13px] font-bold text-red-900 leading-tight">Ҳуҷҷат бо эродҳо <span class="ru-block font-normal">Документ с комментариями</span></h4>
+                                    <h4 class="text-[13px] font-bold text-red-900 leading-tight">Ҳуҷҷат бо эродҳо <span
+                                            class="ru-block font-normal">Документ с комментариями</span></h4>
                                     <input type="file" id="gmc-revision-upload" class="text-[11px]">
                                 </div>
                                 <div class="mt-5">
@@ -1149,7 +1241,8 @@
                             </div>
                             <button type="button" onclick="alert('Боргирӣ... / Скачивание...')"
                                 class="bg-white border border-indigo-300 text-indigo-700 py-2 px-4 rounded-lg text-[12px] font-bold hover:bg-indigo-100 shadow-sm w-full sm:w-auto"><i
-                                    data-lucide="download" class="w-4 h-4 inline-block mr-1"></i>Нақшаи тиҷоратӣ <span class="ru font-normal">/ Бизнес-план</span>
+                                    data-lucide="download" class="w-4 h-4 inline-block mr-1"></i>Нақшаи тиҷоратӣ <span
+                                    class="ru font-normal">/ Бизнес-план</span>
                                 (ШИГ)</button>
                         </div>
 
@@ -1190,7 +1283,8 @@
 
                         <div id="piu-revision-files"
                             class="hidden mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl flex flex-col shadow-sm">
-                            <h4 class="text-[13px] font-bold text-amber-900 leading-tight">Боркунии эродҳо ба ШИГ <span class="ru font-normal">/ Загрузка комментариев в КУГ</span></h4>
+                            <h4 class="text-[13px] font-bold text-amber-900 leading-tight">Боркунии эродҳо ба ШИГ <span
+                                    class="ru font-normal">/ Загрузка комментариев в КУГ</span></h4>
                             <input type="file" id="piu-revision-upload" class="mt-2 text-[11px]">
                         </div>
 
@@ -1282,7 +1376,8 @@
                             </div>
                             <button type="button" onclick="alert('Боргирӣ... / Скачивание...')"
                                 class="bg-white border border-teal-300 text-teal-700 py-2 px-4 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm w-full sm:w-auto"><i
-                                    data-lucide="download" class="w-4 h-4 inline-block mr-1"></i>Нақшаи тиҷоратӣ <span class="ru font-normal">/ Бизнес-план</span>
+                                    data-lucide="download" class="w-4 h-4 inline-block mr-1"></i>Нақшаи тиҷоратӣ <span
+                                    class="ru font-normal">/ Бизнес-план</span>
                                 (PIU)</button>
                         </div>
 
@@ -1296,7 +1391,8 @@
                                     грант <span class="ru font-normal">/ Одобрить и выдать грант</span></button>
                                 <button id="btn-com-reject" onclick="setComDecision('rej')"
                                     class="w-full flex items-center px-4 py-3 rounded-lg text-[13px] font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"><i
-                                        data-lucide="x" class="w-5 h-5 mr-3"></i> Грант рад карда шуд <span class="ru font-normal">/ Отклонить грант</span></button>
+                                        data-lucide="x" class="w-5 h-5 mr-3"></i> Грант рад карда шуд <span
+                                        class="ru font-normal">/ Отклонить грант</span></button>
                             </div>
 
                             <div id="com-rejection-comment-block"
@@ -1362,7 +1458,8 @@
                                     <div class="p-2.5 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="file-text"
                                             class="w-5 h-5"></i></div>
                                     <div>
-                                        <p class="text-[13px] font-bold text-blue-900 leading-tight">Нақшаи тиҷоратӣ <span class="ru font-normal">/ Бизнес-план</span></p>
+                                        <p class="text-[13px] font-bold text-blue-900 leading-tight">Нақшаи тиҷоратӣ
+                                            <span class="ru font-normal">/ Бизнес-план</span></p>
                                     </div>
                                 </div>
                                 <button onclick="alert('Боргирӣ... / Скачивание...')"
@@ -1394,7 +1491,8 @@
                 <div class="p-6">
                     <div class="mb-6">
                         <h2 class="text-[15px] font-bold text-gray-800 uppercase">Мониторинги пасгрантӣ <span
-                                class="ru-block mt-0.5 font-normal text-gray-500 normal-case">Пост-грантовый мониторинг / График
+                                class="ru-block mt-0.5 font-normal text-gray-500 normal-case">Пост-грантовый мониторинг
+                                / График
                                 визитов</span></h2>
                     </div>
                     <div id="monitoringListContainer" class="space-y-4"></div>

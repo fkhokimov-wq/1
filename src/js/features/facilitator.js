@@ -268,7 +268,7 @@
         }, appId);
         if (hardDuplicate) {
             alert('Эҷоди дархост блок шуд: такрор аз рӯи ИНН ё телефон ёфт шуд.
-Создание/отправка заблокированы: найден дубль по ИНН или телефону.');
+Создание / отправка заблокированы: найден дубль по ИНН или телефону.');
             return;
         }
         const sectorSelect = document.getElementById('sector-input');
@@ -311,6 +311,46 @@
 
     function openRevFor(id) {
         openDraftFor(id);
+    }
+
+    function unlockPostponedApp(id) {
+        const app = window.getApp(id);
+        if (!app || app.status !== 'postponed') return;
+
+        const isReady = typeof window.isPostponedUnlockReady === 'function'
+            ? window.isPostponedUnlockReady(app)
+            : false;
+        const untilIso = typeof window.getPostponedUntilIso === 'function'
+            ? window.getPostponedUntilIso(app)
+            : '';
+        const untilRu = typeof window.formatIsoDateRu === 'function'
+            ? window.formatIsoDateRu(untilIso)
+            : (untilIso || '—');
+
+        if (!isReady) {
+            alert('Снятие блокировки пока недоступно. Срок блокировки до ' + untilRu + '.');
+            return;
+        }
+
+        app.status = 'fac_revision';
+        app.revisionCount = 0;
+        app.reactivated = true;
+        app.reactivatedAtISO = (typeof window.toIsoDate === 'function') ? window.toIsoDate(new Date()) : new Date().toISOString().slice(0, 10);
+        app.unlockedByRole = 'facilitator';
+        app.unlockNoticeProcessedAtISO = app.reactivatedAtISO;
+        app.date = window.getCurrentDateTime();
+
+        window.addLog(
+            app,
+            'Фасилитатор',
+            'Блокировка снята вручную, заявка возвращена в редактирование',
+            'Блокировка снята вручную, заявка возвращена в редактирование',
+            'purple',
+            'unlock'
+        );
+
+        alert('Блокировка снята. Заявка переведена в режим редактирования.');
+        if (typeof window.renderAllCards === 'function') window.renderAllCards();
     }
 
     function initializeFacilitatorSearch() {
@@ -521,6 +561,7 @@
         submitToGmc,
         openDraftFor,
         openRevFor,
+        unlockPostponedApp,
         initializeFacilitatorSearch
     };
 
@@ -530,4 +571,5 @@
     window.submitToGmc = submitToGmc;
     window.openDraftFor = openDraftFor;
     window.openRevFor = openRevFor;
+    window.unlockPostponedApp = unlockPostponedApp;
 })();

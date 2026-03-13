@@ -110,6 +110,79 @@
         return false;
     }
 
+    function getPostponedUntilText(app) {
+        const untilIso = typeof window.getPostponedUntilIso === 'function'
+            ? window.getPostponedUntilIso(app)
+            : '';
+        if (!untilIso) return '—';
+        if (typeof window.formatIsoDateRu === 'function') return window.formatIsoDateRu(untilIso);
+        return untilIso;
+    }
+
+    function isPostponedUnlockReadyApp(app) {
+        if (typeof window.isPostponedUnlockReady === 'function') return window.isPostponedUnlockReady(app);
+        return false;
+    }
+
+    function isUnlockNoticeProcessed(app) {
+        return !!(app && app.unlockNoticeProcessedAtISO);
+    }
+
+    function getUnlockNotifications() {
+        const apps = window.filterApps(['postponed']);
+        return apps
+            .filter(function (app) {
+                return isPostponedUnlockReadyApp(app) && !isUnlockNoticeProcessed(app);
+            })
+            .map(function (app) {
+                return {
+                    id: app.id,
+                    name: app.name,
+                    untilText: getPostponedUntilText(app)
+                };
+            });
+    }
+
+    function markUnlockNotificationProcessed(id, skipRender) {
+        const app = window.getApp(id);
+        if (!app) return;
+        app.unlockNoticeProcessedAtISO = (typeof window.toIsoDate === 'function')
+            ? window.toIsoDate(new Date())
+            : new Date().toISOString().slice(0, 10);
+        if (!skipRender) renderAllCards();
+    }
+
+    function markAllUnlockNotificationsProcessed() {
+        getUnlockNotifications().forEach(function (n) {
+            markUnlockNotificationProcessed(n.id, true);
+        });
+        renderAllCards();
+    }
+
+    function setUnlockPanelVisible(visible) {
+        const panel = document.getElementById('unlock-notifications-panel');
+        if (!panel) return;
+        panel.classList.toggle('hidden', !visible);
+        if (visible) renderUnlockNotificationsPanel();
+    }
+
+    function renderUnlockNotificationsPanel() {
+        const list = document.getElementById('unlock-notifications-list');
+        if (!list) return;
+
+        const notifications = getUnlockNotifications();
+        if (notifications.length === 0) {
+            list.innerHTML = '<div class="p-4 text-[12px] text-slate-500">Новых уведомлений нет.</div>';
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(function (n) {
+            html += '<div class="p-3 border-b border-slate-100 last:border-b-0"><div class="flex items-start justify-between gap-2"><div><div class="text-[12px] font-bold text-slate-800">#' + n.id + ' • ' + n.name + '</div><div class="text-[11px] text-slate-500 mt-0.5">Доступна к ручной разблокировке. Блокировка до: ' + n.untilText + '</div></div><div class="flex flex-col gap-1.5 items-end"><button onclick="markUnlockNotificationProcessed(\'' + n.id + '\')" class="text-[11px] text-slate-600 hover:text-slate-800 font-medium">Обработано</button><button onclick="unlockPostponedApp(\'' + n.id + '\')" class="text-[11px] text-emerald-700 hover:text-emerald-900 font-bold">Разблокировать</button></div></div></div>';
+        });
+        list.innerHTML = html;
+    }
+
     function setAvailableTabs(tabsToShow) {
         const allTabs = ['pane-facilitator', 'pane-gmc', 'pane-piu', 'pane-committee', 'pane-gmc-registry-preview', 'pane-committee-batch', 'pane-approved', 'pane-monitoring'];
         allTabs.forEach(function (target) {
@@ -322,6 +395,7 @@
         let badgeHtmlList = '';
         const revisionText = (app.revisionCount && app.revisionCount > 0 && ['fac_revision', 'postponed'].includes(status)) ? '<span class="bg-amber-100 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Миқдори такмил / Доработка: ' + app.revisionCount + '/3"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-0.5"></i>' + app.revisionCount + '/3</span>' : '';
         const protocolHtml = app.protocolId ? '<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Тасдиқшуда тариқи протокол / Утверждено протоколом"><i data-lucide="layers" class="w-3 h-3 inline mr-0.5"></i>' + app.protocolId + '</span>' : '';
+        const postLockBadge = app.reactivated ? '<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Возвращена после 3-месячной блокировки"><i data-lucide="history" class="w-3 h-3 inline mr-0.5"></i>Пас аз 3 моҳ / После 3 мес.</span>' : '';
 
         let checkboxHtmlCard = '';
         let checkboxHtmlRow = '';
@@ -377,10 +451,18 @@
             badgeHtmlList = bHtml;
             aHtml = '<span class="text-red-600 text-[12px] font-bold cursor-pointer" onclick="openRevFor(\'' + id + '\')">Ислоҳ кардан <span class="ru font-normal">/ Исправить</span></span>';
         } else if (status === 'postponed') {
-            bClass = 'bg-slate-100 border-slate-300 opacity-80';
-            bHtml = '<div class="bg-slate-200 text-slate-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> Мавқуф <span class="ru font-normal">/ Отложено (3 мес.)</span></div>';
+            const untilText = getPostponedUntilText(app);
+            const isReadyForUnlock = isPostponedUnlockReadyApp(app);
+            bClass = isReadyForUnlock ? 'bg-emerald-50 border-emerald-300' : 'bg-slate-100 border-slate-300 opacity-80';
+            bHtml = isReadyForUnlock
+                ? '<div class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="bell-ring" class="w-3 h-3 inline"></i> Омода барои кушодан / Готова к разблокировке</div>'
+                : '<div class="bg-slate-200 text-slate-700 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> Мавқуф то ' + untilText + ' <span class="ru font-normal">/ Отложено до ' + untilText + '</span></div>';
             badgeHtmlList = bHtml;
-            aHtml = '<span class="text-slate-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Таърих / История</span>';
+            if (getActiveRoleContext() === 'facilitator' && isReadyForUnlock) {
+                aHtml = '<button onclick="unlockPostponedApp(\'' + id + '\')" class="bg-white text-emerald-700 border border-emerald-300 text-[12px] font-bold px-3 py-1.5 rounded-lg">Кушодан <span class="ru font-normal">/ Разблокировать</span></button>';
+            } else {
+                aHtml = '<span class="text-slate-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Таърих / История</span>';
+            }
         } else if (status === 'incomplete_data') {
             bClass = 'bg-orange-50 border-orange-300';
             bHtml = '<div class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-[10px] font-bold"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Нопурра <span class="ru font-normal">/ Неполные</span></div>';
@@ -410,7 +492,7 @@
         card.setAttribute('data-id', id);
         card.setAttribute('data-status', status);
         card.className = bClass + ' rounded-2xl p-5 border shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer';
-        card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
+        card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + postLockBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
         card.onclick = function (e) {
             if (!e.target.closest('input')) {
                 const btn = card.querySelector('button, span[onclick]');
@@ -424,7 +506,7 @@
         row.setAttribute('data-id', id);
         row.setAttribute('data-status', status);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + postLockBadge + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
         row.onclick = function (e) {
             if (!e.target.closest('button') && !e.target.closest('a') && !e.target.closest('svg') && !e.target.closest('select') && !e.target.closest('input')) {
                 const btn = row.querySelector('button, span[onclick]');
@@ -440,6 +522,8 @@
         const incomplete = window.filterApps(['incomplete_data']);
         const facRevs = window.filterApps(['fac_revision']);
         const postponed = window.filterApps(['postponed']);
+        const postponedReady = postponed.filter(function (app) { return isPostponedUnlockReadyApp(app); });
+        const unlockNotifications = getUnlockNotifications();
         const gmcNew = window.filterApps(['gmc_review']);
         const gmcReturned = window.filterApps(['gmc_revision']);
         const gmcPrep = window.filterApps(['gmc_preparation']);
@@ -459,7 +543,7 @@
                 el.classList.toggle('hidden', count === 0);
             }
         };
-        setB('dash-fac-badge', drafts.length + incomplete.length + facRevs.length);
+        setB('dash-fac-badge', drafts.length + incomplete.length + facRevs.length + postponedReady.length);
         setB('dash-approved-badge', approved.length);
         setB('dash-status-badge', totalApps);
 
@@ -470,6 +554,7 @@
         setB('sub-fac-sent-badge', inReview.length);
         setB('sub-fac-completed-badge', approved.length + rejected.length);
         setB('sub-pos-badge', postponed.length);
+        setB('sub-pos-ready-badge', postponedReady.length);
         setB('dash-gmc-badge', window.filterApps(['gmc_review', 'gmc_revision', 'gmc_preparation', 'gmc_ready_for_registry']).length);
         setB('dash-piu-badge', pius.length);
         setB('dash-com-badge', coms.length);
@@ -494,6 +579,25 @@
         if (submittedEl) submittedEl.textContent = String(submitted);
         if (approvedEl) approvedEl.textContent = String(approved.length);
         if (rejectedEl) rejectedEl.textContent = String(rejected.length);
+
+        const unlockNotice = document.getElementById('facilitator-unlock-notice');
+        const unlockNoticeCount = document.getElementById('facilitator-unlock-ready-count');
+        const unlockNoticeCountRu = document.getElementById('facilitator-unlock-ready-count-ru');
+        if (unlockNotice && unlockNoticeCount) {
+            unlockNoticeCount.textContent = String(postponedReady.length);
+            if (unlockNoticeCountRu) unlockNoticeCountRu.textContent = String(postponedReady.length);
+            if (postponedReady.length > 0 && window.activeMainFilter === 'facilitator') unlockNotice.classList.remove('hidden');
+            else unlockNotice.classList.add('hidden');
+        }
+
+        const bellBadge = document.getElementById('unlock-notifications-badge');
+        if (bellBadge) {
+            bellBadge.textContent = String(unlockNotifications.length);
+            if (unlockNotifications.length > 0) bellBadge.classList.remove('hidden');
+            else bellBadge.classList.add('hidden');
+        }
+
+        renderUnlockNotificationsPanel();
 
         const regBar = document.getElementById('gmc-registry-bar');
         const hasRegistrySelection = window.selectedForRegistry && window.selectedForRegistry.size > 0;
@@ -901,6 +1005,49 @@
         if (approvedMonth) {
             approvedMonth.addEventListener('change', updateApprovedInsights);
         }
+
+        const unlockNoticeBtn = document.getElementById('btn-open-unlock-ready');
+        if (unlockNoticeBtn) {
+            unlockNoticeBtn.addEventListener('click', function () {
+                const mainBtn = document.querySelector('.filter-btn[data-filter="facilitator"]');
+                if (mainBtn) mainBtn.click();
+                const subBtn = document.querySelector('.fac-filter-btn[data-fac-filter="postponed"]');
+                if (subBtn) subBtn.click();
+            });
+        }
+
+        const bellBtn = document.getElementById('btn-unlock-notifications');
+        if (bellBtn) {
+            bellBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const panel = document.getElementById('unlock-notifications-panel');
+                const isHidden = !panel || panel.classList.contains('hidden');
+                setUnlockPanelVisible(isHidden);
+            });
+        }
+
+        const bellCloseBtn = document.getElementById('btn-close-unlock-notifications');
+        if (bellCloseBtn) {
+            bellCloseBtn.addEventListener('click', function () {
+                setUnlockPanelVisible(false);
+            });
+        }
+
+        const markAllBtn = document.getElementById('btn-mark-all-unlock-processed');
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function () {
+                markAllUnlockNotificationsProcessed();
+            });
+        }
+
+        document.addEventListener('click', function (e) {
+            const panel = document.getElementById('unlock-notifications-panel');
+            const bell = document.getElementById('btn-unlock-notifications');
+            if (!panel || panel.classList.contains('hidden')) return;
+            const insidePanel = panel.contains(e.target);
+            const insideBell = bell && bell.contains(e.target);
+            if (!insidePanel && !insideBell) setUnlockPanelVisible(false);
+        });
     }
 
     function initializeModalTabs() {
@@ -1020,6 +1167,9 @@
         openSelectedApprovedList,
         setAvailableTabs,
         initializeModalTabs
+        ,
+        markUnlockNotificationProcessed,
+        markAllUnlockNotificationsProcessed
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -1035,4 +1185,6 @@
     window.setAvailableTabs = setAvailableTabs;
     window.getVisibleReadyRegistryIds = getVisibleReadyRegistryIds;
     window.canOpenInCurrentContext = canOpenInCurrentContext;
+    window.markUnlockNotificationProcessed = markUnlockNotificationProcessed;
+    window.markAllUnlockNotificationsProcessed = markAllUnlockNotificationsProcessed;
 })();
