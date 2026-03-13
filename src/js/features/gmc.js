@@ -5,6 +5,23 @@
     window.currentGmcAppId = null;
     window.currentGmcChoice = null;
 
+    function updateGmcWordVersionLabel(app) {
+        var labelEl = document.getElementById('gmc-word-download-label');
+        if (!labelEl) return;
+        var version = 0;
+        if (app && typeof window.getCurrentWordVersionInfo === 'function') {
+            var info = window.getCurrentWordVersionInfo(app);
+            version = info ? info.version : 0;
+        }
+        labelEl.textContent = 'Боргирии Word (V' + version + ')';
+    }
+
+    function getGmcRevisionUploadFileName() {
+        var input = document.getElementById('gmc-revision-upload');
+        if (!input || !input.files || !input.files.length) return '';
+        return input.files[0].name || '';
+    }
+
     function loadGmcForm(id) {
         const app = window.getApp(id);
         if (!app) return;
@@ -30,6 +47,7 @@
         document.getElementById('gmc-hdr-amount').textContent = app.amount;
         document.getElementById('gmc-hdr-activity').innerHTML = dbUser.course || '—';
         document.getElementById('gmc-hdr-location').innerHTML = dbUser.address || '—';
+        updateGmcWordVersionLabel(app);
 
         document.querySelectorAll('.gmc-score-input, .elig-radio, .elig-radio-no').forEach(function (el) {
             el.checked = false;
@@ -74,6 +92,8 @@
             makeReadonly();
         } else if (app.status === 'gmc_revision') {
             returnContent.classList.remove('hidden');
+            var revisionUploadInput = document.getElementById('gmc-revision-upload');
+            if (revisionUploadInput) revisionUploadInput.value = '';
             const lastLog = app.auditLog.slice().reverse().find(function (l) { return l.comment; });
             const commentEl = document.getElementById('gmc-dynamic-comment');
             if (commentEl) commentEl.textContent = lastLog && lastLog.comment ? lastLog.comment : 'Бе эзоҳ / Без комментариев';
@@ -230,9 +250,33 @@
     function sendGmcBackToPiu() {
         const app = window.getApp(window.currentGmcAppId);
         if (!app) return;
+
+        var wordFileName = getGmcRevisionUploadFileName();
+        if (!wordFileName) {
+            alert('Лутфан версияи нави Word-ҳуҷҷатро бор кунед.\nПожалуйста, загрузите новую версию Word документа.');
+            return;
+        }
+
+        var nextVersion = 0;
+        if (typeof window.registerWordVersion === 'function') {
+            nextVersion = window.registerWordVersion(app, {
+                fileName: wordFileName,
+                uploadedByRole: 'ШИГ / КУГ',
+                uploadedByName: 'ШИГ / КУГ',
+                sourceStage: 'gmc_revision'
+            });
+        }
+
         app.status = 'piu_review';
         app.date = window.getCurrentDateTime();
-        window.addLog(app, 'ШИГ / КУГ', 'Ислоҳот ворид шуд, бозгашт ба ГРП', 'Внесены исправления, возвращено в ГРП', 'blue', 'refresh-cw');
+        window.addLog(
+            app,
+            'ШИГ / КУГ',
+            'Ислоҳот ворид шуд, Word V' + nextVersion + ' бор ва бозгашт ба ГРП',
+            'Внесены исправления, загружен Word V' + nextVersion + ', возвращено в ГРП',
+            'blue',
+            'refresh-cw'
+        );
         window.renderAllCards();
         document.getElementById('applicationModal').classList.add('hidden');
     }

@@ -91,6 +91,191 @@
         });
     }
 
+    function ensureDocumentBundle(app) {
+        if (!app) return null;
+        if (!app.documents) {
+            app.documents = {
+                wordVersions: [],
+                currentWordVersion: 0,
+                basePdf: null,
+                basePhotos: []
+            };
+        }
+        if (!Array.isArray(app.documents.wordVersions)) app.documents.wordVersions = [];
+        if (!Array.isArray(app.documents.basePhotos)) app.documents.basePhotos = [];
+        if (!app.documents.currentWordVersion) app.documents.currentWordVersion = app.documents.wordVersions.length || 0;
+        return app.documents;
+    }
+
+    function registerBaseDocuments(app, payload) {
+        var docs = ensureDocumentBundle(app);
+        if (!docs || !payload) return;
+        var now = getCurrentDateTime();
+
+        if (payload.pdfName) {
+            docs.basePdf = {
+                name: sanitizeText(payload.pdfName),
+                uploadedAt: now,
+                uploadedByRole: sanitizeText(payload.uploadedByRole || 'Фасилитатор'),
+                uploadedByName: sanitizeText(payload.uploadedByName || 'Фасилитатор')
+            };
+        }
+
+        if (Array.isArray(payload.photoNames) && payload.photoNames.length > 0) {
+            docs.basePhotos = payload.photoNames.map(function (name, index) {
+                return {
+                    slot: index + 1,
+                    name: sanitizeText(name),
+                    uploadedAt: now,
+                    uploadedByRole: sanitizeText(payload.uploadedByRole || 'Фасилитатор'),
+                    uploadedByName: sanitizeText(payload.uploadedByName || 'Фасилитатор')
+                };
+            });
+        }
+    }
+
+    function registerWordVersion(app, payload) {
+        var docs = ensureDocumentBundle(app);
+        if (!docs || !payload || !payload.fileName) return 0;
+
+        var nextVersion = (docs.currentWordVersion || 0) + 1;
+        var entry = {
+            version: nextVersion,
+            name: sanitizeText(payload.fileName),
+            uploadedAt: getCurrentDateTime(),
+            uploadedByRole: sanitizeText(payload.uploadedByRole || ''),
+            uploadedByName: sanitizeText(payload.uploadedByName || ''),
+            sourceStage: sanitizeText(payload.sourceStage || '')
+        };
+
+        docs.wordVersions.push(entry);
+        docs.currentWordVersion = nextVersion;
+        return nextVersion;
+    }
+
+    function getCurrentWordVersionInfo(app) {
+        var docs = ensureDocumentBundle(app);
+        if (!docs || !docs.currentWordVersion) return null;
+        var version = docs.currentWordVersion;
+        for (var i = docs.wordVersions.length - 1; i >= 0; i--) {
+            if (docs.wordVersions[i].version === version) return docs.wordVersions[i];
+        }
+        return null;
+    }
+
+    function downloadBusinessPlanFile(appId) {
+        var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
+        if (!app) {
+            alert('Заявка не найдена / Дархост ёфт нашуд');
+            return;
+        }
+
+        var docs = ensureDocumentBundle(app);
+        var currentWord = getCurrentWordVersionInfo(app);
+        var pdf = docs.basePdf ? docs.basePdf.name : '—';
+        var photos = docs.basePhotos || [];
+
+        var content = [
+            'BUSINESS PLAN PACKAGE / ПАКЕТ БИЗНЕС-ПЛАНА',
+            'ID: ' + app.id,
+            'Заявитель: ' + sanitizeText(app.name || ''),
+            'Текущая версия Word: ' + (currentWord ? ('V' + currentWord.version + ' (' + currentWord.name + ')') : '—'),
+            'PDF (фиксированный): ' + pdf,
+            'Фото (фиксированные): ' + (photos.length ? photos.map(function (p) { return p.name; }).join(', ') : '—'),
+            '',
+            'История версий Word:'
+        ];
+
+        if (!docs.wordVersions.length) {
+            content.push('- Нет версий');
+        } else {
+            docs.wordVersions.forEach(function (v) {
+                content.push('- V' + v.version + ': ' + v.name + ' [' + v.uploadedAt + ', ' + v.uploadedByRole + ']');
+            });
+        }
+
+        var blob = new Blob([content.join('\n')], { type: 'text/plain;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.setAttribute('href', url);
+        var versionSuffix = currentWord ? ('_V' + currentWord.version) : '';
+        link.setAttribute('download', 'BusinessPlan_' + app.id + versionSuffix + '.txt');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadBusinessPlanPdfFile(appId) {
+        var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
+        if (!app) {
+            alert('Заявка не найдена / Дархост ёфт нашуд');
+            return;
+        }
+
+        var docs = ensureDocumentBundle(app);
+        if (!docs.basePdf || !docs.basePdf.name) {
+            alert('PDF пока не загружен / PDF то ҳол бор нашудааст');
+            return;
+        }
+
+        var content = [
+            'FIXED PDF ATTACHMENT / ФИКСИРОВАННОЕ PDF-ВЛОЖЕНИЕ',
+            'ID: ' + app.id,
+            'Заявитель: ' + sanitizeText(app.name || ''),
+            'Файл: ' + sanitizeText(docs.basePdf.name),
+            'Загружен: ' + sanitizeText(docs.basePdf.uploadedAt || '—'),
+            'Роль: ' + sanitizeText(docs.basePdf.uploadedByRole || '—')
+        ];
+
+        var blob = new Blob([content.join('\n')], { type: 'text/plain;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'BusinessPlanPDF_' + app.id + '.txt');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadBusinessPlanPhotoPack(appId) {
+        var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
+        if (!app) {
+            alert('Заявка не найдена / Дархост ёфт нашуд');
+            return;
+        }
+
+        var docs = ensureDocumentBundle(app);
+        var photos = docs.basePhotos || [];
+        if (!photos.length) {
+            alert('Фото-комплект пока не загружен / Маҷмӯи аксҳо то ҳол бор нашудааст');
+            return;
+        }
+
+        var lines = [
+            'FIXED PHOTO PACK / ФИКСИРОВАННЫЙ ФОТО-КОМПЛЕКТ',
+            'ID: ' + app.id,
+            'Заявитель: ' + sanitizeText(app.name || ''),
+            'Количество фото: ' + photos.length,
+            ''
+        ];
+
+        photos.forEach(function (p) {
+            lines.push('Фото ' + p.slot + ': ' + sanitizeText(p.name) + ' [' + sanitizeText(p.uploadedAt || '—') + ']');
+        });
+
+        var blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'BusinessPlanPhotos_' + app.id + '.txt');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
     window.AppCore = window.AppCore || {};
     window.AppCore.utils = {
         getCurrentDateTime,
@@ -102,7 +287,14 @@
         addMonths,
         formatIsoDateRu,
         getPostponedUntilIso,
-        isPostponedUnlockReady
+        isPostponedUnlockReady,
+        ensureDocumentBundle,
+        registerBaseDocuments,
+        registerWordVersion,
+        getCurrentWordVersionInfo,
+        downloadBusinessPlanFile,
+        downloadBusinessPlanPdfFile,
+        downloadBusinessPlanPhotoPack
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -116,4 +308,11 @@
     window.formatIsoDateRu = formatIsoDateRu;
     window.getPostponedUntilIso = getPostponedUntilIso;
     window.isPostponedUnlockReady = isPostponedUnlockReady;
+    window.ensureDocumentBundle = ensureDocumentBundle;
+    window.registerBaseDocuments = registerBaseDocuments;
+    window.registerWordVersion = registerWordVersion;
+    window.getCurrentWordVersionInfo = getCurrentWordVersionInfo;
+    window.downloadBusinessPlanFile = downloadBusinessPlanFile;
+    window.downloadBusinessPlanPdfFile = downloadBusinessPlanPdfFile;
+    window.downloadBusinessPlanPhotoPack = downloadBusinessPlanPhotoPack;
 })();

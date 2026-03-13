@@ -102,6 +102,7 @@
     }
 
     function buildBeneficiarySnapshot(source) {
+        source = source || {};
         return {
             fullName: source['full-name'] || '',
             birthDate: source['birth-date'] || '',
@@ -113,6 +114,111 @@
             education: source.education || '',
             course: source.course || ''
         };
+    }
+
+    function getSelectedFileNames(inputId) {
+        var input = document.getElementById(inputId);
+        if (!input || !input.files || !input.files.length) return [];
+        return Array.prototype.map.call(input.files, function (f) { return f && f.name ? f.name : ''; }).filter(Boolean);
+    }
+
+    function updateUploadTextsFromInputs() {
+        var wordNames = getSelectedFileNames('fac-word-upload');
+        var pdfNames = getSelectedFileNames('fac-pdf-upload');
+        var photoNames = getSelectedFileNames('fac-photo-upload');
+
+        var wordText = document.getElementById('fac-word-upload-text');
+        var pdfText = document.getElementById('fac-pdf-upload-text');
+        var photoText = document.getElementById('fac-photo-upload-text');
+
+        if (wordText) wordText.textContent = wordNames[0] || 'Файл не выбран';
+        if (pdfText) pdfText.textContent = pdfNames[0] || 'Файл не выбран';
+        if (photoText) photoText.textContent = String(photoNames.length) + ' / 4';
+    }
+
+    function getExistingDocumentState(app) {
+        if (!app || typeof window.ensureDocumentBundle !== 'function') return { hasWord: false, hasPdf: false, photosCount: 0, currentVersion: 0 };
+        var docs = window.ensureDocumentBundle(app);
+        return {
+            hasWord: !!(docs.wordVersions && docs.wordVersions.length > 0),
+            hasPdf: !!docs.basePdf,
+            photosCount: (docs.basePhotos || []).length,
+            currentVersion: docs.currentWordVersion || 0
+        };
+    }
+
+    function updateWordVersionBadge(app) {
+        var badge = document.getElementById('fac-word-version-badge');
+        if (!badge) return;
+        var current = 0;
+        if (app && typeof window.getCurrentWordVersionInfo === 'function') {
+            var info = window.getCurrentWordVersionInfo(app);
+            current = info ? info.version : 0;
+        }
+        badge.textContent = 'Word V' + current;
+    }
+
+    function validateRequiredDocumentSet(app) {
+        var existing = getExistingDocumentState(app);
+        var selectedWord = getSelectedFileNames('fac-word-upload');
+        var selectedPdf = getSelectedFileNames('fac-pdf-upload');
+        var selectedPhotos = getSelectedFileNames('fac-photo-upload');
+
+        var hasWord = existing.hasWord || selectedWord.length > 0;
+        var hasPdf = existing.hasPdf || selectedPdf.length > 0;
+        var photosCount = existing.photosCount > 0 ? existing.photosCount : selectedPhotos.length;
+
+        if (!hasWord) {
+            alert('Лутфан Word файли бизнес-планро замима кунед.\nПожалуйста, приложите Word файл бизнес-плана.');
+            return false;
+        }
+        if (!hasPdf) {
+            alert('Лутфан PDF файли бизнес-планро замима кунед.\nПожалуйста, приложите PDF файл бизнес-плана.');
+            return false;
+        }
+        if (photosCount !== 4) {
+            alert('Бояд маҳз 4 сурат замима шавад.\nНеобходимо приложить ровно 4 фото.');
+            return false;
+        }
+        return true;
+    }
+
+    function persistDocumentBundle(app, sourceStage) {
+        if (!app || typeof window.ensureDocumentBundle !== 'function') return;
+
+        var docs = window.ensureDocumentBundle(app);
+        var wordNames = getSelectedFileNames('fac-word-upload');
+        var pdfNames = getSelectedFileNames('fac-pdf-upload');
+        var photoNames = getSelectedFileNames('fac-photo-upload');
+
+        if (!docs.basePdf && pdfNames.length > 0 && typeof window.registerBaseDocuments === 'function') {
+            window.registerBaseDocuments(app, {
+                pdfName: pdfNames[0],
+                photoNames: photoNames,
+                uploadedByRole: 'Фасилитатор',
+                uploadedByName: 'Фасилитатор'
+            });
+        }
+
+        if ((!docs.basePhotos || docs.basePhotos.length === 0) && photoNames.length > 0 && typeof window.registerBaseDocuments === 'function') {
+            window.registerBaseDocuments(app, {
+                photoNames: photoNames,
+                uploadedByRole: 'Фасилитатор',
+                uploadedByName: 'Фасилитатор'
+            });
+        }
+
+        if ((!docs.wordVersions || docs.wordVersions.length === 0) && wordNames.length > 0 && typeof window.registerWordVersion === 'function') {
+            var v = window.registerWordVersion(app, {
+                fileName: wordNames[0],
+                uploadedByRole: 'Фасилитатор',
+                uploadedByName: 'Фасилитатор',
+                sourceStage: sourceStage || 'facilitator'
+            });
+            window.addLog(app, 'Фасилитатор', 'Word версия V' + v + ' бор шуд', 'Загружена Word версия V' + v, 'indigo', 'file-up');
+        }
+
+        updateWordVersionBadge(app);
     }
 
     function fillFacilitatorForm(id) {
@@ -145,6 +251,9 @@
         document.getElementById('display-education').textContent = source.education || snapshot.education || '—';
         document.getElementById('course').value = '';
         document.getElementById('display-course').textContent = source.course || snapshot.course || '—';
+
+        updateUploadTextsFromInputs();
+        updateWordVersionBadge(app);
 
         // Check data completeness and highlight missing fields
         applyCompletenessCheck(source);
@@ -226,6 +335,9 @@
         const amount = document.getElementById('amount-input').value;
         const timestamp = window.getCurrentDateTime();
         const sanitize = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
+        var db = getSearchDatabase();
+        var fallbackDb = window.mockDatabase || {};
+        var source = db[beneficiaryId] || fallbackDb[beneficiaryId] || {};
         let app = window.getApp(appId);
         if (!app) {
             app = { id: appId, name: sanitize(document.getElementById('full-name').value), auditLog: [] };
@@ -241,10 +353,10 @@
         app.amount = sanitize(amount || '0');
         app.date = timestamp;
 
+        // Register initial document set if files selected on this draft session
+        persistDocumentBundle(app, 'facilitator_draft');
+
         // Check if beneficiary data is complete
-        var db = getSearchDatabase();
-        var fallbackDb = window.mockDatabase || {};
-        var source = db[beneficiaryId] || fallbackDb[beneficiaryId] || {};
         var completeness = window.checkBeneficiaryDataComplete(source);
 
         if (!completeness.isComplete) {
@@ -311,6 +423,10 @@
         app.sector = sectorText;
         app.amount = sanitize(amount);
         app.date = timestamp;
+
+        persistDocumentBundle(app, 'facilitator_submit');
+        if (!validateRequiredDocumentSet(app)) return;
+
         app.status = 'gmc_review';
         window.addLog(app, 'Фасилитатор', 'Ба ШИГ фиристода шуд', 'Отправлено в КУГ', 'blue', 'send');
         window.renderAllCards();
@@ -379,6 +495,21 @@
         const submitApplicationBtn = document.getElementById('submitApplicationBtn');
         const duplicateWarning = document.getElementById('beneficiary-duplicate-warning');
         if (!toggleBtn || !formBlock || !clearSelectionBtn || !searchInput || !searchDropdownList || !selectedBeneficiary || !submitApplicationBtn || !duplicateWarning) return;
+
+        var facWordInput = document.getElementById('fac-word-upload');
+        var facPdfInput = document.getElementById('fac-pdf-upload');
+        var facPhotoInput = document.getElementById('fac-photo-upload');
+
+        [facWordInput, facPdfInput, facPhotoInput].forEach(function (input) {
+            if (!input) return;
+            input.addEventListener('change', function () {
+                if (input === facPhotoInput && input.files && input.files.length > 4) {
+                    alert('Мумкин аст танҳо 4 сурат замима шавад.\nМожно прикрепить только 4 фото.');
+                    input.value = '';
+                }
+                updateUploadTextsFromInputs();
+            });
+        });
 
         let isFormVisible = false;
         let selectedBeneficiaryId = null;
@@ -516,6 +647,10 @@
                 document.getElementById('btnIcon').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>';
                 document.getElementById('btnText').innerHTML = 'Дархости нав <span class="ru">/ Новая заявка</span>';
                 clearSelectionBtn.click();
+                if (facWordInput) facWordInput.value = '';
+                if (facPdfInput) facPdfInput.value = '';
+                if (facPhotoInput) facPhotoInput.value = '';
+                updateUploadTextsFromInputs();
             }
         });
 
@@ -545,6 +680,10 @@
             selectedBeneficiary.classList.remove('flex');
             searchInput.classList.remove('hidden');
             searchInput.value = '';
+            if (facWordInput) facWordInput.value = '';
+            if (facPdfInput) facPdfInput.value = '';
+            if (facPhotoInput) facPhotoInput.value = '';
+            updateUploadTextsFromInputs();
             setSubmitEnabled(false);
             showDuplicateWarning(duplicateWarning, null);
         });

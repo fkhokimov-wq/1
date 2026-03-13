@@ -526,7 +526,8 @@
             <p class="text-[14px] font-medium text-slate-600" id="empty-state-title">Дархостҳо ёфт нашуданд <span
                     class="ru">/ Заявки не найдены</span></p>
             <p class="text-[12px] mt-1 text-slate-400" id="empty-state-desc">Дархостҳо мувофиқи филтрҳо ёфт нашуданд
-                <span class="ru">/ По выбранным фильтрам не найдено</span></p>
+                <span class="ru">/ По выбранным фильтрам не найдено</span>
+            </p>
         </div>
 
     </div>
@@ -741,20 +742,42 @@
                             <textarea id="experience" rows="3"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 text-[13px] focus:border-primary outline-none focus:ring-1 focus:ring-primary transition-shadow resize-none"></textarea>
                         </div>
-                        <div>
-                            <label class="block text-[12px] text-gray-600 mb-1.5">Боркунии нақшаи тиҷоратӣ (doc, docx,
-                                pdf) <span class="ru">/ Загрузка бизнес-плана</span></label>
-                            <div class="flex items-center gap-3">
-                                <button type="button"
-                                    class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-lg text-[12px] font-bold hover:bg-indigo-100 transition-colors flex items-center gap-2 relative overflow-hidden"><input
-                                        type="file" id="facilitator-upload"
-                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"><i
-                                        data-lucide="upload" class="w-4 h-4"></i>
-                                    <div class="text-left leading-tight"><span>Интихоби файл</span><span
-                                            class="ru-block mt-0.5">Выберите файл</span></div>
-                                </button>
-                                <span class="text-[12px] text-gray-500" id="facilitator-upload-text">Файл интихоб
-                                    нашудааст <span class="ru">/ Файл не выбран</span></span>
+                        <div class="border border-indigo-200 rounded-xl p-4 bg-indigo-50/50 space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <label class="block text-[12px] text-indigo-800 font-bold">Ҳуҷҷатҳои ҳатмӣ <span
+                                        class="ru">/ Обязательные документы</span></label>
+                                <span id="fac-word-version-badge"
+                                    class="text-[11px] font-bold text-indigo-700 bg-white border border-indigo-200 px-2 py-1 rounded-md">Word
+                                    V0</span>
+                            </div>
+                            <p class="text-[11px] text-indigo-700 leading-tight">Word — версияшаванда. PDF ва 4 сурат
+                                доимӣ мебошанд.
+                                <span class="ru-block">Word — версионируется. PDF и 4 фото фиксированные.</span>
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-[11px] text-indigo-800 font-semibold mb-1">Word
+                                        (doc/docx)</label>
+                                    <input type="file" id="fac-word-upload"
+                                        accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                        class="w-full text-[11px] border border-indigo-200 rounded-lg bg-white p-2">
+                                    <div id="fac-word-upload-text" class="text-[10px] text-slate-500 mt-1">Файл не
+                                        выбран</div>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-indigo-800 font-semibold mb-1">PDF</label>
+                                    <input type="file" id="fac-pdf-upload" accept="application/pdf,.pdf"
+                                        class="w-full text-[11px] border border-indigo-200 rounded-lg bg-white p-2">
+                                    <div id="fac-pdf-upload-text" class="text-[10px] text-slate-500 mt-1">Файл не выбран
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-indigo-800 font-semibold mb-1">4 фото
+                                        объекта</label>
+                                    <input type="file" id="fac-photo-upload" accept="image/*" multiple
+                                        class="w-full text-[11px] border border-indigo-200 rounded-lg bg-white p-2">
+                                    <div id="fac-photo-upload-text" class="text-[10px] text-slate-500 mt-1">0 / 4</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -856,12 +879,25 @@
                                         <p class="text-[11px] text-blue-500 mt-1">Боршуда аз Фасилитатор</p>
                                     </div>
                                 </div>
-                                <button type="button" onclick="alert('Боргирӣ... / Скачивание...')"
-                                    class="bg-white border border-blue-300 text-blue-700 py-2 px-4 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors flex items-center gap-2 shadow-sm w-full sm:w-auto justify-center"><i
-                                        data-lucide="download" class="w-4 h-4"></i>
-                                    <div class="text-left leading-tight"><span>Боргирӣ</span><span
-                                            class="ru-block text-[10px]">Скачать</span></div>
-                                </button>
+                                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                    <button type="button" onclick="downloadCurrentBusinessPlanFromModal()"
+                                        class="bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors flex items-center gap-2 shadow-sm justify-center"><i
+                                            data-lucide="download" class="w-4 h-4"></i>
+                                        <div class="text-left leading-tight"><span id="gmc-word-download-label">Боргирии
+                                                Word
+                                                (V0)</span><span class="ru-block text-[10px]">Скачать Word</span>
+                                        </div>
+                                    </button>
+                                    <button type="button" onclick="downloadCurrentPdfFromModal()"
+                                        class="bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-2 shadow-sm justify-center"><i
+                                            data-lucide="file" class="w-4 h-4"></i><span class="leading-tight">Боргирии
+                                            PDF <span class="ru font-normal">/ Скачать PDF</span></span></button>
+                                    <button type="button" onclick="downloadCurrentPhotoPackFromModal()"
+                                        class="bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-2 shadow-sm justify-center"><i
+                                            data-lucide="images" class="w-4 h-4"></i><span
+                                            class="leading-tight">Боргирии фото
+                                            <span class="ru font-normal">/ Скачать фото</span></span></button>
+                                </div>
                             </div>
 
                             <div class="border border-gray-300 rounded-xl overflow-hidden">
@@ -1239,11 +1275,22 @@
                                         id="piu-app-name">—</span> <span class="text-indigo-600 font-normal ml-2">#<span
                                             id="piu-app-id">—</span></span></p>
                             </div>
-                            <button type="button" onclick="alert('Боргирӣ... / Скачивание...')"
-                                class="bg-white border border-indigo-300 text-indigo-700 py-2 px-4 rounded-lg text-[12px] font-bold hover:bg-indigo-100 shadow-sm w-full sm:w-auto"><i
-                                    data-lucide="download" class="w-4 h-4 inline-block mr-1"></i>Нақшаи тиҷоратӣ <span
-                                    class="ru font-normal">/ Бизнес-план</span>
-                                (ШИГ)</button>
+                            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <button type="button" onclick="downloadCurrentBusinessPlanFromModal()"
+                                    class="bg-white border border-indigo-300 text-indigo-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-indigo-100 shadow-sm inline-flex items-center gap-2"><i
+                                        data-lucide="download" class="w-4 h-4"></i><span class="leading-tight">Боргирии
+                                        Word
+                                        <span class="ru font-normal">/ Скачать Word</span></span></button>
+                                <button type="button" onclick="downloadCurrentPdfFromModal()"
+                                    class="bg-white border border-indigo-300 text-indigo-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-indigo-100 shadow-sm inline-flex items-center gap-2"><i
+                                        data-lucide="file" class="w-4 h-4"></i><span class="leading-tight">Боргирии PDF
+                                        <span class="ru font-normal">/ Скачать PDF</span></span></button>
+                                <button type="button" onclick="downloadCurrentPhotoPackFromModal()"
+                                    class="bg-white border border-indigo-300 text-indigo-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-indigo-100 shadow-sm inline-flex items-center gap-2"><i
+                                        data-lucide="images" class="w-4 h-4"></i><span class="leading-tight">Боргирии
+                                        фото
+                                        <span class="ru font-normal">/ Скачать фото</span></span></button>
+                            </div>
                         </div>
 
                         <div
@@ -1374,11 +1421,22 @@
                                         id="com-app-name">—</span> <span class="text-teal-600 font-normal ml-2">#<span
                                             id="com-app-id">—</span></span></p>
                             </div>
-                            <button type="button" onclick="alert('Боргирӣ... / Скачивание...')"
-                                class="bg-white border border-teal-300 text-teal-700 py-2 px-4 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm w-full sm:w-auto"><i
-                                    data-lucide="download" class="w-4 h-4 inline-block mr-1"></i>Нақшаи тиҷоратӣ <span
-                                    class="ru font-normal">/ Бизнес-план</span>
-                                (PIU)</button>
+                            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <button type="button" onclick="downloadCurrentBusinessPlanFromModal()"
+                                    class="bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
+                                        data-lucide="download" class="w-4 h-4"></i><span class="leading-tight">Боргирии
+                                        Word
+                                        <span class="ru font-normal">/ Скачать Word</span></span></button>
+                                <button type="button" onclick="downloadCurrentPdfFromModal()"
+                                    class="bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
+                                        data-lucide="file" class="w-4 h-4"></i><span class="leading-tight">Боргирии PDF
+                                        <span class="ru font-normal">/ Скачать PDF</span></span></button>
+                                <button type="button" onclick="downloadCurrentPhotoPackFromModal()"
+                                    class="bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
+                                        data-lucide="images" class="w-4 h-4"></i><span class="leading-tight">Боргирии
+                                        фото
+                                        <span class="ru font-normal">/ Скачать фото</span></span></button>
+                            </div>
                         </div>
 
                         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative">
@@ -1459,12 +1517,28 @@
                                             class="w-5 h-5"></i></div>
                                     <div>
                                         <p class="text-[13px] font-bold text-blue-900 leading-tight">Нақшаи тиҷоратӣ
-                                            <span class="ru font-normal">/ Бизнес-план</span></p>
+                                            <span class="ru font-normal">/ Бизнес-план</span>
+                                        </p>
                                     </div>
                                 </div>
-                                <button onclick="alert('Боргирӣ... / Скачивание...')"
-                                    class="bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"><i
-                                        data-lucide="download" class="w-4 h-4"></i></button>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="downloadCurrentBusinessPlanFromModal()"
+                                        class="bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                        title="Боргирии Word / Скачать Word"><i data-lucide="download"
+                                            class="w-4 h-4"></i></button>
+                                    <button onclick="downloadCurrentPdfFromModal()"
+                                        class="bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                        title="Боргирии PDF / Скачать PDF"><i data-lucide="file"
+                                            class="w-4 h-4"></i></button>
+                                    <button onclick="downloadCurrentPhotoPackFromModal()"
+                                        class="bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                        title="Боргирии фото / Скачать фото-комплект"><i data-lucide="images"
+                                            class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+                                <p class="text-[12px] font-bold text-slate-800 mb-2">Версии Word бизнес-плана</p>
+                                <div id="history-word-versions-list" class="space-y-0"></div>
                             </div>
                             <div
                                 class="bg-white border border-emerald-200 rounded-xl p-4 flex items-center justify-between shadow-sm relative overflow-hidden hover:shadow-md transition-shadow">

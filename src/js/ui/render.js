@@ -16,6 +16,19 @@
         document.getElementById('summ-revs').textContent = revisionsCount + ' / 3';
         document.getElementById('summ-status').textContent = currentStatusName;
 
+        const versionsEl = document.getElementById('history-word-versions-list');
+        if (versionsEl) {
+            var docs = (typeof window.ensureDocumentBundle === 'function') ? window.ensureDocumentBundle(app) : null;
+            var versions = docs && docs.wordVersions ? docs.wordVersions.slice() : [];
+            if (!versions.length) {
+                versionsEl.innerHTML = '<div class="text-[11px] text-slate-500">Версий Word пока нет.</div>';
+            } else {
+                versionsEl.innerHTML = versions.map(function (v) {
+                    return '<div class="text-[11px] text-slate-700 py-1 border-b border-slate-100 last:border-b-0">V' + v.version + ': ' + v.name + ' <span class="text-slate-400">(' + v.uploadedAt + ', ' + v.uploadedByRole + ')</span></div>';
+                }).join('');
+            }
+        }
+
         const timelineContainer = document.getElementById('dynamic-timeline');
         if (timelineContainer) {
             timelineContainer.innerHTML = '';
@@ -36,6 +49,45 @@
             });
             timelineContainer.innerHTML = html;
         }
+    }
+
+    function downloadCurrentBusinessPlanFromModal() {
+        const id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) {
+            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            return;
+        }
+        if (typeof window.downloadBusinessPlanFile === 'function') {
+            window.downloadBusinessPlanFile(id);
+            return;
+        }
+        alert('Функсияи боргирӣ дастрас нест. / Функция скачивания недоступна.');
+    }
+
+    function downloadCurrentPdfFromModal() {
+        const id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) {
+            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            return;
+        }
+        if (typeof window.downloadBusinessPlanPdfFile === 'function') {
+            window.downloadBusinessPlanPdfFile(id);
+            return;
+        }
+        alert('Функсияи боргирии PDF дастрас нест. / Функция скачивания PDF недоступна.');
+    }
+
+    function downloadCurrentPhotoPackFromModal() {
+        const id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) {
+            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            return;
+        }
+        if (typeof window.downloadBusinessPlanPhotoPack === 'function') {
+            window.downloadBusinessPlanPhotoPack(id);
+            return;
+        }
+        alert('Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
     }
 
     function openApprovedFor(id) {
@@ -418,6 +470,9 @@
         const protocolBadge = app.protocolId
             ? '<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap"><i data-lucide="layers" class="w-3 h-3 inline mr-0.5"></i>' + app.protocolId + '</span>'
             : '';
+        const docs = (typeof window.ensureDocumentBundle === 'function') ? window.ensureDocumentBundle(app) : null;
+        const currentWordVersion = docs && docs.currentWordVersion ? docs.currentWordVersion : 0;
+        const wordVersionBadge = '<span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Current Word Version"><i data-lucide="file-text" class="w-3 h-3 inline mr-0.5"></i>Current Word Version: V' + currentWordVersion + '</span>';
 
         const card = document.createElement('div');
         card.setAttribute('data-status', 'approved_item');
@@ -428,7 +483,7 @@
         card.setAttribute('data-gender-values', genderValue);
         card.setAttribute('data-search', searchHaystack);
         card.className = 'bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-emerald-400';
-        card.innerHTML = '<div class="flex justify-between items-start mb-1"><h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-emerald-700 font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + String((app.date || '').split(',')[0] || '—') + '</span><span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + app.id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span></div>';
+        card.innerHTML = '<div class="flex justify-between items-start mb-1"><h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolBadge + wordVersionBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-emerald-700 font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + String((app.date || '').split(',')[0] || '—') + '</span><span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + app.id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span></div>';
         card.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             window.openApprovedFor(app.id);
@@ -444,7 +499,7 @@
         row.setAttribute('data-gender-values', genderValue);
         row.setAttribute('data-search', searchHaystack);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in bg-emerald-50/40';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-emerald-500 align-middle"><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + String((app.date || '').split(',')[0] || '—') + '</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-emerald-700 text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle"><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-emerald-200">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openApprovedFor(\'' + app.id + '\')" class="text-emerald-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-emerald-500 align-middle"><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + String((app.date || '').split(',')[0] || '—') + ' ' + wordVersionBadge + '</div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-emerald-700 text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle"><div class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md text-[10px] font-bold w-max border border-emerald-200">Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span></div></td><td class="py-4 px-5 align-middle text-right"><button onclick="openApprovedFor(\'' + app.id + '\')" class="text-emerald-600 text-[12px] font-bold hover:underline">Кушодан / Открыть</button></td>';
         row.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             window.openApprovedFor(app.id);
@@ -463,6 +518,9 @@
         const revisionText = (displayRevisionCount > 0 && ['fac_revision', 'postponed'].includes(status)) ? '<span class="bg-amber-100 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Миқдори такмил / Доработка: ' + displayRevisionCount + '/3"><i data-lucide="refresh-cw" class="w-3 h-3 inline mr-0.5"></i>' + displayRevisionCount + '/3</span>' : '';
         const protocolHtml = app.protocolId ? '<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Тасдиқшуда тариқи протокол / Утверждено протоколом"><i data-lucide="layers" class="w-3 h-3 inline mr-0.5"></i>' + app.protocolId + '</span>' : '';
         const postLockBadge = app.reactivated ? '<span class="bg-purple-100 text-purple-800 border border-purple-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Возвращена после 3-месячной блокировки"><i data-lucide="history" class="w-3 h-3 inline mr-0.5"></i>Пас аз 3 моҳ / После 3 мес.</span>' : '';
+        const docs = (typeof window.ensureDocumentBundle === 'function') ? window.ensureDocumentBundle(app) : null;
+        const currentWordVersion = docs && docs.currentWordVersion ? docs.currentWordVersion : 0;
+        const wordVersionBadge = '<span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap" title="Current Word Version"><i data-lucide="file-text" class="w-3 h-3 inline mr-0.5"></i>Current Word Version: V' + currentWordVersion + '</span>';
 
         let checkboxHtmlCard = '';
         let checkboxHtmlRow = '';
@@ -562,7 +620,7 @@
         card.setAttribute('data-id', id);
         card.setAttribute('data-status', status);
         card.className = bClass + ' rounded-2xl p-5 border shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer';
-        card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + postLockBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
+        card.innerHTML = '<div class="flex justify-between items-start mb-1"><div class="flex items-center">' + checkboxHtmlCard + '<h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3></div>' + bHtml + '</div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolHtml + revisionText + postLockBadge + wordVersionBadge + '</div><div class="mt-4 mb-4 flex flex-col"><span class="text-primary font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + app.date.split(',')[0] + '</span>' + aHtml + '</div>';
         card.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             const btn = card.querySelector('button, span[onclick]');
@@ -575,7 +633,7 @@
         row.setAttribute('data-id', id);
         row.setAttribute('data-status', status);
         row.className = 'hover:bg-slate-50 transition-colors cursor-pointer group animate-fade-in';
-        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + postLockBadge + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
+        row.innerHTML = '<td class="py-4 px-5 border-l-4 border-transparent align-middle"><div class="flex items-center">' + checkboxHtmlRow + '<div><div class="font-bold text-slate-800 text-[13px] mb-0.5">' + app.name + '</div><div class="text-[11px] text-slate-400 flex items-center gap-1">#' + app.id + ' • ' + app.date.split(',')[0] + ' ' + protocolHtml + postLockBadge + wordVersionBadge + '</div></div></div></td><td class="py-4 px-5 align-middle text-[12px] text-slate-600 font-medium">' + app.sector + revisionText + '</td><td class="py-4 px-5 align-middle"><div class="font-black text-primary text-[13px]">' + app.amount + ' сомонӣ / сом.</div></td><td class="py-4 px-5 align-middle">' + badgeHtmlList + '</td><td class="py-4 px-5 align-middle text-right"><div class="flex justify-end opacity-90 group-hover:opacity-100 transition-opacity">' + aHtml + '</div></td>';
         row.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             const btn = row.querySelector('button, span[onclick]');
@@ -1267,7 +1325,10 @@
         initializeModalTabs
         ,
         markUnlockNotificationProcessed,
-        markAllUnlockNotificationsProcessed
+        markAllUnlockNotificationsProcessed,
+        downloadCurrentBusinessPlanFromModal,
+        downloadCurrentPdfFromModal,
+        downloadCurrentPhotoPackFromModal
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -1285,4 +1346,7 @@
     window.canOpenInCurrentContext = canOpenInCurrentContext;
     window.markUnlockNotificationProcessed = markUnlockNotificationProcessed;
     window.markAllUnlockNotificationsProcessed = markAllUnlockNotificationsProcessed;
+    window.downloadCurrentBusinessPlanFromModal = downloadCurrentBusinessPlanFromModal;
+    window.downloadCurrentPdfFromModal = downloadCurrentPdfFromModal;
+    window.downloadCurrentPhotoPackFromModal = downloadCurrentPhotoPackFromModal;
 })();

@@ -6,37 +6,31 @@
     window.currentComChoice = null;
 
     function getBusinessPlanButtonHtml(appId) {
-        return '<button type="button" onclick="downloadCommitteeBusinessPlan(\'' + appId + '\')" class="bg-white border border-indigo-200 text-indigo-700 py-1.5 px-3 rounded-lg text-[11px] font-bold hover:bg-indigo-50 transition-colors inline-flex items-center gap-1.5"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>Нақшаи тиҷоратӣ <span class="ru font-normal">/ Бизнес-план</span></span></button>';
+        return '<div class="flex flex-wrap gap-1.5"><button type="button" onclick="downloadCommitteeBusinessPlan(\'' + appId + '\')" class="bg-white border border-indigo-200 text-indigo-700 py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-indigo-50 transition-colors inline-flex items-center gap-1.5"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>Боргирии Word <span class="ru font-normal">/ Скачать Word</span></span></button><button type="button" onclick="downloadCommitteePdf(\'' + appId + '\')" class="bg-white border border-indigo-200 text-indigo-700 py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-indigo-50 transition-colors inline-flex items-center gap-1.5"><i data-lucide="file" class="w-3.5 h-3.5"></i><span>Боргирии PDF <span class="ru font-normal">/ Скачать PDF</span></span></button><button type="button" onclick="downloadCommitteePhotos(\'' + appId + '\')" class="bg-white border border-indigo-200 text-indigo-700 py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-indigo-50 transition-colors inline-flex items-center gap-1.5"><i data-lucide="images" class="w-3.5 h-3.5"></i><span>Боргирии фото <span class="ru font-normal">/ Скачать фото</span></span></button></div>';
     }
 
     function downloadCommitteeBusinessPlan(appId) {
-        const app = window.getApp(appId);
-        if (!app) {
-            alert('Заявка не найдена / Дархост ёфт нашуд');
+        if (typeof window.downloadBusinessPlanFile === 'function') {
+            window.downloadBusinessPlanFile(appId);
             return;
         }
+        alert('Функсияи боргирӣ дастрас нест. / Функция скачивания недоступна.');
+    }
 
-        const cleanSector = String(app.sector || '').replace(/<[^>]*>?/gm, '').trim();
-        const content = [
-            'НАҚШАИ ТИҶОРАТӢ / БИЗНЕС-ПЛАН',
-            'ID: ' + app.id,
-            'Аризадиҳанда / Заявитель: ' + app.name,
-            'Бахш / Сектор: ' + cleanSector,
-            'Маблағ / Сумма: ' + app.amount + ' сомонӣ',
-            'Сана / Дата: ' + (app.date || ''),
-            '',
-            'Ҳуҷҷат аз система сохта шуд. / Документ сформирован из системы.'
-        ].join('\n');
+    function downloadCommitteePdf(appId) {
+        if (typeof window.downloadBusinessPlanPdfFile === 'function') {
+            window.downloadBusinessPlanPdfFile(appId);
+            return;
+        }
+        alert('Функсияи боргирии PDF дастрас нест. / Функция скачивания PDF недоступна.');
+    }
 
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', 'Бизнес_план_' + app.id + '.txt');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+    function downloadCommitteePhotos(appId) {
+        if (typeof window.downloadBusinessPlanPhotoPack === 'function') {
+            window.downloadBusinessPlanPhotoPack(appId);
+            return;
+        }
+        alert('Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
     }
 
     function openCommitteeBatch(protocolId) {
@@ -442,6 +436,8 @@
         openCommitteeBatch,
         toggleBatchComment,
         downloadCommitteeBusinessPlan,
+        downloadCommitteePdf,
+        downloadCommitteePhotos,
         submitCommitteeBatch,
         exportProtocolToExcel,
         loadComForm,
@@ -454,6 +450,8 @@
     window.openCommitteeBatch = openCommitteeBatch;
     window.toggleBatchComment = toggleBatchComment;
     window.downloadCommitteeBusinessPlan = downloadCommitteeBusinessPlan;
+    window.downloadCommitteePdf = downloadCommitteePdf;
+    window.downloadCommitteePhotos = downloadCommitteePhotos;
     window.submitCommitteeBatch = submitCommitteeBatch;
     window.exportProtocolToExcel = exportProtocolToExcel;
     window.loadComForm = loadComForm;
