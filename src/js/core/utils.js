@@ -169,6 +169,8 @@
             app.grantAgreement = {
                 uploaded: false,
                 fileName: '',
+                mimeType: '',
+                fileDataUrl: '',
                 uploadedAt: '',
                 uploadedByRole: '',
                 uploadedByName: '',
@@ -176,6 +178,8 @@
                 replaceCount: 0
             };
         }
+        if (typeof app.grantAgreement.mimeType !== 'string') app.grantAgreement.mimeType = '';
+        if (typeof app.grantAgreement.fileDataUrl !== 'string') app.grantAgreement.fileDataUrl = '';
         return app.grantAgreement;
     }
 
@@ -187,6 +191,8 @@
         var isReplacing = !!agreement.uploaded;
         agreement.uploaded = true;
         agreement.fileName = sanitizeText(payload.fileName);
+        agreement.mimeType = sanitizeText(payload.mimeType || '');
+        agreement.fileDataUrl = sanitizeText(payload.fileDataUrl || '');
         agreement.uploadedAt = getCurrentDateTime();
         agreement.uploadedByRole = sanitizeText(payload.uploadedByRole || 'Фасилитатор');
         agreement.uploadedByName = sanitizeText(payload.uploadedByName || 'Фасилитатор');
@@ -205,6 +211,16 @@
         var agreement = ensureGrantAgreement(app);
         if (!agreement || !agreement.uploaded || !agreement.fileName) {
             alert('Подписанный договор еще не загружен / Шартномаи имзошуда ҳанӯз бор нашудааст');
+            return;
+        }
+
+        if (agreement.fileDataUrl) {
+            var linkFile = document.createElement('a');
+            linkFile.setAttribute('href', agreement.fileDataUrl);
+            linkFile.setAttribute('download', agreement.fileName || ('GrantAgreement_' + app.id + '.pdf'));
+            document.body.appendChild(linkFile);
+            linkFile.click();
+            document.body.removeChild(linkFile);
             return;
         }
 

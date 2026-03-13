@@ -178,27 +178,36 @@
 
         var noteEl = document.getElementById('grant-agreement-note');
         var note = noteEl ? String(noteEl.value || '').trim() : '';
-        var agreement = null;
-        if (typeof window.registerGrantAgreement === 'function') {
-            agreement = window.registerGrantAgreement(app, {
-                fileName: file.name,
-                uploadedByRole: 'Фасилитатор',
-                uploadedByName: 'Фасилитатор',
-                note: note
-            });
-        }
-        if (!agreement) return;
+        var reader = new FileReader();
+        reader.onerror = function () {
+            alert('Хониши файл хато дод. / Ошибка чтения файла.');
+        };
+        reader.onload = function () {
+            var agreement = null;
+            if (typeof window.registerGrantAgreement === 'function') {
+                agreement = window.registerGrantAgreement(app, {
+                    fileName: file.name,
+                    mimeType: file.type || '',
+                    fileDataUrl: String(reader.result || ''),
+                    uploadedByRole: 'Фасилитатор',
+                    uploadedByName: 'Фасилитатор',
+                    note: note
+                });
+            }
+            if (!agreement) return;
 
-        var actionTj = agreement.replaceCount > 0
-            ? 'Шартномаи имзошуда аз нав бор шуд (' + agreement.fileName + ')'
-            : 'Шартномаи имзошуда бор шуд (' + agreement.fileName + ')';
-        var actionRu = agreement.replaceCount > 0
-            ? 'Подписанный договор обновлен (' + agreement.fileName + ')'
-            : 'Загружен подписанный договор (' + agreement.fileName + ')';
-        window.addLog(app, 'Фасилитатор', actionTj, actionRu, 'emerald', 'file-signature', note);
+            var actionTj = agreement.replaceCount > 0
+                ? 'Шартномаи имзошуда аз нав бор шуд (' + agreement.fileName + ')'
+                : 'Шартномаи имзошуда бор шуд (' + agreement.fileName + ')';
+            var actionRu = agreement.replaceCount > 0
+                ? 'Подписанный договор обновлен (' + agreement.fileName + ')'
+                : 'Загружен подписанный договор (' + agreement.fileName + ')';
+            window.addLog(app, 'Фасилитатор', actionTj, actionRu, 'emerald', 'file-signature', note);
 
-        renderGrantAgreementPanel(app);
-        window.renderAllCards();
+            renderGrantAgreementPanel(app);
+            window.renderAllCards();
+        };
+        reader.readAsDataURL(file);
     }
 
     function downloadCurrentGrantAgreementFromModal() {
@@ -273,6 +282,10 @@
         return rule.ownedStatuses.includes(status);
     }
 
+    function isReadOnlyOpenAllowed(status) {
+        return ['approved', 'rejected'].includes(status);
+    }
+
     function canOpenInCurrentContext(appOrId) {
         const app = typeof appOrId === 'string' ? window.getApp(appOrId) : appOrId;
         if (!app) return false;
@@ -281,6 +294,7 @@
         const rule = getRoleRule(activeRole);
         if (!rule) return true;
         if (isRoleOwnedStatus(app.status, activeRole)) return true;
+        if (isReadOnlyOpenAllowed(app.status)) return true;
 
         alert('Ин марҳила кори ' + rule.label + ' нест. Танҳо дидан мумкин аст.\nЭто не зона работы роли ' + rule.label + '. Открытие недоступно.');
         return false;
@@ -761,7 +775,11 @@
         if (activeRole && !isRoleOwnedStatus(status, activeRole)) {
             checkboxHtmlCard = '';
             checkboxHtmlRow = '';
-            aHtml = '<span class="text-slate-400 text-[11px] font-bold">Танҳо дидан / Только просмотр</span>';
+            if (isReadOnlyOpenAllowed(status)) {
+                aHtml = '<span class="text-slate-600 text-[12px] font-bold cursor-pointer" onclick="openApprovedFor(\'' + id + '\')">Танҳо дидан / Только просмотр</span>';
+            } else {
+                aHtml = '<span class="text-slate-400 text-[11px] font-bold">Танҳо дидан / Только просмотр</span>';
+            }
         }
 
         const card = document.createElement('div');
