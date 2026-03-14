@@ -33,6 +33,8 @@
 
         renderGrantAgreementPanel(app);
         renderGrantContractDraftPanel(app);
+        collapseGrantContractDraftPanel();
+        syncGrantContractPanelUi(app);
 
         const timelineContainer = document.getElementById('dynamic-timeline');
         if (timelineContainer) {
@@ -288,6 +290,66 @@
             });
             contractNoInput.dataset.boundFormatter = '1';
         }
+    }
+
+    function canEditGrantContract(app) {
+        return !!(app && app.status === 'approved' && getActiveRoleContext() === 'facilitator');
+    }
+
+    function collapseGrantContractDraftPanel() {
+        var shell = document.getElementById('grant-contract-form-shell');
+        if (!shell) return;
+        shell.classList.add('hidden');
+    }
+
+    function syncGrantContractPanelUi(app) {
+        var shell = document.getElementById('grant-contract-form-shell');
+        var btn = document.getElementById('btn-toggle-grant-contract-panel');
+        var hint = document.getElementById('grant-contract-collapsed-hint');
+        if (!shell || !btn || !hint) return;
+
+        var canEdit = canEditGrantContract(app);
+        var expanded = !shell.classList.contains('hidden');
+        var draft = typeof window.ensureGrantContractDraft === 'function' ? window.ensureGrantContractDraft(app) : null;
+        var hasDraft = !!(draft && draft.updatedAt);
+
+        btn.disabled = !canEdit;
+        btn.classList.toggle('opacity-50', !canEdit);
+        btn.classList.toggle('pointer-events-none', !canEdit);
+
+        if (!canEdit) {
+            btn.textContent = 'Создание договора недоступно';
+            hint.textContent = 'Форма договора доступна только Фасилитатору в статусе approved.';
+            hint.classList.remove('hidden');
+            shell.classList.add('hidden');
+            return;
+        }
+
+        if (expanded) {
+            btn.textContent = 'Свернуть форму договора';
+            hint.classList.add('hidden');
+        } else {
+            btn.textContent = hasDraft ? 'Редактировать договор' : 'Создать договор';
+            hint.textContent = 'Нажмите "Создать договор", чтобы раскрыть форму заполнения.';
+            hint.classList.remove('hidden');
+        }
+    }
+
+    function toggleGrantContractDraftPanelFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) return;
+        var app = window.getApp(id);
+        if (!app) return;
+
+        if (!canEditGrantContract(app)) {
+            alert('Форма договора доступна только Фасилитатору в статусе approved.');
+            return;
+        }
+
+        var shell = document.getElementById('grant-contract-form-shell');
+        if (!shell) return;
+        shell.classList.toggle('hidden');
+        syncGrantContractPanelUi(app);
     }
 
     function collectGrantContractFieldsFromForm() {
@@ -1992,7 +2054,8 @@
         previewGrantContractDraftFromModal,
         printGrantContractDraftFromModal,
         exportGrantContractPdfFromModal,
-        resetGrantContractAutoFieldsFromModal
+        resetGrantContractAutoFieldsFromModal,
+        toggleGrantContractDraftPanelFromModal
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -2021,4 +2084,5 @@
     window.printGrantContractDraftFromModal = printGrantContractDraftFromModal;
     window.exportGrantContractPdfFromModal = exportGrantContractPdfFromModal;
     window.resetGrantContractAutoFieldsFromModal = resetGrantContractAutoFieldsFromModal;
+    window.toggleGrantContractDraftPanelFromModal = toggleGrantContractDraftPanelFromModal;
 })();
