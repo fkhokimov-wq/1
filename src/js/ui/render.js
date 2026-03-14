@@ -657,7 +657,7 @@
             '<div class="contract-doc">' +
             '<section class="paper-page page-1">' +
             '<h1 class="contract-head-title">ШАРТНОМА ДАР БОРАИ ГРАНТ № ' + lineValue('contractNumber', ' ', 'lf-contract-no') + '</h1>' +
-            '<p class="contract-place-date"><span class="meta-left">Аз «' + lineValue('contractDateDay', '__', 'lf-day') + '» ' + lineValue('contractDateMonth', ' ', 'lf-month') + ' соли ' + lineValue('contractDateYear', '____', 'lf-year') + '</span><span class="meta-right">ш. ' + lineValue('contractCity', 'Душанбе', 'lf-city') + '</span></p>' +
+            '<p class="contract-place-date"><span class="meta-left"><b>Аз «' + val('contractDateDay', '__') + '» ' + val('contractDateMonth', '____') + ' соли ' + val('contractDateYear', '____') + '</b></span><span class="meta-right"><b>ш. ' + val('contractCity', 'Душанбе') + '</b></span></p>' +
             '<h3 class="contract-first-section-title">I. МАВЗӮИ ШАРТНОМА</h3>' +
             '<p>Шартномаи мазкур байни Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон / Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ, ки аз ҷониби <b>' + val('donorEntityForText') + '</b>, минбаъд «Грантдиҳанда» номида мешавад ва <b>' + val('granteeEntityForText') + '</b>, минбаъд «Грантгир» номида мешавад, дар алоҳидагӣ «Тараф» ё якҷоя «Тарафҳо» номида мешаванд, дар доираи «Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ», ки минбаъд «Лоиҳа» номида мешавад, амал мекунанд, ба мазмуни зерин ба имзо расониданд:</p>' +
             '<h3>II. ӮҲДАДОРИҲОИ ТАРАФҲО</h3>' +
@@ -768,8 +768,8 @@
             '.paper-page{position:relative;box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto 10mm;padding:15mm 16mm 18mm 20mm;background:#fff;border:1px solid #d1d5db;box-shadow:0 10px 30px rgba(15,23,42,.16);page-break-inside:avoid}' +
             '.paper-page+.paper-page{page-break-before:always}' +
             '.contract-doc .contract-head-title{font-size:15pt;text-align:center;margin:0 0 7.6mm 0;line-height:1.2;font-weight:700}' +
-            '.contract-doc .contract-place-date{margin:0 0 7mm 0;display:flex;align-items:flex-end;justify-content:space-between;gap:6mm}' +
-            '.contract-doc .meta-left,.contract-doc .meta-right{display:inline-flex;align-items:flex-end;gap:1.8mm;white-space:nowrap}' +
+            '.contract-doc .contract-place-date{margin:0 0 7mm 0;display:flex;align-items:flex-end;justify-content:space-between;gap:6mm;font-weight:700}' +
+            '.contract-doc .meta-left,.contract-doc .meta-right{display:inline-block;white-space:nowrap}' +
             '.contract-doc h3{font-size:12pt;margin:0 0 4mm 0;line-height:1.2;page-break-after:avoid;text-align:center;font-weight:700}' +
             '.page-1 .contract-first-section-title{margin-top:5mm}' +
             '.contract-doc p{margin:0 0 3.2mm 0;text-align:justify;text-wrap:pretty}' +
