@@ -302,6 +302,19 @@
         return out;
     }
 
+    function getGrantContractAutoFieldKeys() {
+        return [
+            'grantIdentifier',
+            'committeeGrantNumber',
+            'approvalDate',
+            'projectName',
+            'grantAmount',
+            'beneficiaryStatusOrName',
+            'beneficiaryRegAddress',
+            'beneficiaryPhone'
+        ];
+    }
+
     function formatContractNumberValue(raw) {
         var value = String(raw || '').toUpperCase().replace(/\s+/g, '');
         if (!value) return '';
@@ -425,7 +438,11 @@
             '<li><b>Телефон:</b> ' + val('donorPhone') + '</li>' +
             '<li><b>E-mail:</b> ' + val('donorEmail') + '</li>' +
             '</ul>' +
+            getGrantContractLegalTextTemplateHtml(val);
+    }
 
+    function getGrantContractLegalTextTemplateHtml(val) {
+        return '' +
             '<h3 style="margin:18px 0 8px 0;">III. МАТНИ СОЗИШНОМА</h3>' +
             '<p>Созишномаи мазкур байни Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон / Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ, ки аз ҷониби <b>' + val('donorEntityForText') + '</b>, минбаъд «Грантдиҳанда» номида мешавад ва <b>' + val('granteeEntityForText') + '</b>, минбаъд «Грантгир» номида мешавад, баста шудааст.</p>' +
             '<p>Тарафҳо ба таври зайл ба созиш расиданд:</p>' +
@@ -474,6 +491,27 @@
             '<p><b>ГРАНТГИРАНДА</b>: Имзо: _________________________</p>' +
             '<p>Сана: ' + val('signDateBeneficiary', '________________') + '</p>' +
             '<p><i>(ҷойи мӯҳр)</i></p>';
+    }
+
+    function resetGrantContractAutoFieldsFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) return;
+        var app = window.getApp(id);
+        if (!app) return;
+
+        if (!(app.status === 'approved' && getActiveRoleContext() === 'facilitator')) {
+            alert('Сброс автополей доступен только Фасилитатору в approved.');
+            return;
+        }
+
+        var defaults = getDefaultGrantContractFields(app);
+        getGrantContractAutoFieldKeys().forEach(function (k) {
+            var el = document.getElementById('contract-' + k);
+            if (!el) return;
+            el.value = defaults[k] || '';
+        });
+        clearGrantContractValidationUi();
+        window.addLog(app, 'Фасилитатор', 'Автополя договора сброшены', 'Автополя договора сброшены', 'slate', 'rotate-ccw');
     }
 
     function openGrantContractPreviewWindow(fields, title, autoPrint, showPdfHint) {
@@ -1946,7 +1984,8 @@
         saveGrantContractDraftFromModal,
         previewGrantContractDraftFromModal,
         printGrantContractDraftFromModal,
-        exportGrantContractPdfFromModal
+        exportGrantContractPdfFromModal,
+        resetGrantContractAutoFieldsFromModal
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -1974,4 +2013,5 @@
     window.previewGrantContractDraftFromModal = previewGrantContractDraftFromModal;
     window.printGrantContractDraftFromModal = printGrantContractDraftFromModal;
     window.exportGrantContractPdfFromModal = exportGrantContractPdfFromModal;
+    window.resetGrantContractAutoFieldsFromModal = resetGrantContractAutoFieldsFromModal;
 })();
