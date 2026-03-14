@@ -201,6 +201,35 @@
         return agreement;
     }
 
+    function ensureGrantContractDraft(app) {
+        if (!app) return null;
+        if (!app.grantContractDraft) {
+            app.grantContractDraft = {
+                fields: {},
+                updatedAt: '',
+                updatedByRole: '',
+                updatedByName: ''
+            };
+        }
+        if (!app.grantContractDraft.fields || typeof app.grantContractDraft.fields !== 'object') {
+            app.grantContractDraft.fields = {};
+        }
+        return app.grantContractDraft;
+    }
+
+    function registerGrantContractDraft(app, payload) {
+        if (!app) return null;
+        var draft = ensureGrantContractDraft(app);
+        if (!draft) return null;
+
+        var fields = payload && payload.fields && typeof payload.fields === 'object' ? payload.fields : {};
+        draft.fields = fields;
+        draft.updatedAt = getCurrentDateTime();
+        draft.updatedByRole = sanitizeText((payload && payload.updatedByRole) || 'Фасилитатор');
+        draft.updatedByName = sanitizeText((payload && payload.updatedByName) || 'Фасилитатор');
+        return draft;
+    }
+
     function downloadGrantAgreementFile(appId) {
         var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
         if (!app) {
@@ -421,6 +450,8 @@
         getCurrentWordVersionInfo,
         ensureGrantAgreement,
         registerGrantAgreement,
+        ensureGrantContractDraft,
+        registerGrantContractDraft,
         getApplicationDocumentCompleteness,
         downloadGrantAgreementFile,
         downloadBusinessPlanFile,
@@ -445,6 +476,8 @@
     window.getCurrentWordVersionInfo = getCurrentWordVersionInfo;
     window.ensureGrantAgreement = ensureGrantAgreement;
     window.registerGrantAgreement = registerGrantAgreement;
+    window.ensureGrantContractDraft = ensureGrantContractDraft;
+    window.registerGrantContractDraft = registerGrantContractDraft;
     window.getApplicationDocumentCompleteness = getApplicationDocumentCompleteness;
     window.downloadGrantAgreementFile = downloadGrantAgreementFile;
     window.downloadBusinessPlanFile = downloadBusinessPlanFile;

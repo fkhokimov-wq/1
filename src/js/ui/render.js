@@ -32,6 +32,7 @@
         }
 
         renderGrantAgreementPanel(app);
+        renderGrantContractDraftPanel(app);
 
         const timelineContainer = document.getElementById('dynamic-timeline');
         if (timelineContainer) {
@@ -179,6 +180,390 @@
             var icon = c.ok ? '✔' : '✖';
             return '<span class="text-[10px] px-1.5 py-0.5 rounded border font-medium ' + chipClass + '">' + icon + ' ' + c.label + '</span>';
         }).join('') + '</div></div>';
+    }
+
+    function getContractAppContext(app) {
+        var beneficiaryId = (app && (app.beneficiaryId || app.id)) || '';
+        var db = (window.beneficiarySearchDatabase || {})[beneficiaryId]
+            || (window.mockDatabase || {})[beneficiaryId]
+            || (app && app.beneficiarySnapshot)
+            || {};
+        return { beneficiaryId: beneficiaryId, db: db };
+    }
+
+    function getDefaultGrantContractFields(app) {
+        var ctx = getContractAppContext(app);
+        var db = ctx.db;
+        var appDate = String((app && app.date) || '').split(',')[0] || '';
+        var grantAmount = String((app && app.amount) || '').trim();
+        var projectName = String((app && app.sector) || '').replace(/<[^>]*>?/gm, '').trim();
+
+        return {
+            contractNumber: '___-____',
+            grantIdentifier: String((app && app.id) || ''),
+            committeeGrantNumber: String((app && app.protocolId) || ''),
+            approvalDate: appDate,
+            projectName: projectName,
+            grantAmount: grantAmount,
+            grantAmountWords: '',
+            organizerName: 'Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон',
+            donorEntityForText: 'Грантдиҳанда',
+            beneficiaryStatusOrName: String((app && app.name) || db['full-name'] || ''),
+            granteeEntityForText: String((app && app.name) || db['full-name'] || ''),
+            beneficiaryLegalName: '',
+            beneficiaryRegAddress: String(db.address || ''),
+            beneficiaryProjectAddress: String(db.address || ''),
+            beneficiaryPhone: String((app && app.contacts) || db.contacts || ''),
+            beneficiaryEmail: '',
+            donorRepName: '',
+            donorRepPosition: '',
+            donorAddress: '',
+            donorPhone: '',
+            donorEmail: '',
+            bankName: '',
+            currentAccount: '',
+            correspondentAccount: '',
+            bik: '',
+            signDateDonor: '',
+            signDateBeneficiary: ''
+        };
+    }
+
+    function ensureMergedContractFields(app) {
+        var defaults = getDefaultGrantContractFields(app);
+        var draft = typeof window.ensureGrantContractDraft === 'function' ? window.ensureGrantContractDraft(app) : null;
+        var existing = draft && draft.fields ? draft.fields : {};
+        var merged = {};
+        Object.keys(defaults).forEach(function (key) {
+            merged[key] = (existing[key] == null || existing[key] === '') ? defaults[key] : String(existing[key]);
+        });
+        return merged;
+    }
+
+    function renderGrantContractDraftPanel(app) {
+        var panel = document.getElementById('grant-contract-draft-panel');
+        var summary = document.getElementById('grant-contract-draft-summary');
+        var noData = document.getElementById('grant-contract-draft-empty');
+        if (!panel || !summary || !noData) return;
+
+        var canEdit = !!(app && app.status === 'approved' && getActiveRoleContext() === 'facilitator');
+        var fields = ensureMergedContractFields(app || {});
+
+        Object.keys(fields).forEach(function (key) {
+            var el = document.getElementById('contract-' + key);
+            if (!el) return;
+            el.value = fields[key];
+            el.disabled = !canEdit;
+            el.classList.toggle('bg-slate-100', !canEdit);
+            el.classList.toggle('cursor-not-allowed', !canEdit);
+        });
+
+        var draft = typeof window.ensureGrantContractDraft === 'function' ? window.ensureGrantContractDraft(app) : null;
+        if (draft && draft.updatedAt) {
+            summary.textContent = 'Черновик обновлен: ' + draft.updatedAt + ' • ' + (draft.updatedByRole || 'Фасилитатор');
+            noData.classList.add('hidden');
+        } else {
+            summary.textContent = 'Черновик еще не сохранен. Автополя подтянуты из заявки и базы.';
+            noData.classList.remove('hidden');
+        }
+
+        var saveBtn = document.getElementById('btn-save-grant-contract-draft');
+        if (saveBtn) {
+            saveBtn.disabled = !canEdit;
+            saveBtn.classList.toggle('opacity-50', !canEdit);
+            saveBtn.classList.toggle('pointer-events-none', !canEdit);
+        }
+
+        var contractNoInput = document.getElementById('contract-contractNumber');
+        if (contractNoInput && !contractNoInput.dataset.boundFormatter) {
+            contractNoInput.addEventListener('blur', function () {
+                contractNoInput.value = formatContractNumberValue(contractNoInput.value);
+            });
+            contractNoInput.dataset.boundFormatter = '1';
+        }
+    }
+
+    function collectGrantContractFieldsFromForm() {
+        var keys = [
+            'contractNumber', 'grantIdentifier', 'committeeGrantNumber', 'approvalDate', 'projectName', 'grantAmount',
+            'grantAmountWords',
+            'organizerName', 'beneficiaryStatusOrName', 'beneficiaryLegalName', 'beneficiaryRegAddress',
+            'donorEntityForText', 'granteeEntityForText',
+            'beneficiaryProjectAddress', 'beneficiaryPhone', 'beneficiaryEmail', 'donorRepName', 'donorRepPosition',
+            'donorAddress', 'donorPhone', 'donorEmail', 'bankName', 'currentAccount', 'correspondentAccount', 'bik',
+            'signDateDonor', 'signDateBeneficiary'
+        ];
+        var out = {};
+        keys.forEach(function (key) {
+            var el = document.getElementById('contract-' + key);
+            out[key] = el ? String(el.value || '').trim() : '';
+        });
+        out.contractNumber = formatContractNumberValue(out.contractNumber);
+        return out;
+    }
+
+    function formatContractNumberValue(raw) {
+        var value = String(raw || '').toUpperCase().replace(/\s+/g, '');
+        if (!value) return '';
+
+        var cleaned = value.replace(/[^A-ZА-Я0-9\-_]/g, '');
+        if (cleaned.indexOf('-') >= 0) return cleaned;
+
+        if (cleaned.length <= 3) return cleaned;
+        return cleaned.slice(0, 3) + '-' + cleaned.slice(3, 7);
+    }
+
+    function clearGrantContractValidationUi() {
+        var box = document.getElementById('grant-contract-validation-errors');
+        if (box) {
+            box.classList.add('hidden');
+            box.innerHTML = '';
+        }
+
+        var keys = [
+            'contractNumber', 'grantIdentifier', 'approvalDate', 'projectName', 'grantAmount',
+            'grantAmountWords',
+            'beneficiaryStatusOrName', 'beneficiaryRegAddress', 'beneficiaryPhone',
+            'donorRepName', 'donorRepPosition'
+        ];
+        keys.forEach(function (k) {
+            var el = document.getElementById('contract-' + k);
+            if (!el) return;
+            el.classList.remove('border-red-400', 'bg-red-50');
+            if (k === 'grantIdentifier' || k === 'projectName' || k === 'grantAmount' || k === 'beneficiaryStatusOrName' || k === 'beneficiaryRegAddress' || k === 'beneficiaryPhone' || k === 'approvalDate') {
+                el.classList.add('border-emerald-300', 'bg-emerald-50');
+            }
+        });
+    }
+
+    function validateGrantContractFields(fields, strictMode) {
+        clearGrantContractValidationUi();
+
+        var checks = [
+            { key: 'contractNumber', label: 'Номер договора' },
+            { key: 'grantIdentifier', label: 'Идентификатор гранта' },
+            { key: 'approvalDate', label: 'Дата утверждения' },
+            { key: 'projectName', label: 'Название проекта' },
+            { key: 'grantAmount', label: 'Сумма гранта' },
+            { key: 'grantAmountWords', label: 'Сумма гранта прописью' },
+            { key: 'beneficiaryStatusOrName', label: 'Грантополучатель' },
+            { key: 'beneficiaryRegAddress', label: 'Адрес регистрации' },
+            { key: 'beneficiaryPhone', label: 'Телефон грантополучателя' },
+            { key: 'donorRepName', label: 'Представитель грантодателя' },
+            { key: 'donorRepPosition', label: 'Должность представителя' }
+        ];
+
+        var errors = [];
+        checks.forEach(function (c) {
+            if (!String(fields[c.key] || '').trim()) {
+                errors.push('Заполните поле: ' + c.label);
+                var el = document.getElementById('contract-' + c.key);
+                if (el) {
+                    el.classList.remove('border-emerald-300', 'bg-emerald-50');
+                    el.classList.add('border-red-400', 'bg-red-50');
+                }
+            }
+        });
+
+        var contractNumber = String(fields.contractNumber || '');
+        if (contractNumber && !/^[A-ZА-Я0-9_]{3,}-[A-ZА-Я0-9_]{1,}$/.test(contractNumber)) {
+            errors.push('Номер договора должен быть в формате XXX-XXXX');
+            var noEl = document.getElementById('contract-contractNumber');
+            if (noEl) {
+                noEl.classList.remove('border-emerald-300', 'bg-emerald-50');
+                noEl.classList.add('border-red-400', 'bg-red-50');
+            }
+        }
+
+        if (strictMode && errors.length) {
+            var box = document.getElementById('grant-contract-validation-errors');
+            if (box) {
+                box.classList.remove('hidden');
+                box.innerHTML = errors.map(function (e) {
+                    return '<div>• ' + e + '</div>';
+                }).join('');
+            }
+        }
+
+        return { ok: errors.length === 0, errors: errors };
+    }
+
+    function getGrantContractBodyHtml(fields) {
+        var esc = window.sanitizeText || function (v) { return String(v == null ? '' : v); };
+        var get = function (k) { return esc(fields[k] || ''); };
+        var val = function (k, fallback) {
+            var x = get(k);
+            return x || (fallback || '____________________________');
+        };
+
+        return '' +
+            '<h1 style="text-align:center;font-size:20px;margin:0 0 10px 0;">ШАРТНОМА ДАР БОРАИ ГРАНТ № ' + val('contractNumber', '___-____') + '</h1>' +
+            '<h3 style="margin:18px 0 8px 0;">I. МАЪЛУМОТИ УМУМӢ ВА ТЕХНИКИИ ГРАНТ</h3>' +
+            '<p><b>Идентификатори грант:</b> ' + val('grantIdentifier') + '</p>' +
+            '<p><b>Рақами гранти аз ҷониби кумита тасдиқшуда:</b> ' + val('committeeGrantNumber') + '</p>' +
+            '<p><b>Санаи тасдиқ:</b> ' + val('approvalDate') + '</p>' +
+            '<p><b>Номи лоиҳа:</b> ' + val('projectName') + '</p>' +
+            '<p><b>Маблағи грант:</b> ' + val('grantAmount') + ' (' + val('grantAmountWords', 'маблағ бо ҳарфҳо') + ') сомонӣ</p>' +
+            '<p><b>Муассисаи ташкилкунанда:</b> «' + val('organizerName') + '»</p>' +
+
+            '<h3 style="margin:18px 0 8px 0;">II. МАЪЛУМОТ ДАР БОРАИ ТАРАФҲО</h3>' +
+            '<p><b>1. ГРАНТГИРАНДА:</b></p>' +
+            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<li><b>Вазъи ҳуқуқӣ / Ному насаби баҳрагир:</b> ' + val('beneficiaryStatusOrName') + '</li>' +
+            '<li><b>Номи ҳуқуқӣ:</b> ' + val('beneficiaryLegalName') + '</li>' +
+            '<li><b>Суроғаи ҷойи бақайдгирӣ:</b> ' + val('beneficiaryRegAddress') + '</li>' +
+            '<li><b>Суроғаи ҷойи татбиқи лоиҳа:</b> ' + val('beneficiaryProjectAddress') + '</li>' +
+            '<li><b>Телефон:</b> ' + val('beneficiaryPhone') + '</li>' +
+            '<li><b>E-mail:</b> ' + val('beneficiaryEmail') + '</li>' +
+            '</ul>' +
+
+            '<p><b>2. ГРАНТДИҲАНДА (Намояндаи ваколатдор):</b></p>' +
+            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<li><b>Ному насаб:</b> ' + val('donorRepName') + '</li>' +
+            '<li><b>Вазифа:</b> ' + val('donorRepPosition') + '</li>' +
+            '<li><b>Суроға:</b> ' + val('donorAddress') + '</li>' +
+            '<li><b>Телефон:</b> ' + val('donorPhone') + '</li>' +
+            '<li><b>E-mail:</b> ' + val('donorEmail') + '</li>' +
+            '</ul>' +
+
+            '<h3 style="margin:18px 0 8px 0;">III. МАТНИ СОЗИШНОМА</h3>' +
+            '<p>Созишномаи мазкур байни Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон / Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ, ки аз ҷониби <b>' + val('donorEntityForText') + '</b>, минбаъд «Грантдиҳанда» номида мешавад ва <b>' + val('granteeEntityForText') + '</b>, минбаъд «Грантгир» номида мешавад, баста шудааст.</p>' +
+            '<p>Тарафҳо ба таври зайл ба созиш расиданд:</p>' +
+            '<h4 style="margin:12px 0 6px 0;">1. МАБЛАҒГУЗОРӢ</h4>' +
+            '<p>1.1. Грантгир дар доираи Лоиҳа барои гирифтани грант ба маблағи <b>' + val('grantAmount') + ' (' + val('grantAmountWords', 'маблағ бо ҳарфҳо') + ') сомонӣ</b> дархост пешниҳод кардааст.</p>' +
+            '<p>1.2. Ӯҳдадориҳо ва масъулияти Грантдиҳанда тибқи Шартномаи мазкур танҳо бо пардохти Грант маҳдуд аст.</p>' +
+            '<h4 style="margin:12px 0 6px 0;">2. ИСТИФОДАИ МАБЛАҒГУЗОРӢ</h4>' +
+            '<p>2.1. Маблағгузорӣ аз ҷониби Грантгир барои харидани молҳо/таҷҳизот/хизматрасонӣ истифода мешавад. Дигар харидҳо бе розигии пешакии хаттии Грантдиҳанда манъ аст.</p>' +
+            '<h4 style="margin:12px 0 6px 0;">3. ТАРТИБИ ПАРДОХТИ ГРАНТ</h4>' +
+            '<p>3.1. Грантгиранда бояд дар давоми 10 рӯз пас аз имзои Шартномаи грантӣ аз ҷониби ҳарду тараф маблағҳои грантиро гирад.</p>' +
+            '<p>3.2. Грант мустақиман ба суратҳисоби бонкии Грантгиранда пардохт карда мешавад:</p>' +
+            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<li><b>Номи бонк:</b> ' + val('bankName') + '</li>' +
+            '<li><b>Суратҳисоби ҷорӣ:</b> ' + val('currentAccount') + '</li>' +
+            '<li><b>Суратҳисоби муросилотӣ:</b> ' + val('correspondentAccount') + '</li>' +
+            '<li><b>БИК:</b> ' + val('bik') + '</li>' +
+            '</ul>' +
+            '<p>3.3. Интиқоли маблағҳои грантӣ ба Грантгиранда бо пули миллӣ - сомонӣ сурат мегирад.</p>' +
+
+            '<h4 style="margin:12px 0 6px 0;">4. ӮҲДАДОРИҲОИ ТАРАФҲО</h4>' +
+            '<p><b>4.1. Грантгиранда ӯҳдадор аст:</b></p>' +
+            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<li>а) Лоиҳаро дар мутобиқат бо шартҳои Шартномаи мазкур самаранок амалӣ намояд.</li>' +
+            '<li>б) Танҳо маҳсулот ва хизматрасониҳоеро харидорӣ намояд, ки дар нақшаҳои соҳибкорӣ нишон дода шудаанд.</li>' +
+            '<li>в) Нафурӯшад, интиқол надиҳад ва ба шахси сеюм иҷозат надиҳад, ки ашёи бо маблағҳои грантӣ харидашударо истифода барад.</li>' +
+            '<li>г) Ҳама намуди маълумоти заруриро оид ба татбиқи лоиҳа пешниҳод намояд.</li>' +
+            '<li>д) Харидҳоро бо иштироки намояндаи Грантдиҳанда анҷом диҳад.</li>' +
+            '</ul>' +
+            '<p><b>4.2. Грантдиҳанда ӯҳдадор аст:</b></p>' +
+            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<li>а) Пардохтҳоро сари вақт анҷом диҳад.</li>' +
+            '<li>б) Дар доираи салоҳияти худ ба Грантгир барои татбиқи бомуваффақияти лоиҳа кӯмак расонад.</li>' +
+            '</ul>' +
+
+            '<h4 style="margin:12px 0 6px 0;">5. ТАРТИБИ ВОРИД НАМУДАНИ ТАҒЙИРОТ</h4>' +
+            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<li>а) Ҳама гуна дархост оид ба тағйир додани Созишномаи мазкур бояд дар шакли хаттӣ пешниҳод карда шавад.</li>' +
+            '<li>б) Тарафи дигар дар давоми 20 рӯзи корӣ ҷавоби худро пешниҳод менамояд.</li>' +
+            '<li>в) Ҳангоми тасдиқ, замимаи дахлдор тартиб дода ва имзо карда мешавад.</li>' +
+            '</ul>' +
+
+            '<h3 style="margin:18px 0 8px 0;">IV. ИМЗОҲОИ ТАРАФҲО</h3>' +
+            '<p><b>ГРАНТДИҲАНДА</b>: Имзо: _________________________</p>' +
+            '<p>Сана: ' + val('signDateDonor', '________________') + '</p>' +
+            '<p><i>(ҷойи мӯҳр)</i></p>' +
+            '<p><b>ГРАНТГИРАНДА</b>: Имзо: _________________________</p>' +
+            '<p>Сана: ' + val('signDateBeneficiary', '________________') + '</p>' +
+            '<p><i>(ҷойи мӯҳр)</i></p>';
+    }
+
+    function openGrantContractPreviewWindow(fields, title, autoPrint, showPdfHint) {
+        var bodyHtml = getGrantContractBodyHtml(fields);
+        var popup = window.open('', '_blank');
+        if (!popup) {
+            alert('Поп-ап баста аст. / Всплывающее окно заблокировано.');
+            return;
+        }
+
+        popup.document.open();
+        popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + (title || 'Grant Contract Preview') + '</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111;line-height:1.45}h1,h2,h3{page-break-after:avoid} .hint{font-size:12px;color:#555;margin-bottom:12px;padding:8px;border:1px dashed #ccc;border-radius:8px;background:#fafafa} @media print {.hint{display:none}}</style></head><body>' + (showPdfHint ? '<div class="hint">Для экспорта в PDF выберите в окне печати: Save as PDF / Сохранить как PDF.</div>' : '') + bodyHtml + '</body></html>');
+        popup.document.close();
+
+        if (autoPrint) {
+            popup.focus();
+            setTimeout(function () { popup.print(); }, 120);
+        }
+    }
+
+    function saveGrantContractDraftFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) return;
+        var app = window.getApp(id);
+        if (!app) return;
+        if (!(app.status === 'approved' && getActiveRoleContext() === 'facilitator')) {
+            alert('Сохранение доступно только Фасилитатору в approved.');
+            return;
+        }
+
+        var fields = collectGrantContractFieldsFromForm();
+        var result = validateGrantContractFields(fields, false);
+        if (!result.ok) {
+            alert('Черновик сохранен, но часть обязательных полей не заполнена. Их можно заполнить позже.');
+        }
+        if (typeof window.registerGrantContractDraft === 'function') {
+            window.registerGrantContractDraft(app, {
+                fields: fields,
+                updatedByRole: 'Фасилитатор',
+                updatedByName: 'Фасилитатор'
+            });
+        }
+        window.addLog(app, 'Фасилитатор', 'Черновик договора сохранен', 'Сохранен черновик договора', 'teal', 'file-edit');
+        renderGrantContractDraftPanel(app);
+        window.renderAllCards();
+    }
+
+    function previewGrantContractDraftFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) return;
+        var app = window.getApp(id);
+        if (!app) return;
+        var fields = collectGrantContractFieldsFromForm();
+        var result = validateGrantContractFields(fields, true);
+        if (!result.ok) {
+            alert('Заполните обязательные поля договора перед предпросмотром.');
+            return;
+        }
+        openGrantContractPreviewWindow(fields, 'Демо договор', false, false);
+        window.addLog(app, 'Фасилитатор', 'Открыт предпросмотр договора', 'Открыт предпросмотр договора', 'slate', 'eye');
+    }
+
+    function printGrantContractDraftFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) return;
+        var app = window.getApp(id);
+        if (!app) return;
+        var fields = collectGrantContractFieldsFromForm();
+        var result = validateGrantContractFields(fields, true);
+        if (!result.ok) {
+            alert('Заполните обязательные поля договора перед печатью.');
+            return;
+        }
+        openGrantContractPreviewWindow(fields, 'Печать договора', true, false);
+        window.addLog(app, 'Фасилитатор', 'Договор отправлен на печать', 'Договор отправлен на печать', 'blue', 'printer');
+    }
+
+    function exportGrantContractPdfFromModal() {
+        var id = window.currentOpenedAppId || window.currentApprovedAppId;
+        if (!id) return;
+        var app = window.getApp(id);
+        if (!app) return;
+        var fields = collectGrantContractFieldsFromForm();
+        var result = validateGrantContractFields(fields, true);
+        if (!result.ok) {
+            alert('Заполните обязательные поля договора перед экспортом PDF.');
+            return;
+        }
+        openGrantContractPreviewWindow(fields, 'Экспорт договора в PDF', true, true);
+        window.addLog(app, 'Фасилитатор', 'Договор экспортирован в PDF (через печать)', 'Договор экспортирован в PDF (через печать)', 'indigo', 'file-down');
     }
 
     function openGrantAgreementPicker() {
@@ -1557,7 +1942,11 @@
         downloadCurrentPhotoPackFromModal,
         openGrantAgreementPicker,
         uploadGrantAgreementFromModal,
-        downloadCurrentGrantAgreementFromModal
+        downloadCurrentGrantAgreementFromModal,
+        saveGrantContractDraftFromModal,
+        previewGrantContractDraftFromModal,
+        printGrantContractDraftFromModal,
+        exportGrantContractPdfFromModal
     };
 
     // Legacy compatibility while migrating code out of grant.html
@@ -1581,4 +1970,8 @@
     window.openGrantAgreementPicker = openGrantAgreementPicker;
     window.uploadGrantAgreementFromModal = uploadGrantAgreementFromModal;
     window.downloadCurrentGrantAgreementFromModal = downloadCurrentGrantAgreementFromModal;
+    window.saveGrantContractDraftFromModal = saveGrantContractDraftFromModal;
+    window.previewGrantContractDraftFromModal = previewGrantContractDraftFromModal;
+    window.printGrantContractDraftFromModal = printGrantContractDraftFromModal;
+    window.exportGrantContractPdfFromModal = exportGrantContractPdfFromModal;
 })();
