@@ -251,7 +251,6 @@
             contractDateYear: headerDate.year,
             contractCity: 'Душанбе',
             grantAmount: grantAmount,
-            grantAmountWords: '',
             donorEntityForText: '',
             beneficiaryStatusOrName: String((app && app.name) || db['full-name'] || ''),
             granteeEntityForText: String((app && app.name) || db['full-name'] || ''),
@@ -395,7 +394,7 @@
     function collectGrantContractFieldsFromForm() {
         var keys = [
             'contractNumber', 'approvalDate', 'contractDateDay', 'contractDateMonth', 'contractDateYear', 'contractCity',
-            'grantAmount', 'grantAmountWords', 'beneficiaryStatusOrName', 'beneficiaryLegalName', 'beneficiaryRegAddress',
+            'grantAmount', 'beneficiaryStatusOrName', 'beneficiaryLegalName', 'beneficiaryRegAddress',
             'donorEntityForText', 'granteeEntityForText',
             'beneficiaryProjectAddress', 'beneficiaryPhone', 'beneficiaryEmail', 'donorRepName', 'donorRepPosition',
             'donorAddress', 'donorPhone', 'donorEmail', 'bankName', 'currentAccount', 'correspondentAccount', 'bik'
@@ -500,7 +499,7 @@
         }
 
         var keys = [
-            'contractNumber', 'contractDateDay', 'contractDateMonth', 'contractDateYear', 'contractCity', 'grantAmount', 'grantAmountWords',
+            'contractNumber', 'contractDateDay', 'contractDateMonth', 'contractDateYear', 'contractCity', 'grantAmount',
             'beneficiaryStatusOrName', 'beneficiaryRegAddress', 'beneficiaryPhone',
             'donorRepName', 'donorRepPosition', 'donorEntityForText', 'granteeEntityForText'
         ];
@@ -526,7 +525,6 @@
             { key: 'donorEntityForText', label: 'Грантдиҳанда (в тексте)' },
             { key: 'granteeEntityForText', label: 'Грантгир (в тексте)' },
             { key: 'grantAmount', label: 'Сумма гранта' },
-            { key: 'grantAmountWords', label: 'Сумма гранта словами' },
             { key: 'beneficiaryStatusOrName', label: 'Грантополучатель' },
             { key: 'beneficiaryRegAddress', label: 'Адрес регистрации' },
             { key: 'beneficiaryPhone', label: 'Телефон грантополучателя' },
@@ -607,7 +605,7 @@
 
             '<section class="paper-page page-2">' +
             '<h3>III. МАБЛАҒГУЗОРӢ</h3>' +
-            '<p>3.1. Грантгир дар доираи Лоиҳа барои гирифтани грант ба маблағи ' + lineValue('grantAmountWords', ' ') + ' (' + val('grantAmount') + ') сомонӣ (минбаъд – Грант) дархост пешниҳод кардааст.</p>' +
+            '<p>3.1. Грантгир дар доираи Лоиҳа барои гирифтани грант ба маблағи ' + lineValue('grantAmount', ' ') + ' сомонӣ (минбаъд – Грант) дархост пешниҳод кардааст.</p>' +
             '<p>3.2. Ӯҳдадориҳо ва масъулияти Грантдиҳанда тибқи Шартномаи мазкур танҳо бо пардохти Грант маҳдуд аст. Грантгир масъулияти пурраи молиявиро барои татбиқи Лоиҳа ба дӯш мегирад.</p>' +
             '<h3>IV. ИСТИФОДАИ МАБЛАҒГУЗОРӢ</h3>' +
             '<p>4.1. Маблағгузорӣ аз ҷониби Грантгир барои харидани молҳо / таҷҳизот / хизматрасонӣ / гардиши пули нақд,<br>ки дар Нақшаи соҳибкорӣ тавсиф шудааст, истифода мешавад. Дигар харидҳо бе розигии пешакии хаттии Грантдиҳанда манъ аст.</p>' +
