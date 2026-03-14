@@ -240,6 +240,7 @@
         var db = ctx.db;
         var appDate = String((app && app.date) || '').split(',')[0] || '';
         var grantAmount = String((app && app.amount) || '').trim();
+        var grantAmountWords = numberToTajikWords(grantAmount);
         var contractNoDefault = getSystemGeneratedContractNumber(app, appDate, '');
         var headerDate = getContractHeaderDateParts(appDate);
 
@@ -251,6 +252,7 @@
             contractDateYear: headerDate.year,
             contractCity: 'Душанбе',
             grantAmount: grantAmount,
+            grantAmountWords: grantAmountWords,
             donorEntityForText: '',
             beneficiaryStatusOrName: String((app && app.name) || db['full-name'] || ''),
             granteeEntityForText: String((app && app.name) || db['full-name'] || ''),
@@ -312,6 +314,18 @@
                 el.classList.add('bg-emerald-50');
             }
         });
+
+        var wordsInput = document.getElementById('contract-grantAmountWords');
+        var amountInput = document.getElementById('contract-grantAmount');
+        if (wordsInput && amountInput) {
+            var sourceAmount = String(amountInput.value || '').trim();
+            var currentWords = String(wordsInput.value || '').trim();
+            var autoWords = numberToTajikWords(sourceAmount);
+            if (!currentWords || currentWords === wordsInput.getAttribute('data-auto-generated')) {
+                wordsInput.value = autoWords;
+            }
+            wordsInput.setAttribute('data-auto-generated', autoWords);
+        }
 
         var draft = typeof window.ensureGrantContractDraft === 'function' ? window.ensureGrantContractDraft(app) : null;
         if (draft && draft.updatedAt) {
@@ -394,7 +408,7 @@
     function collectGrantContractFieldsFromForm() {
         var keys = [
             'contractNumber', 'approvalDate', 'contractDateDay', 'contractDateMonth', 'contractDateYear', 'contractCity',
-            'grantAmount', 'beneficiaryStatusOrName', 'beneficiaryLegalName', 'beneficiaryRegAddress',
+            'grantAmount', 'grantAmountWords', 'beneficiaryStatusOrName', 'beneficiaryLegalName', 'beneficiaryRegAddress',
             'donorEntityForText', 'granteeEntityForText',
             'beneficiaryProjectAddress', 'beneficiaryPhone', 'beneficiaryEmail', 'donorRepName', 'donorRepPosition',
             'donorAddress', 'donorPhone', 'donorEmail', 'bankName', 'currentAccount', 'correspondentAccount', 'bik'
@@ -409,7 +423,12 @@
         var id = window.currentOpenedAppId || window.currentApprovedAppId;
         var app = id ? window.getApp(id) : null;
         out.contractNumber = getSystemGeneratedContractNumber(app, out.approvalDate, out.contractNumber);
-        if (app) out.grantAmount = String(app.amount || '').trim();
+        if (app) {
+            out.grantAmount = String(app.amount || '').trim();
+            if (!String(out.grantAmountWords || '').trim()) {
+                out.grantAmountWords = numberToTajikWords(out.grantAmount);
+            }
+        }
         return out;
     }
 
@@ -421,10 +440,59 @@
             'contractDateYear',
             'contractCity',
             'grantAmount',
+            'grantAmountWords',
             'beneficiaryStatusOrName',
             'beneficiaryRegAddress',
             'beneficiaryPhone'
         ];
+    }
+
+    function numberToTajikWords(rawAmount) {
+        var digits = String(rawAmount || '').replace(/\s+/g, '').replace(/[^\d]/g, '');
+        if (!digits) return '';
+        var n = parseInt(digits, 10);
+        if (!isFinite(n)) return '';
+        if (n === 0) return 'сифр';
+
+        var ones = ['', 'як', 'ду', 'се', 'чор', 'панҷ', 'шаш', 'ҳафт', 'ҳашт', 'нӯҳ'];
+        var teens = ['даҳ', 'ёздаҳ', 'дувоздаҳ', 'сездаҳ', 'чордаҳ', 'понздаҳ', 'шонздаҳ', 'ҳабдаҳ', 'ҳаждаҳ', 'нуздаҳ'];
+        var tens = ['', '', 'бист', 'сӣ', 'чил', 'панҷоҳ', 'шаст', 'ҳафтод', 'ҳаштод', 'навад'];
+        var hundreds = ['', 'яксад', 'дусад', 'сесад', 'чорсад', 'панҷсад', 'шашсад', 'ҳафтсад', 'ҳаштсад', 'нӯҳсад'];
+        var scales = [
+            { value: 1000000000, label: 'миллиард' },
+            { value: 1000000, label: 'миллион' },
+            { value: 1000, label: 'ҳазор' }
+        ];
+
+        function triadToWords(num) {
+            var out = [];
+            var h = Math.floor(num / 100);
+            var rest = num % 100;
+            if (h) out.push(hundreds[h]);
+            if (rest >= 10 && rest <= 19) {
+                out.push(teens[rest - 10]);
+            } else {
+                var t = Math.floor(rest / 10);
+                var o = rest % 10;
+                if (t) out.push(tens[t]);
+                if (o) out.push(ones[o]);
+            }
+            return out.filter(Boolean).join(' ');
+        }
+
+        var words = [];
+        var value = n;
+        scales.forEach(function (s) {
+            if (value >= s.value) {
+                var chunk = Math.floor(value / s.value);
+                value = value % s.value;
+                var chunkWords = triadToWords(chunk);
+                if (chunkWords) words.push(chunkWords + ' ' + s.label);
+            }
+        });
+
+        if (value > 0) words.push(triadToWords(value));
+        return words.join(' ').replace(/\s+/g, ' ').trim();
     }
 
     function getContractHeaderDateParts(rawDate) {
@@ -499,7 +567,7 @@
         }
 
         var keys = [
-            'contractNumber', 'contractDateDay', 'contractDateMonth', 'contractDateYear', 'contractCity', 'grantAmount',
+            'contractNumber', 'contractDateDay', 'contractDateMonth', 'contractDateYear', 'contractCity', 'grantAmount', 'grantAmountWords',
             'beneficiaryStatusOrName', 'beneficiaryRegAddress', 'beneficiaryPhone',
             'donorRepName', 'donorRepPosition', 'donorEntityForText', 'granteeEntityForText'
         ];
@@ -525,6 +593,7 @@
             { key: 'donorEntityForText', label: 'Грантдиҳанда (в тексте)' },
             { key: 'granteeEntityForText', label: 'Грантгир (в тексте)' },
             { key: 'grantAmount', label: 'Сумма гранта' },
+            { key: 'grantAmountWords', label: 'Сумма прописью (тадж.)' },
             { key: 'beneficiaryStatusOrName', label: 'Грантополучатель' },
             { key: 'beneficiaryRegAddress', label: 'Адрес регистрации' },
             { key: 'beneficiaryPhone', label: 'Телефон грантополучателя' },
@@ -576,7 +645,8 @@
         };
         var lineValue = function (k, fallback, extraClass) {
             var x = get(k);
-            var cls = 'line-fill' + (extraClass ? (' ' + extraClass) : '');
+            var hasValue = !!String(x || '').trim();
+            var cls = 'line-fill' + (hasValue ? '' : ' line-empty') + (extraClass ? (' ' + extraClass) : '');
             return '<span class="' + cls + '">' + (x || (fallback || '')) + '</span>';
         };
         var lineLabel = function (label, key) {
@@ -589,7 +659,7 @@
             '<h1 class="contract-head-title">ШАРТНОМА ДАР БОРАИ ГРАНТ № ' + lineValue('contractNumber', ' ', 'lf-contract-no') + '</h1>' +
             '<p class="contract-place-date"><span class="meta-left">Аз «' + lineValue('contractDateDay', '__', 'lf-day') + '» ' + lineValue('contractDateMonth', ' ', 'lf-month') + ' соли ' + lineValue('contractDateYear', '____', 'lf-year') + '</span><span class="meta-right">ш. ' + lineValue('contractCity', 'Душанбе', 'lf-city') + '</span></p>' +
             '<h3 class="contract-first-section-title">I. МАВЗӮИ ШАРТНОМА</h3>' +
-            '<p>Шартномаи мазкур байни Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон / Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ,<br>ки аз ҷониби <b>' + val('donorEntityForText') + '</b>, минбаъд «Грантдиҳанда» номида мешавад ва <b>' + val('granteeEntityForText') + '</b>, минбаъд «Грантгир» номида мешавад, дар алоҳидагӣ «Тараф» ё якҷоя «Тарафҳо» дар доираи «Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ», минбаъд «Лоиҳа» номида мешаванд, амал мекунанд, ба мазмуни зерин Шартномаи мазкурро ба имзо расониданд:</p>' +
+            '<p>Шартномаи мазкур байни Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон / Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ, ки аз ҷониби <b>' + val('donorEntityForText') + '</b>, минбаъд «Грантдиҳанда» номида мешавад ва <b>' + val('granteeEntityForText') + '</b>, минбаъд «Грантгир» номида мешавад, дар алоҳидагӣ «Тараф» ё якҷоя «Тарафҳо» номида мешаванд, дар доираи «Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ», ки минбаъд «Лоиҳа» номида мешавад, амал мекунанд, ба мазмуни зерин ба имзо расониданд:</p>' +
             '<h3>II. ӮҲДАДОРИҲОИ ТАРАФҲО</h3>' +
             '<p><b>2.1. Грантгиранда ӯҳдадор аст:</b></p>' +
             '<p class="subpoint">а) Лоиҳаро дар мутобиқат бо шартҳои Шартномаи мазкур бомулоҳиза ва самаранок амалӣ намояд.</p>' +
@@ -605,10 +675,10 @@
 
             '<section class="paper-page page-2">' +
             '<h3>III. МАБЛАҒГУЗОРӢ</h3>' +
-            '<p>3.1. Грантгир дар доираи Лоиҳа барои гирифтани грант ба маблағи ' + lineValue('grantAmount', ' ') + ' сомонӣ (минбаъд – Грант) дархост пешниҳод кардааст.</p>' +
+            '<p>3.1. Грантгир дар доираи Лоиҳа барои гирифтани грант ба маблағи ' + lineValue('grantAmount', ' ') + ' (' + lineValue('grantAmountWords', ' ') + ') сомонӣ (минбаъд – Грант) дархост пешниҳод кардааст.</p>' +
             '<p>3.2. Ӯҳдадориҳо ва масъулияти Грантдиҳанда тибқи Шартномаи мазкур танҳо бо пардохти Грант маҳдуд аст. Грантгир масъулияти пурраи молиявиро барои татбиқи Лоиҳа ба дӯш мегирад.</p>' +
             '<h3>IV. ИСТИФОДАИ МАБЛАҒГУЗОРӢ</h3>' +
-            '<p>4.1. Маблағгузорӣ аз ҷониби Грантгир барои харидани молҳо / таҷҳизот / хизматрасонӣ / гардиши пули нақд,<br>ки дар Нақшаи соҳибкорӣ тавсиф шудааст, истифода мешавад. Дигар харидҳо бе розигии пешакии хаттии Грантдиҳанда манъ аст.</p>' +
+            '<p>4.1. Маблағгузорӣ аз ҷониби Грантгир барои харидани молҳо / таҷҳизот / хизматрасонӣ / гардиши пули нақд, ки дар Нақшаи соҳибкорӣ тавсиф шудааст, истифода мешавад. Дигар харидҳо бе розигии пешакии хаттии Грантдиҳанда манъ аст.</p>' +
             '<h3>V. ТАРТИБИ ПАРДОХТИ ГРАНТ</h3>' +
             '<p>5.1. Грантгиранда бояд дар давоми 10 рӯз пас аз имзои Шартномаи грантӣ аз ҷониби ҳарду тараф маблағҳои грантиро гирад.</p>' +
             '<p>5.2. Грант мустақиман ба суратҳисоби бонкии Грантгиранда пардохт карда мешавад:</p>' +
@@ -690,13 +760,12 @@
         }
 
         var previewCss = '' +
-            '@page{size:A4;margin:18mm 16mm 18mm 20mm}' +
+            '@page{size:A4;margin:15mm 16mm 18mm 20mm}' +
             'html,body{margin:0;padding:0;color:#111}' +
             'body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.32;background:#e5e7eb}' +
             '.hint{font-size:10pt;color:#555;margin:12px auto 10px;padding:7px 10px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;max-width:210mm}' +
             '.contract-doc{max-width:220mm;margin:0 auto;padding:10mm 0 14mm}' +
-            '.paper-page{position:relative;box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto 10mm;padding:18mm 16mm 18mm 20mm;background:#fff;border:1px solid #d1d5db;box-shadow:0 10px 30px rgba(15,23,42,.16);page-break-inside:avoid}' +
-            '.page-1{padding-top:1.8mm}' +
+            '.paper-page{position:relative;box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto 10mm;padding:15mm 16mm 18mm 20mm;background:#fff;border:1px solid #d1d5db;box-shadow:0 10px 30px rgba(15,23,42,.16);page-break-inside:avoid}' +
             '.paper-page+.paper-page{page-break-before:always}' +
             '.contract-doc .contract-head-title{font-size:15pt;text-align:center;margin:0 0 7.6mm 0;line-height:1.2;font-weight:700}' +
             '.contract-doc .contract-place-date{margin:0 0 7mm 0;display:flex;align-items:flex-end;justify-content:space-between;gap:6mm}' +
@@ -708,7 +777,8 @@
             '.contract-doc ul{margin:2mm 0 4mm 7mm;padding:0}' +
             '.contract-doc li{margin:0 0 2.3mm 0}' +
             '.line-list{list-style:disc}' +
-            '.line-fill{display:inline-block;border-bottom:0.7pt solid #111;line-height:1.05;vertical-align:baseline;word-break:break-word}' +
+            '.line-fill{display:inline-block;line-height:1.05;vertical-align:baseline;word-break:break-word}' +
+            '.line-fill.line-empty{border-bottom:0.7pt solid #111}' +
             '.lf-contract-no{min-width:40mm}.lf-day{min-width:11mm;text-align:center}.lf-month{min-width:42mm}.lf-year{min-width:18mm;text-align:center}.lf-city{min-width:38mm}' +
             '.signature-gap{margin-top:10mm}' +
             '.page-no{position:absolute;right:0;bottom:0;font-size:10pt;color:#555}' +
