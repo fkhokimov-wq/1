@@ -2,6 +2,14 @@
     window.AppFeatures = window.AppFeatures || {};
     if (window.AppFeatures.piu) return;
 
+    function notifyMessage(kind, message, title) {
+        if (window.AppNotify && typeof window.AppNotify.toast === 'function') {
+            window.AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     window.currentPiuAppId = null;
 
     function loadPiuForm(id) {
@@ -135,7 +143,7 @@
             if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
                 window.AppNotify.errorByKey('validation.error');
             } else {
-                alert('Қарорро интихоб кунед / Выберите решение');
+                notifyMessage('error', 'Қарорро интихоб кунед / Выберите решение');
             }
             return;
         }
@@ -143,7 +151,7 @@
             if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
                 window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
             } else {
-                alert('Лутфан сабаби баргардониданро нависед! / Укажите причину возврата!');
+                notifyMessage('warning', 'Лутфан сабаби баргардониданро нависед! / Укажите причину возврата!');
             }
             return;
         }

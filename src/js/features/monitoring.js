@@ -2,6 +2,14 @@
     window.AppFeatures = window.AppFeatures || {};
     if (window.AppFeatures.monitoring) return;
 
+    function notifyMessage(kind, message, title) {
+        if (window.AppNotify && typeof window.AppNotify.toast === 'function') {
+            window.AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     function generateMonitoringFor(appId, startDateStr) {
         if (!window.state) return;
         if (!window.state.monitoring) window.state.monitoring = {};
@@ -70,7 +78,7 @@
         const noteVal = noteInput ? noteInput.value : '';
 
         if (!eqVal || !bizVal || !incVal || !ecoVal) {
-            alert('Лутфан ҳамаи майдонҳои ҳатмиро пур кунед! / Заполните все обязательные поля!');
+            notifyMessage('warning', 'Лутфан ҳамаи майдонҳои ҳатмиро пур кунед! / Заполните все обязательные поля!');
             return;
         }
 
@@ -92,7 +100,7 @@
                 monData[visitIndex + 1].daysLeft = 90;
             }
             if (eqVal === 'sold') {
-                alert('Огоҳинома ба Администратор фиристода шуд! (Таҷҳизот фурӯхта шудааст)\nУведомление отправлено Администратору! (Оборудование продано)');
+                notifyMessage('warning', 'Огоҳинома ба Администратор фиристода шуд! (Таҷҳизот фурӯхта шудааст) / Уведомление отправлено Администратору! (Оборудование продано)');
             }
             renderMonitoringList();
         }

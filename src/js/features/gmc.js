@@ -2,6 +2,14 @@
     window.AppFeatures = window.AppFeatures || {};
     if (window.AppFeatures.gmc) return;
 
+    function notifyMessage(kind, message, title) {
+        if (window.AppNotify && typeof window.AppNotify.toast === 'function') {
+            window.AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     window.currentGmcAppId = null;
     window.currentGmcChoice = null;
 
@@ -218,7 +226,11 @@
 
     function saveGmcDecision() {
         if (!window.currentGmcChoice) {
-            alert('Қарорро интихоб кунед / Выберите решение');
+            if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
+                window.AppNotify.errorByKey('validation.error');
+            } else {
+                notifyMessage('error', 'Қарорро интихоб кунед / Выберите решение');
+            }
             return;
         }
 
@@ -240,22 +252,26 @@
         if (window.currentGmcChoice === 'ok') {
             app.status = 'piu_review';
             window.addLog(app, 'ШИГ / КУГ', 'Тасдиқ шуд, ба ГТЛ равон шуд', 'Одобрено, направлено в ГРП', 'emerald', 'check');
-            alert('Дархост тасдиқ шуд! Ҳуҷҷат бетағйир ба ГТЛ интиқол ёфт.\nЗаявка одобрена! Документ в неизменном состоянии передан в ГРП.');
+            notifyMessage('success', 'Дархост тасдиқ шуд! Ҳуҷҷат бетағйир ба ГТЛ интиқол ёфт. / Заявка одобрена! Документ в неизменном состоянии передан в ГРП.');
         } else if (window.currentGmcChoice === 'rev') {
             app.revisionCount = (app.revisionCount || 0) + 1;
             if (app.revisionCount >= 3) {
                 lockApplicationForThreeMonths(app, comment);
                 const untilRu = typeof window.formatIsoDateRu === 'function' ? window.formatIsoDateRu(app.postponedUntilISO) : app.postponedUntilISO;
-                alert('Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
+                if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
+                    window.AppNotify.warningByKey('deadline.unlockNotAvailableUntilDate', { date: untilRu });
+                } else {
+                    notifyMessage('warning', 'Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
+                }
             } else {
                 app.status = 'fac_revision';
                 window.addLog(app, 'ШИГ / КУГ', 'Барои такмил ба Фасилитатор баргашт (' + app.revisionCount + '/3)', 'Возвращено на доработку Фасилитатору (' + app.revisionCount + '/3)', 'amber', 'corner-down-left', comment);
-                alert('Дархост бо файлҳои эроддор барои такмил ба Фасилитатор фиристода шуд (Кӯшиши ' + app.revisionCount + ' аз 3).\nЗаявка с комментариями направлена на доработку Фасилитатору (Попытка ' + app.revisionCount + ' из 3).');
+                notifyMessage('warning', 'Дархост бо файлҳои эроддор барои такмил ба Фасилитатор фиристода шуд (Кӯшиши ' + app.revisionCount + ' аз 3). / Заявка с комментариями направлена на доработку Фасилитатору (Попытка ' + app.revisionCount + ' из 3).');
             }
         } else {
             app.status = 'rejected';
             window.addLog(app, 'ШИГ / КУГ', 'Дархост рад шуд', 'Заявка отклонена', 'red', 'x-circle', comment);
-            alert('Дархост рад карда шуд.\nЗаявка отклонена.');
+            notifyMessage('error', 'Дархост рад карда шуд. / Заявка отклонена.');
         }
 
         document.getElementById('gmc-evaluation-content').classList.add('hidden');
@@ -269,7 +285,11 @@
 
         var wordFileName = getGmcRevisionUploadFileName();
         if (!wordFileName) {
-            alert('Лутфан версияи нави Word-ҳуҷҷатро бор кунед.\nПожалуйста, загрузите новую версию Word документа.');
+            if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
+                window.AppNotify.errorByKey('validation.errorDetailed');
+            } else {
+                notifyMessage('error', 'Лутфан версияи нави Word-ҳуҷҷатро бор кунед. / Пожалуйста, загрузите новую версию Word документа.');
+            }
             return;
         }
 
@@ -313,7 +333,11 @@
         const commentEl = document.getElementById('gmc-return-comment');
         const comment = commentEl ? commentEl.value.trim() : '';
         if (!comment) {
-            alert('Лутфан эзоҳи бозгардониданро нависед!\nПожалуйста, укажите комментарий для возврата!');
+            if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
+                window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
+            } else {
+                notifyMessage('warning', 'Лутфан эзоҳи бозгардониданро нависед! / Пожалуйста, укажите комментарий для возврата!');
+            }
             return;
         }
 
@@ -325,12 +349,16 @@
         if (app.revisionCount >= 3) {
             lockApplicationForThreeMonths(app, comment);
             const untilRu = typeof window.formatIsoDateRu === 'function' ? window.formatIsoDateRu(app.postponedUntilISO) : app.postponedUntilISO;
-            alert('Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
+            if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
+                window.AppNotify.warningByKey('deadline.unlockNotAvailableUntilDate', { date: untilRu });
+            } else {
+                notifyMessage('warning', 'Лимит доработок исчерпан на 3-м неодобрении. Заявка заблокирована до ' + untilRu + '.');
+            }
         } else {
             app.status = 'fac_revision';
             var committeeCycle = fromCommittee && app.lastCommitteeReturn ? ' Комитет #' + app.lastCommitteeReturn.cycle : '';
             window.addLog(app, 'ШИГ / КУГ', 'Аз ГТЛ баргашт -> Ба Фасилитатор равон шуд (' + app.revisionCount + '/3)' + committeeCycle, 'Возврат из ГРП -> Направлено Фасилитатору (' + app.revisionCount + '/3)' + committeeCycle, 'amber', 'corner-down-left', comment);
-            alert('Дархост барои такмил ба Фасилитатор фиристода шуд (Кӯшиши ' + app.revisionCount + ' аз 3)!\nЗаявка отправлена Фасилитатору на доработку (Попытка ' + app.revisionCount + ' из 3)!');
+            notifyMessage('warning', 'Дархост барои такмил ба Фасилитатор фиристода шуд (Кӯшиши ' + app.revisionCount + ' аз 3)! / Заявка отправлена Фасилитатору на доработку (Попытка ' + app.revisionCount + ' из 3)!');
         }
         window.renderAllCards();
         document.getElementById('applicationModal').classList.add('hidden');
@@ -342,7 +370,7 @@
         app.status = 'gmc_ready_for_registry';
         app.date = window.getCurrentDateTime();
         window.addLog(app, 'ШИГ / КУГ', 'Барои реестри Комитет омода шуд', 'Заявка подготовлена для реестра Комитета', 'blue', 'list-checks');
-        alert('Дархост ба реестр илова карда шуд!\nЗаявка успешно добавлена в реестр для отправки в Комитет!');
+        notifyMessage('success', 'Дархост ба реестр илова карда шуд! / Заявка успешно добавлена в реестр для отправки в Комитет!');
         window.renderAllCards();
         document.getElementById('applicationModal').classList.add('hidden');
     }
@@ -382,7 +410,7 @@
 
     function openRegistryPreview() {
         if (!window.selectedForRegistry || window.selectedForRegistry.size === 0) {
-            alert('Ҳадди аққал як дархостро интихоб кунед! / Выберите хотя бы одну заявку!');
+            notifyMessage('warning', 'Ҳадди аққал як дархостро интихоб кунед! / Выберите хотя бы одну заявку!');
             return;
         }
 
@@ -445,7 +473,7 @@
             totalAmount: totalAmount
         });
 
-        alert('Реестр бомуваффақият ба Кумита фиристода шуд!\nРеестр успешно отправлен в Комитет!');
+        notifyMessage('success', 'Реестр бомуваффақият ба Кумита фиристода шуд! / Реестр успешно отправлен в Комитет!');
 
         window.selectedForRegistry.clear();
         document.getElementById('reg-sel-count').textContent = '0';

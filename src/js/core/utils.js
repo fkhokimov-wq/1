@@ -447,6 +447,14 @@
         confirmByKey: notifyConfirmByKey
     };
 
+    function notifyMessage(kind, message, title) {
+        if (AppNotify && typeof AppNotify.toast === 'function') {
+            AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     function addLog(app, actor, action, actionRu, color, icon, comment) {
         if (!app.auditLog) app.auditLog = [];
         app.auditLog.push({
@@ -602,13 +610,13 @@
     function downloadGrantAgreementFile(appId) {
         var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
         if (!app) {
-            alert('Заявка не найдена / Дархост ёфт нашуд');
+            notifyMessage('error', 'Заявка не найдена / Дархост ёфт нашуд');
             return;
         }
 
         var agreement = ensureGrantAgreement(app);
         if (!agreement || !agreement.uploaded || !agreement.fileName) {
-            alert('Подписанный договор еще не загружен / Шартномаи имзошуда ҳанӯз бор нашудааст');
+            notifyMessage('warning', 'Подписанный договор еще не загружен / Шартномаи имзошуда ҳанӯз бор нашудааст');
             return;
         }
 
@@ -650,7 +658,7 @@
     function downloadBusinessPlanFile(appId) {
         var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
         if (!app) {
-            alert('Заявка не найдена / Дархост ёфт нашуд');
+            notifyMessage('error', 'Заявка не найдена / Дархост ёфт нашуд');
             return;
         }
 
@@ -693,13 +701,13 @@
     function downloadBusinessPlanPdfFile(appId) {
         var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
         if (!app) {
-            alert('Заявка не найдена / Дархост ёфт нашуд');
+            notifyMessage('error', 'Заявка не найдена / Дархост ёфт нашуд');
             return;
         }
 
         var docs = ensureDocumentBundle(app);
         if (!docs.basePdf || !docs.basePdf.name) {
-            alert('PDF пока не загружен / PDF то ҳол бор нашудааст');
+            notifyMessage('warning', 'PDF пока не загружен / PDF то ҳол бор нашудааст');
             return;
         }
 
@@ -726,14 +734,14 @@
     function downloadBusinessPlanPhotoPack(appId) {
         var app = typeof appId === 'string' ? (window.getApp ? window.getApp(appId) : null) : appId;
         if (!app) {
-            alert('Заявка не найдена / Дархост ёфт нашуд');
+            notifyMessage('error', 'Заявка не найдена / Дархост ёфт нашуд');
             return;
         }
 
         var docs = ensureDocumentBundle(app);
         var photos = docs.basePhotos || [];
         if (!photos.length) {
-            alert('Фото-комплект пока не загружен / Маҷмӯи аксҳо то ҳол бор нашудааст');
+            notifyMessage('warning', 'Фото-комплект пока не загружен / Маҷмӯи аксҳо то ҳол бор нашудааст');
             return;
         }
 

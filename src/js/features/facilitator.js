@@ -2,6 +2,14 @@
     window.AppFeatures = window.AppFeatures || {};
     if (window.AppFeatures.facilitator) return;
 
+    function notifyMessage(kind, message, title) {
+        if (window.AppNotify && typeof window.AppNotify.toast === 'function') {
+            window.AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     function getSearchDatabase() {
         return window.beneficiarySearchDatabase || window.mockDatabase || {};
     }
@@ -268,7 +276,7 @@
 
         if (isRevision) {
             if (selectedWord.length === 0) {
-                alert('Барои такмил фақат Word версияи навро бор кунед.\nДля доработки загрузите новую Word версию бизнес-плана.');
+                notifyMessage('warning', 'Барои такмил фақат Word версияи навро бор кунед. / Для доработки загрузите новую Word версию бизнес-плана.');
                 return false;
             }
             return true;
@@ -279,15 +287,15 @@
         var photosCount = existing.photosCount > 0 ? existing.photosCount : selectedPhotos.length;
 
         if (!hasWord) {
-            alert('Лутфан Word файли бизнес-планро замима кунед.\nПожалуйста, приложите Word файл бизнес-плана.');
+            notifyMessage('warning', 'Лутфан Word файли бизнес-планро замима кунед. / Пожалуйста, приложите Word файл бизнес-плана.');
             return false;
         }
         if (!hasPdf) {
-            alert('Лутфан PDF файли бизнес-планро замима кунед.\nПожалуйста, приложите PDF файл бизнес-плана.');
+            notifyMessage('warning', 'Лутфан PDF файли бизнес-планро замима кунед. / Пожалуйста, приложите PDF файл бизнес-плана.');
             return false;
         }
         if (photosCount !== 4) {
-            alert('Бояд маҳз 4 сурат замима шавад.\nНеобходимо приложить ровно 4 фото.');
+            notifyMessage('warning', 'Бояд маҳз 4 сурат замима шавад. / Необходимо приложить ровно 4 фото.');
             return false;
         }
         return true;
@@ -598,7 +606,7 @@
             if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
                 window.AppNotify.warningByKey('deadline.unlockNotAvailableUntilDate', { date: untilRu });
             } else {
-                alert('Снятие блокировки пока недоступно. Срок блокировки до ' + untilRu + '.');
+                notifyMessage('warning', 'Снятие блокировки пока недоступно. Срок блокировки до ' + untilRu + '.');
             }
             return;
         }
@@ -635,7 +643,7 @@
         if (window.AppNotify && typeof window.AppNotify.successByKey === 'function') {
             window.AppNotify.successByKey('unlock.success');
         } else {
-            alert('Блокировка снята. Заявка переведена в режим редактирования.');
+            notifyMessage('success', 'Блокировка снята. Заявка переведена в режим редактирования.');
         }
         if (typeof window.renderAllCards === 'function') window.renderAllCards();
     }
@@ -659,7 +667,7 @@
             if (!input) return;
             input.addEventListener('change', function () {
                 if (input === facPhotoInput && input.files && input.files.length > 4) {
-                    alert('Мумкин аст танҳо 4 сурат замима шавад.\nМожно прикрепить только 4 фото.');
+                    notifyMessage('warning', 'Мумкин аст танҳо 4 сурат замима шавад. / Можно прикрепить только 4 фото.');
                     input.value = '';
                 }
                 var openedApp = window.getApp(window.currentOpenedAppId || document.getElementById('id-input').value);
@@ -857,7 +865,7 @@
         submitApplicationBtn.addEventListener('click', function () {
             if (!selectedBeneficiaryId) return;
             if (selectedHasHardDuplicate) {
-                alert('Эҷод блок шуд: такрор аз рӯи ИНН ё телефон ёфт шуд.\nСоздание заблокировано: найден дубль по ИНН или телефону.');
+                notifyMessage('error', 'Эҷод блок шуд: такрор аз рӯи ИНН ё телефон ёфт шуд. / Создание заблокировано: найден дубль по ИНН или телефону.');
                 return;
             }
             if (!validateTrainingSessionsForGrant(selectedBeneficiaryData || {})) {

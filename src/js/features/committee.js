@@ -2,6 +2,14 @@
     window.AppFeatures = window.AppFeatures || {};
     if (window.AppFeatures.committee) return;
 
+    function notifyMessage(kind, message, title) {
+        if (window.AppNotify && typeof window.AppNotify.toast === 'function') {
+            window.AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     window.currentComAppId = null;
     window.currentComChoice = null;
 
@@ -14,7 +22,7 @@
             window.downloadBusinessPlanFile(appId);
             return;
         }
-        alert('Функсияи боргирӣ дастрас нест. / Функция скачивания недоступна.');
+        notifyMessage('error', 'Функсияи боргирӣ дастрас нест. / Функция скачивания недоступна.');
     }
 
     function downloadCommitteePdf(appId) {
@@ -22,7 +30,7 @@
             window.downloadBusinessPlanPdfFile(appId);
             return;
         }
-        alert('Функсияи боргирии PDF дастрас нест. / Функция скачивания PDF недоступна.');
+        notifyMessage('error', 'Функсияи боргирии PDF дастрас нест. / Функция скачивания PDF недоступна.');
     }
 
     function downloadCommitteePhotos(appId) {
@@ -30,7 +38,7 @@
             window.downloadBusinessPlanPhotoPack(appId);
             return;
         }
-        alert('Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
+        notifyMessage('error', 'Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
     }
 
     function normalizeDecisionComment(value) {
@@ -85,7 +93,7 @@
             if (pending.length === 1) {
                 targetProtocolId = pending[0].id;
             } else if (pending.length > 1) {
-                alert('Аввал рӯйхати лозимро аз блоки Комитет интихоб кунед / Сначала выберите нужный список в блоке Комитета');
+                notifyMessage('warning', 'Аввал рӯйхати лозимро аз блоки Комитет интихоб кунед / Сначала выберите нужный список в блоке Комитета');
                 return;
             }
         }
@@ -205,14 +213,14 @@
             }
         }
         if (comApps.length === 0) {
-            alert('Рӯйхат холӣ аст / Список пуст');
+            notifyMessage('warning', 'Рӯйхат холӣ аст / Список пуст');
             return;
         }
 
         const protocolNum = document.getElementById('batch-protocol-number').value;
         const protocolDateInput = document.getElementById('batch-protocol-date').value;
         if (!protocolDateInput) {
-            alert('Лутфан санаи рӯйхатро интихоб кунед! / Пожалуйста, выберите дату списка!');
+            notifyMessage('warning', 'Лутфан санаи рӯйхатро интихоб кунед! / Пожалуйста, выберите дату списка!');
             return;
         }
 
@@ -232,7 +240,11 @@
             var comment = decision === 'rej' ? getBatchDecisionComment(appForValidation.id) : '';
 
             if (decision === 'rej' && !comment) {
-                alert('Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
+                    window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
+                } else {
+                    notifyMessage('warning', 'Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                }
                 return;
             }
             decisions.push({ app: appForValidation, decision: decision, comment: comment });
@@ -274,7 +286,7 @@
         }
         window.currentCommitteeRegistryId = null;
 
-        alert('Рӯйхат бомуваффақият тасдиқ шуд!\nСписок успешно утвержден!\n\nТасдиқшуда / Одобрено: ' + newProtocol.okCount + '\nРадшуда / Отклонено: ' + newProtocol.rejCount);
+        notifyMessage('success', 'Рӯйхат бомуваффақият тасдиқ шуд! / Список успешно утвержден! Одобрено: ' + newProtocol.okCount + ', Отклонено: ' + newProtocol.rejCount);
         document.getElementById('applicationModal').classList.add('hidden');
         document.getElementById('modal-main-title').innerHTML = 'Дархост: Дастгирии грантии тиҷорат <span class="ru">/ Заявка: Грантовая поддержка бизнеса</span>';
 
@@ -287,7 +299,7 @@
 
         const prot = (window.state.protocols || []).find(function (p) { return p.id === window.currentViewedProtocolId; });
         if (!prot || !prot.apps || prot.apps.length === 0) {
-            alert('Рӯйхат холӣ аст / Список пуст');
+            notifyMessage('warning', 'Рӯйхат холӣ аст / Список пуст');
             return;
         }
 
@@ -466,7 +478,11 @@
 
     function saveComDecision() {
         if (!window.currentComChoice) {
-            alert('Қарорро интихоб кунед / Выберите решение');
+            if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
+                window.AppNotify.errorByKey('validation.error');
+            } else {
+                notifyMessage('error', 'Қарорро интихоб кунед / Выберите решение');
+            }
             return;
         }
 
@@ -481,7 +497,11 @@
             window.generateMonitoringFor(app.id, new Date().toISOString().split('T')[0]);
         } else {
             if (!normalizeDecisionComment(comment)) {
-                alert('Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
+                    window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
+                } else {
+                    notifyMessage('warning', 'Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                }
                 return;
             }
             applyCommitteeRejection(app, app.protocolId || 'IND-' + app.id, app.date.split(',')[0], app.date.split(',')[1] || '', normalizeDecisionComment(comment));

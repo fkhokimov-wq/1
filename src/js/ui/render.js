@@ -1,6 +1,14 @@
 (function initRenderModule() {
     if (window.AppUI) return;
 
+    function notifyMessage(kind, message, title) {
+        if (window.AppNotify && typeof window.AppNotify.toast === 'function') {
+            window.AppNotify.toast(kind || 'info', title || '', message || '');
+            return;
+        }
+        alert((title ? (title + '\n') : '') + (message || ''));
+    }
+
     function loadHistoryForm(id) {
         const app = window.getApp(id) || { auditLog: [] };
         const revisionsCount = app.revisionCount || 0;
@@ -61,40 +69,40 @@
     function downloadCurrentBusinessPlanFromModal() {
         const id = window.currentOpenedAppId || window.currentApprovedAppId;
         if (!id) {
-            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            notifyMessage('warning', 'Сначала откройте заявку / Аввал дархостро кушоед');
             return;
         }
         if (typeof window.downloadBusinessPlanFile === 'function') {
             window.downloadBusinessPlanFile(id);
             return;
         }
-        alert('Функсияи боргирӣ дастрас нест. / Функция скачивания недоступна.');
+        notifyMessage('error', 'Функсияи боргирӣ дастрас нест. / Функция скачивания недоступна.');
     }
 
     function downloadCurrentPdfFromModal() {
         const id = window.currentOpenedAppId || window.currentApprovedAppId;
         if (!id) {
-            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            notifyMessage('warning', 'Сначала откройте заявку / Аввал дархостро кушоед');
             return;
         }
         if (typeof window.downloadBusinessPlanPdfFile === 'function') {
             window.downloadBusinessPlanPdfFile(id);
             return;
         }
-        alert('Функсияи боргирии PDF дастрас нест. / Функция скачивания PDF недоступна.');
+        notifyMessage('error', 'Функсияи боргирии PDF дастрас нест. / Функция скачивания PDF недоступна.');
     }
 
     function downloadCurrentPhotoPackFromModal() {
         const id = window.currentOpenedAppId || window.currentApprovedAppId;
         if (!id) {
-            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            notifyMessage('warning', 'Сначала откройте заявку / Аввал дархостро кушоед');
             return;
         }
         if (typeof window.downloadBusinessPlanPhotoPack === 'function') {
             window.downloadBusinessPlanPhotoPack(id);
             return;
         }
-        alert('Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
+        notifyMessage('error', 'Функсияи боргирии аксҳо дастрас нест. / Функция скачивания фото недоступна.');
     }
 
     function isValidAgreementFile(file) {
@@ -406,7 +414,7 @@
         if (!app) return;
 
         if (!canEditGrantContract(app)) {
-            alert('Форма договора доступна только Фасилитатору в статусе approved.');
+            notifyMessage('warning', 'Форма договора доступна только Фасилитатору в статусе approved.');
             return;
         }
 
@@ -751,7 +759,7 @@
         if (!app) return;
 
         if (!(app.status === 'approved' && getActiveRoleContext() === 'facilitator')) {
-            alert('Сброс автополей доступен только Фасилитатору в approved.');
+            notifyMessage('warning', 'Сброс автополей доступен только Фасилитатору в approved.');
             return;
         }
 
@@ -769,7 +777,7 @@
         var bodyHtml = getGrantContractBodyHtml(fields);
         var popup = window.open('', '_blank');
         if (!popup) {
-            alert('Поп-ап баста аст. / Всплывающее окно заблокировано.');
+            notifyMessage('warning', 'Поп-ап баста аст. / Всплывающее окно заблокировано.');
             return;
         }
 
@@ -814,14 +822,14 @@
         var app = window.getApp(id);
         if (!app) return;
         if (!(app.status === 'approved' && getActiveRoleContext() === 'facilitator')) {
-            alert('Сохранение доступно только Фасилитатору в approved.');
+            notifyMessage('warning', 'Сохранение доступно только Фасилитатору в approved.');
             return;
         }
 
         var fields = collectGrantContractFieldsFromForm();
         var result = validateGrantContractFields(fields, false);
         if (!result.ok) {
-            alert('Черновик сохранен, но часть обязательных полей не заполнена. Их можно заполнить позже.');
+            notifyMessage('warning', 'Черновик сохранен, но часть обязательных полей не заполнена. Их можно заполнить позже.');
         }
         if (typeof window.registerGrantContractDraft === 'function') {
             window.registerGrantContractDraft(app, {
@@ -843,7 +851,8 @@
         var fields = collectGrantContractFieldsFromForm();
         var result = validateGrantContractFields(fields, true);
         if (!result.ok) {
-            alert('Заполните обязательные поля договора перед предпросмотром.');
+            if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') window.AppNotify.errorByKey('validation.error');
+            else notifyMessage('error', 'Заполните обязательные поля договора перед предпросмотром.');
             return;
         }
         openGrantContractPreviewWindow(fields, 'Демо договор', false, false);
@@ -858,7 +867,8 @@
         var fields = collectGrantContractFieldsFromForm();
         var result = validateGrantContractFields(fields, true);
         if (!result.ok) {
-            alert('Заполните обязательные поля договора перед печатью.');
+            if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') window.AppNotify.errorByKey('validation.error');
+            else notifyMessage('error', 'Заполните обязательные поля договора перед печатью.');
             return;
         }
         openGrantContractPreviewWindow(fields, 'Печать договора', true, false);
@@ -873,7 +883,8 @@
         var fields = collectGrantContractFieldsFromForm();
         var result = validateGrantContractFields(fields, true);
         if (!result.ok) {
-            alert('Заполните обязательные поля договора перед экспортом PDF.');
+            if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') window.AppNotify.errorByKey('validation.error');
+            else notifyMessage('error', 'Заполните обязательные поля договора перед экспортом PDF.');
             return;
         }
         openGrantContractPreviewWindow(fields, 'Экспорт договора в PDF', true, true);
@@ -889,24 +900,24 @@
     function uploadGrantAgreementFromModal() {
         var id = window.currentOpenedAppId || window.currentApprovedAppId;
         if (!id) {
-            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            notifyMessage('warning', 'Сначала откройте заявку / Аввал дархостро кушоед');
             return;
         }
         var app = window.getApp(id);
         if (!app) return;
         if (!canUploadAgreementForApp(app)) {
-            alert('Ин амал танҳо барои Фасилитатор дастрас аст. / Это действие доступно только Фасилитатору.');
+            notifyMessage('warning', 'Ин амал танҳо барои Фасилитатор дастрас аст. / Это действие доступно только Фасилитатору.');
             return;
         }
 
         var inputEl = document.getElementById('grant-agreement-upload');
         if (!inputEl || !inputEl.files || !inputEl.files.length) {
-            alert('Лутфан файлро интихоб кунед / Пожалуйста, выберите файл');
+            notifyMessage('warning', 'Лутфан файлро интихоб кунед / Пожалуйста, выберите файл');
             return;
         }
         var file = inputEl.files[0];
         if (!isValidAgreementFile(file)) {
-            alert('Фақат PDF/JPG/PNG то 10MB қабул мешавад. / Допустимы только PDF/JPG/PNG до 10MB.');
+            notifyMessage('error', 'Фақат PDF/JPG/PNG то 10MB қабул мешавад. / Допустимы только PDF/JPG/PNG до 10MB.');
             return;
         }
 
@@ -914,7 +925,7 @@
         var note = noteEl ? String(noteEl.value || '').trim() : '';
         var reader = new FileReader();
         reader.onerror = function () {
-            alert('Хониши файл хато дод. / Ошибка чтения файла.');
+            notifyMessage('error', 'Хониши файл хато дод. / Ошибка чтения файла.');
         };
         reader.onload = function () {
             var agreement = null;
@@ -947,14 +958,14 @@
     function downloadCurrentGrantAgreementFromModal() {
         var id = window.currentOpenedAppId || window.currentApprovedAppId;
         if (!id) {
-            alert('Сначала откройте заявку / Аввал дархостро кушоед');
+            notifyMessage('warning', 'Сначала откройте заявку / Аввал дархостро кушоед');
             return;
         }
         if (typeof window.downloadGrantAgreementFile === 'function') {
             window.downloadGrantAgreementFile(id);
             return;
         }
-        alert('Функсияи боргирии шартнома дастрас нест. / Функция скачивания договора недоступна.');
+        notifyMessage('error', 'Функсияи боргирии шартнома дастрас нест. / Функция скачивания договора недоступна.');
     }
 
     function openApprovedFor(id) {
@@ -1030,7 +1041,7 @@
         if (isRoleOwnedStatus(app.status, activeRole)) return true;
         if (isReadOnlyOpenAllowed(app.status)) return true;
 
-        alert('Ин марҳила кори ' + rule.label + ' нест. Танҳо дидан мумкин аст.\nЭто не зона работы роли ' + rule.label + '. Открытие недоступно.');
+        notifyMessage('warning', 'Ин марҳила кори ' + rule.label + ' нест. Танҳо дидан мумкин аст. / Это не зона работы роли ' + rule.label + '. Открытие недоступно.');
         return false;
     }
 
