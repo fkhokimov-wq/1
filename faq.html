@@ -29,6 +29,12 @@
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            width: 100%;
+            max-width: 100%;
+        }
+
         body {
             margin: 0;
             font-family: "PT Sans", sans-serif;
@@ -42,7 +48,10 @@
         }
 
         .wrap {
-            width: min(1120px, calc(100% - 2rem));
+            width: 100%;
+            max-width: 1120px;
+            padding-left: 1rem;
+            padding-right: 1rem;
             margin: 0 auto;
         }
 
@@ -185,6 +194,7 @@
             border-radius: 999px;
             padding: .2rem .55rem;
             font-weight: 700;
+            overflow-wrap: anywhere;
         }
 
         .quick {
@@ -192,6 +202,7 @@
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: .7rem;
+            min-width: 0;
         }
 
         .quick a {
@@ -202,6 +213,7 @@
             padding: .8rem;
             background: var(--surface);
             box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+            min-width: 0;
         }
 
         .quick strong {
@@ -215,6 +227,7 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: .7rem;
+            min-width: 0;
         }
 
         .faq-layout {
@@ -222,6 +235,7 @@
             grid-template-columns: minmax(0, 1fr) 260px;
             gap: 1rem;
             align-items: start;
+            min-width: 0;
         }
 
         .faq-main {
