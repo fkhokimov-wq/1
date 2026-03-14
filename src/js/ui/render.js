@@ -691,8 +691,33 @@
             return;
         }
 
+        var previewCss = '' +
+            '@page{size:A4;margin:18mm 16mm 18mm 20mm}' +
+            'html,body{margin:0;padding:0;color:#111}' +
+            'body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.32;background:#e5e7eb}' +
+            '.hint{font-size:10pt;color:#555;margin:12px auto 10px;padding:7px 10px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc;max-width:210mm}' +
+            '.contract-doc{max-width:220mm;margin:0 auto;padding:10mm 0 14mm}' +
+            '.paper-page{position:relative;box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto 10mm;padding:18mm 16mm 18mm 20mm;background:#fff;border:1px solid #d1d5db;box-shadow:0 10px 30px rgba(15,23,42,.16);page-break-inside:avoid}' +
+            '.page-1{padding-top:1.8mm}' +
+            '.paper-page+.paper-page{page-break-before:always}' +
+            '.contract-doc .contract-head-title{font-size:15pt;text-align:center;margin:0 0 7.6mm 0;line-height:1.2;font-weight:700}' +
+            '.contract-doc .contract-place-date{margin:0 0 7mm 0;display:flex;align-items:flex-end;justify-content:space-between;gap:6mm}' +
+            '.contract-doc .meta-left,.contract-doc .meta-right{display:inline-flex;align-items:flex-end;gap:1.8mm;white-space:nowrap}' +
+            '.contract-doc h3{font-size:12pt;margin:0 0 4mm 0;line-height:1.2;page-break-after:avoid;text-align:center;font-weight:700}' +
+            '.page-1 .contract-first-section-title{margin-top:5mm}' +
+            '.contract-doc p{margin:0 0 3.2mm 0;text-align:justify;text-wrap:pretty}' +
+            '.contract-doc .subpoint{margin-left:4mm;text-indent:-4mm}' +
+            '.contract-doc ul{margin:2mm 0 4mm 7mm;padding:0}' +
+            '.contract-doc li{margin:0 0 2.3mm 0}' +
+            '.line-list{list-style:disc}' +
+            '.line-fill{display:inline-block;border-bottom:0.7pt solid #111;line-height:1.05;vertical-align:baseline;word-break:break-word}' +
+            '.lf-contract-no{min-width:40mm}.lf-day{min-width:11mm;text-align:center}.lf-month{min-width:42mm}.lf-year{min-width:18mm;text-align:center}.lf-city{min-width:38mm}' +
+            '.signature-gap{margin-top:10mm}' +
+            '.page-no{position:absolute;right:0;bottom:0;font-size:10pt;color:#555}' +
+            '@media print{.hint{display:none}body{font-size:12pt;background:#fff}.contract-doc{max-width:none;margin:0;padding:0}.paper-page{width:auto;min-height:261mm;margin:0;padding:0;border:none;box-shadow:none;page-break-after:always}.paper-page:last-child{page-break-after:auto}.contract-doc .contract-head-title,.contract-doc h3,.contract-doc p,.contract-doc li{orphans:3;widows:3}}';
+
         popup.document.open();
-        popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + (title || 'Grant Contract Preview') + '</title><style>@page{size:A4;margin:18mm 16mm 18mm 16mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.32} .hint{font-size:10pt;color:#555;margin:0 0 10px 0;padding:7px 10px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc} .contract-doc{max-width:180mm;margin:0 auto} .paper-page{position:relative;min-height:238mm;padding-bottom:10mm;page-break-inside:avoid} .page-1{padding-top:1.8mm} .paper-page+.paper-page{page-break-before:always} .contract-doc .contract-head-title{font-size:15pt;text-align:center;margin:0 0 7.6mm 0;line-height:1.2;font-weight:700} .contract-doc .contract-place-date{margin:0 0 7mm 0;display:flex;align-items:flex-end;justify-content:space-between;gap:6mm} .contract-doc .meta-left,.contract-doc .meta-right{display:inline-flex;align-items:flex-end;gap:1.8mm;white-space:nowrap} .contract-doc h3{font-size:12pt;margin:0 0 4mm 0;line-height:1.2;page-break-after:avoid;text-align:center;font-weight:700} .page-1 .contract-first-section-title{margin-top:5mm} .contract-doc p{margin:0 0 3.2mm 0;text-align:justify;text-wrap:pretty} .contract-doc .subpoint{margin-left:4mm;text-indent:-4mm} .contract-doc ul{margin:2mm 0 4mm 7mm;padding:0} .contract-doc li{margin:0 0 2.3mm 0} .line-list{list-style:disc} .line-fill{display:inline-block;border-bottom:0.7pt solid #111;line-height:1.05;vertical-align:baseline;word-break:break-word} .lf-contract-no{min-width:40mm} .lf-day{min-width:11mm;text-align:center} .lf-month{min-width:42mm} .lf-year{min-width:18mm;text-align:center} .lf-city{min-width:38mm} .signature-gap{margin-top:10mm} .page-no{position:absolute;right:0;bottom:0;font-size:10pt;color:#555} @media print {.hint{display:none} body{font-size:12pt} .contract-doc{max-width:none;margin:0} .paper-page{min-height:auto;padding-bottom:10mm} .contract-doc .contract-head-title,.contract-doc h3,.contract-doc p,.contract-doc li{orphans:3;widows:3}}</style></head><body>' + (showPdfHint ? '<div class="hint">Для экспорта в PDF выберите в окне печати: Save as PDF / Сохранить как PDF.</div>' : '') + bodyHtml + '</body></html>');
+        popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + (title || 'Grant Contract Preview') + '</title><style>' + previewCss + '</style></head><body>' + (showPdfHint ? '<div class="hint">Для экспорта в PDF выберите в окне печати: Save as PDF / Сохранить как PDF.</div>' : '') + bodyHtml + '</body></html>');
         popup.document.close();
 
         if (autoPrint) {

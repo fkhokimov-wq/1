@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EIP FAQ - Справка по интерфейсу</title>
+    <title>EIP - Справка по интерфейсу</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -85,18 +85,15 @@
         }
 
         .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            backdrop-filter: blur(8px);
-            background: rgba(244, 247, 245, .86);
-            border-bottom: 1px solid var(--line);
+            position: static;
+            border-bottom: 1px solid #e3ece6;
+            background: rgba(255, 255, 255, 0.88);
         }
 
         .topbar-inner {
             display: grid;
             grid-template-columns: 1fr;
-            gap: .8rem;
+            gap: .45rem;
             padding: .75rem 0;
         }
 
@@ -155,6 +152,17 @@
             gap: .55rem;
             flex-wrap: wrap;
             align-items: center;
+        }
+
+        .controls-panel {
+            margin: .2rem auto .9rem;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: #ffffff;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+            padding: .8rem .9rem;
+            display: grid;
+            gap: .65rem;
         }
 
         .pill {
@@ -577,6 +585,11 @@
             .search input {
                 min-width: 100%;
             }
+
+            .btn {
+                padding: .56rem .72rem;
+                font-size: .83rem;
+            }
         }
     </style>
 </head>
@@ -587,38 +600,18 @@
             <div class="search">
                 <input id="faqSearch" type="search"
                     placeholder="Поиск по вопросам: договор, отправка, мониторинг, комитет..."
-                    aria-label="Поиск по FAQ">
-                <button class="btn" id="openAllBtn" type="button">Раскрыть все</button>
-                <button class="btn" id="closeAllBtn" type="button">Свернуть все</button>
-                <button class="btn" id="resetFiltersBtn" type="button">Сбросить фильтры</button>
-                <button class="btn btn-accent" id="shareStateBtn" type="button">Поделиться ссылкой</button>
+                    aria-label="Поиск по справке">
+                <button class="btn" id="openAllBtn" type="button">Открыть все ответы</button>
+                <button class="btn" id="closeAllBtn" type="button">Скрыть все ответы</button>
+                <button class="btn" id="resetFiltersBtn" type="button">Сбросить</button>
+                <button class="btn btn-accent" id="shareStateBtn" type="button">Поделиться</button>
                 <a class="btn" href="grant.html">Открыть систему</a>
-            </div>
-            <div class="meta">
-                <div id="faqCount">Показано вопросов: 0</div>
-                <div>Роли: Фасилитатор, ШИГ / КУГ, ГТЛ / ГРП, Комитет</div>
-            </div>
-            <div class="toolbar-row" id="roleFilters">
-                <button class="pill active" type="button" data-role-filter="all">Все роли</button>
-                <button class="pill" type="button" data-role-filter="facilitator">Фасилитатор</button>
-                <button class="pill" type="button" data-role-filter="gmc">ШИГ / КУГ</button>
-                <button class="pill" type="button" data-role-filter="piu">ГТЛ / ГРП</button>
-                <button class="pill" type="button" data-role-filter="committee">Комитет</button>
-                <button class="pill" type="button" data-role-filter="monitoring">Мониторинг</button>
-            </div>
-            <div class="toolbar-row" id="quickTags">
-                <button class="pill" type="button" data-tag="договор"># Договор</button>
-                <button class="pill" type="button" data-tag="отправка"># Отправка</button>
-                <button class="pill" type="button" data-tag="реестр"># Реестр</button>
-                <button class="pill" type="button" data-tag="мониторинг"># Мониторинг</button>
-                <button class="pill" type="button" data-tag="ошибка"># Ошибки</button>
-                <button class="pill" type="button" data-tag="postponed"># postponed</button>
             </div>
         </div>
     </div>
 
     <header class="wrap hero">
-        <h1>FAQ по интерфейсу EIP</h1>
+        <h1>Справка по системе EIP</h1>
         <p>
             Страница для быстрого поиска ответов: как работать по ролям, как формировать договор,
             как отправлять заявку по этапам и что делать при ошибках. Если вы не знаете, с чего начать,
@@ -626,17 +619,33 @@
         </p>
         <div class="updated">
             <span class="chip">Последнее обновление: 14.03.2026</span>
-            <span class="chip">Версия FAQ: 2.0</span>
-            <span class="chip">Источник правил: docs/USER-INSTRUCTIONS.md</span>
+            <span class="chip">Версия справки: 2.0</span>
+            <span class="chip">Источник: инструкция пользователя</span>
         </div>
     </header>
 
-    <div class="wrap quick">
-        <a href="#facilitator"><strong>Я Фасилитатор</strong><span>Создание, доработка, договоры, мониторинг</span></a>
-        <a href="#gmc"><strong>Я ШИГ / КУГ</strong><span>Скоринг, возвраты, подготовка реестра</span></a>
-        <a href="#piu"><strong>Я ГТЛ / ГРП</strong><span>Проверка и маршрутизация заявок</span></a>
-        <a href="#committee"><strong>Я Комитет</strong><span>Реестры, решения, протоколы</span></a>
-    </div>
+    <section class="wrap controls-panel">
+        <div class="meta">
+            <div id="faqCount">Показано вопросов: 0</div>
+            <div>Роли: Фасилитатор, ШИГ / КУГ, ГТЛ / ГРП, Комитет</div>
+        </div>
+        <div class="toolbar-row" id="roleFilters">
+            <button class="pill active" type="button" data-role-filter="all">Все роли</button>
+            <button class="pill" type="button" data-role-filter="facilitator">Фасилитатор</button>
+            <button class="pill" type="button" data-role-filter="gmc">ШИГ / КУГ</button>
+            <button class="pill" type="button" data-role-filter="piu">ГТЛ / ГРП</button>
+            <button class="pill" type="button" data-role-filter="committee">Комитет</button>
+            <button class="pill" type="button" data-role-filter="monitoring">Мониторинг</button>
+        </div>
+        <div class="toolbar-row" id="quickTags">
+            <button class="pill" type="button" data-tag="договор"># Договор</button>
+            <button class="pill" type="button" data-tag="отправка"># Отправка</button>
+            <button class="pill" type="button" data-tag="реестр"># Реестр</button>
+            <button class="pill" type="button" data-tag="мониторинг"># Мониторинг</button>
+            <button class="pill" type="button" data-tag="ошибка"># Ошибки</button>
+            <button class="pill" type="button" data-tag="отложено"># Отложено</button>
+        </div>
+    </section>
 
     <section class="wrap quick-start" id="quickStart">
         <article class="qs-card">
@@ -698,9 +707,8 @@
                                 class="tag">Доступ</span>
                         </summary>
                         <div class="answer">
-                            <p>Для статусов <strong>approved</strong> и <strong>rejected</strong> доступ из любой роли
-                                идет
-                                в read-only режиме.</p>
+                            <p>Для статусов <strong>Одобрено</strong> и <strong>Отклонено</strong> доступ из любой роли
+                                только в режиме просмотра.</p>
                             <p>Редактирование доступно только в статусах, закрепленных за вашей ролью.</p>
                         </div>
                     </details>
@@ -711,7 +719,7 @@
                             <ul>
                                 <li>Проверьте выбранный главный фильтр роли.</li>
                                 <li>Очистите строку поиска.</li>
-                                <li>Переключите вид Grid/List и проверьте снова.</li>
+                                <li>Переключите вид Карточки/Список и проверьте снова.</li>
                                 <li>Для одобренных проверьте фильтры сектор/регион/пол.</li>
                             </ul>
                         </div>
@@ -727,7 +735,7 @@
                 <div class="items">
                     <details class="faq-item" data-role="facilitator"
                         data-keywords="новая заявка создать beneficiary certified">
-                        <summary>Как правильно создать новую заявку? <span class="tag">F1</span></summary>
+                        <summary>Как правильно создать новую заявку? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
                                 <li>Нажмите <strong>Новая заявка</strong>.</li>
@@ -735,18 +743,19 @@
                                 <li>Выберите запись и нажмите <strong>Создать</strong>.</li>
                                 <li>Заполните поля вкладки Фасилитатора.</li>
                             </ul>
-                            <div class="callout warn">Если не создается: проверьте certStatus и предупреждение о дубле.
+                            <div class="callout warn">Если не создается: проверьте статус сертификации и предупреждение
+                                о дубле.
                             </div>
                         </div>
                     </details>
 
                     <details class="faq-item" data-role="facilitator"
                         data-keywords="отправка шиг word pdf 4 фото комплект">
-                        <summary>Что обязательно перед отправкой в ШИГ / КУГ? <span class="tag">F3</span></summary>
+                        <summary>Что обязательно перед отправкой в ШИГ / КУГ? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
                                 <li>Заполнены поле сектора и сумма.</li>
-                                <li>Загружен комплект: Word + PDF + ровно 4 фото.</li>
+                                <li>Загружен комплект: документ Word, PDF и ровно 4 фото.</li>
                                 <li>Нет блокирующих дублей и неполного профиля.</li>
                             </ul>
                         </div>
@@ -766,24 +775,24 @@
 
                     <details class="faq-item" data-role="facilitator"
                         data-keywords="договор создать редактировать approved preview print pdf">
-                        <summary>Как сформировать договор в системе? <span class="tag">F6</span></summary>
+                        <summary>Как сформировать договор в системе? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
-                                <li>Откройте заявку в статусе <strong>approved</strong>.</li>
+                                <li>Откройте заявку в статусе <strong>Одобрено</strong>.</li>
                                 <li>Раскройте блок <strong>Создание договора</strong>.</li>
                                 <li>Заполните разделы сверху вниз.</li>
                                 <li>Сохраните черновик.</li>
-                                <li>Откройте предпросмотр, затем печать или экспорт PDF.</li>
+                                <li>Откройте предварительный просмотр, затем печать или экспорт PDF.</li>
                             </ul>
                         </div>
                     </details>
 
                     <details class="faq-item" data-role="facilitator"
                         data-keywords="подписанный договор загрузить pdf jpg png 10mb">
-                        <summary>Как загрузить подписанный договор? <span class="tag">F7</span></summary>
+                        <summary>Как загрузить подписанный договор? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
-                                <li>В approved-заявке откройте блок <strong>Подписанный договор</strong>.</li>
+                                <li>В одобренной заявке откройте блок <strong>Подписанный договор</strong>.</li>
                                 <li>Выберите файл PDF/JPG/JPEG/PNG до 10MB.</li>
                                 <li>Нажмите <strong>Загрузить</strong>.</li>
                                 <li>Проверьте метаданные и скачивание.</li>
@@ -801,7 +810,7 @@
                 <div class="items">
                     <details class="faq-item" data-role="gmc"
                         data-keywords="скоринг 15 критериев решение approve revision reject">
-                        <summary>Как провести первичную оценку? <span class="tag">G1</span></summary>
+                        <summary>Как провести первичную оценку? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
                                 <li>Заполните 3 критерия соответствия.</li>
@@ -813,18 +822,19 @@
 
                     <details class="faq-item" data-role="gmc"
                         data-keywords="gmc_revision возврат грп комитет word версия">
-                        <summary>Что делать в статусе gmc_revision? <span class="tag">G2</span></summary>
+                        <summary>Что делать в статусе на доработке? <span class="tag">Шаг</span></summary>
                         <div class="answer">
-                            <p>Изучить комментарий возврата, загрузить новую Word-версию и выбрать маршрут: обратно в
+                            <p>Изучить комментарий возврата, загрузить новую версию документа и выбрать маршрут: обратно
+                                в
                                 ГРП
                                 или к Фасилитатору.</p>
                         </div>
                     </details>
 
                     <details class="faq-item" data-role="gmc" data-keywords="реестр gmc_ready_for_registry комитет">
-                        <summary>Как отправить заявки в Комитет? <span class="tag">G3</span></summary>
+                        <summary>Как отправить заявки в Комитет? <span class="tag">Шаг</span></summary>
                         <div class="answer">
-                            <p>Переведите заявки в <strong>gmc_ready_for_registry</strong>, отметьте чекбоксами,
+                            <p>Переведите заявки в <strong>готово к реестру</strong>, отметьте чекбоксами,
                                 создайте
                                 реестр и отправьте в Комитет.</p>
                         </div>
@@ -839,7 +849,7 @@
                 </div>
                 <div class="items">
                     <details class="faq-item" data-role="piu" data-keywords="piu_review approve resubmit комментарий">
-                        <summary>Как завершить проверку ГРП? <span class="tag">P1</span></summary>
+                        <summary>Как завершить проверку ГРП? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
                                 <li>Откройте заявку в <strong>piu_review</strong>.</li>
@@ -860,7 +870,7 @@
                 <div class="items">
                     <details class="faq-item" data-role="committee"
                         data-keywords="комитет реестр протокол дата отклонить причина">
-                        <summary>Как правильно утвердить список? <span class="tag">C1</span></summary>
+                        <summary>Как правильно утвердить список? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
                                 <li>Откройте входящий реестр.</li>
@@ -882,16 +892,16 @@
                 <div class="items">
                     <details class="faq-item" data-role="monitoring"
                         data-keywords="визит monitoring active pending completed">
-                        <summary>Как заполнить активный визит? <span class="tag">M1</span></summary>
+                        <summary>Как заполнить активный визит? <span class="tag">Шаг</span></summary>
                         <div class="answer">
                             <ul>
-                                <li>Откройте вкладку мониторинга в approved-заявке.</li>
+                                <li>Откройте вкладку мониторинга в одобренной заявке.</li>
                                 <li>Выберите активный визит и нажмите <strong>Оформить</strong>.</li>
                                 <li>Заполните оборудование, бизнес, доход, эко-проверку.</li>
                                 <li>Сохраните визит.</li>
                             </ul>
-                            <div class="callout">После сохранения текущий визит становится completed, следующий -
-                                active.
+                            <div class="callout">После сохранения текущий визит становится завершенным, следующий -
+                                активным.
                             </div>
                         </div>
                     </details>
@@ -917,8 +927,9 @@
                         </div>
                     </details>
 
-                    <details class="faq-item" data-keywords="postponed unlock-ready разблокировать">
-                        <summary>Почему заявка остается в postponed после 3 месяцев? <span class="tag">Ошибка</span>
+                    <details class="faq-item" data-keywords="отложено разблокировка разблокировать">
+                        <summary>Почему заявка остается в отложенном статусе после 3 месяцев? <span
+                                class="tag">Ошибка</span>
                         </summary>
                         <div class="answer">
                             <p>Потому что автоматического снятия блокировки нет. Нужна ручная разблокировка
@@ -929,8 +940,8 @@
 
                     <details class="faq-item" data-role="errors"
                         data-keywords="alert Бахш ва маблағро пур кунед сектор сумма">
-                        <summary>Alert: "Бахш ва маблағро пур кунед!" / "Заполните сектор и сумму!" <span
-                                class="tag">Alert</span></summary>
+                        <summary>Системное сообщение: "Заполните сектор и сумму" <span class="tag">Сообщение</span>
+                        </summary>
                         <div class="answer">
                             <ul>
                                 <li>Откройте вкладку Фасилитатора.</li>
@@ -942,7 +953,8 @@
 
                     <details class="faq-item" data-role="errors"
                         data-keywords="alert Маълумоти бенефициар нопурра аст неполные данные">
-                        <summary>Alert: "Маълумоти бенефициар нопурра аст!" <span class="tag">Alert</span></summary>
+                        <summary>Системное сообщение: "Данные бенефициара неполные" <span class="tag">Сообщение</span>
+                        </summary>
                         <div class="answer">
                             <ul>
                                 <li>Проверьте недостающие поля профиля бенефициара.</li>
@@ -953,8 +965,8 @@
                     </details>
 
                     <details class="faq-item" data-role="errors" data-keywords="alert номер договора Ш-******-ДДММГГ">
-                        <summary>Alert: "Номер договора должен быть в формате Ш-******-ДДММГГ" <span
-                                class="tag">Alert</span></summary>
+                        <summary>Системное сообщение: "Номер договора должен быть в формате Ш-******-ДДММГГ" <span
+                                class="tag">Сообщение</span></summary>
                         <div class="answer">
                             <p>Номер договора системный и выставляется автоматически. Проверьте, что поле не изменялось
                                 вручную.</p>
@@ -965,8 +977,8 @@
 
                     <details class="faq-item" data-role="errors"
                         data-keywords="alert Лутфан ҳамаи майдонҳои ҳатмиро пур кунед мониторинг">
-                        <summary>Alert: "Лутфан ҳамаи майдонҳои ҳатмиро пур кунед!" / "Заполните все обязательные поля!"
-                            <span class="tag">Alert</span>
+                        <summary>Системное сообщение: "Заполните все обязательные поля" <span
+                                class="tag">Сообщение</span>
                         </summary>
                         <div class="answer">
                             <ul>
@@ -998,7 +1010,7 @@
     </div>
 
     <footer class="wrap">
-        FAQ обновляется вместе с изменениями интерфейса. Подробный регламент: docs/DOCS-MAINTENANCE.md
+        Справка обновляется вместе с изменениями интерфейса.
     </footer>
 
     <script>
@@ -1111,7 +1123,7 @@
                     var linkBtn = document.createElement("button");
                     linkBtn.type = "button";
                     linkBtn.className = "mini-link";
-                    linkBtn.textContent = "link";
+                    linkBtn.textContent = "ссылка";
                     linkBtn.title = "Скопировать ссылку на этот вопрос";
                     linkBtn.addEventListener("click", function (e) {
                         e.preventDefault();
@@ -1123,8 +1135,8 @@
                         if (q) params.set("q", q); else params.delete("q");
                         var shareUrl = window.location.origin + window.location.pathname + (params.toString() ? ("?" + params.toString()) : "") + "#" + item.id;
                         navigator.clipboard.writeText(shareUrl).then(function () {
-                            linkBtn.textContent = "copied";
-                            setTimeout(function () { linkBtn.textContent = "link"; }, 900);
+                            linkBtn.textContent = "скопировано";
+                            setTimeout(function () { linkBtn.textContent = "ссылка"; }, 900);
                         });
                     });
                     tools.appendChild(linkBtn);
@@ -1280,7 +1292,7 @@
                     var shareUrl = window.location.href;
                     navigator.clipboard.writeText(shareUrl).then(function () {
                         shareStateBtn.textContent = "Ссылка скопирована";
-                        setTimeout(function () { shareStateBtn.textContent = "Поделиться ссылкой"; }, 1200);
+                        setTimeout(function () { shareStateBtn.textContent = "Поделиться"; }, 1200);
                     });
                 });
             }
