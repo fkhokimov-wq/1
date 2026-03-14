@@ -362,6 +362,47 @@
         URL.revokeObjectURL(url);
     }
 
+    function getApplicationDocumentCompleteness(app) {
+        if (!app) {
+            return {
+                hasWord: false,
+                hasPdf: false,
+                hasPhotos4: false,
+                photosCount: 0,
+                hasAgreement: false,
+                isBasePackageComplete: false,
+                isFullPackageComplete: false,
+                missingItemsRu: ['Word', 'PDF', 'Фото (4)', 'Подписанный договор']
+            };
+        }
+
+        var docs = ensureDocumentBundle(app);
+        var agreement = ensureGrantAgreement(app);
+        var photosCount = Array.isArray(docs.basePhotos) ? docs.basePhotos.length : 0;
+        var hasWord = !!(docs.wordVersions && docs.wordVersions.length > 0);
+        var hasPdf = !!(docs.basePdf && docs.basePdf.name);
+        var hasPhotos4 = photosCount === 4;
+        var hasAgreement = !!(agreement && agreement.uploaded && agreement.fileName);
+
+        var missingItemsRu = [];
+        if (!hasWord) missingItemsRu.push('Word');
+        if (!hasPdf) missingItemsRu.push('PDF');
+        if (!hasPhotos4) missingItemsRu.push('Фото (4)');
+        if (!hasAgreement) missingItemsRu.push('Подписанный договор');
+
+        var isBasePackageComplete = hasWord && hasPdf && hasPhotos4;
+        return {
+            hasWord: hasWord,
+            hasPdf: hasPdf,
+            hasPhotos4: hasPhotos4,
+            photosCount: photosCount,
+            hasAgreement: hasAgreement,
+            isBasePackageComplete: isBasePackageComplete,
+            isFullPackageComplete: isBasePackageComplete && hasAgreement,
+            missingItemsRu: missingItemsRu
+        };
+    }
+
     window.AppCore = window.AppCore || {};
     window.AppCore.utils = {
         getCurrentDateTime,
@@ -380,6 +421,7 @@
         getCurrentWordVersionInfo,
         ensureGrantAgreement,
         registerGrantAgreement,
+        getApplicationDocumentCompleteness,
         downloadGrantAgreementFile,
         downloadBusinessPlanFile,
         downloadBusinessPlanPdfFile,
@@ -403,6 +445,7 @@
     window.getCurrentWordVersionInfo = getCurrentWordVersionInfo;
     window.ensureGrantAgreement = ensureGrantAgreement;
     window.registerGrantAgreement = registerGrantAgreement;
+    window.getApplicationDocumentCompleteness = getApplicationDocumentCompleteness;
     window.downloadGrantAgreementFile = downloadGrantAgreementFile;
     window.downloadBusinessPlanFile = downloadBusinessPlanFile;
     window.downloadBusinessPlanPdfFile = downloadBusinessPlanPdfFile;
