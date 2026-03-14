@@ -582,6 +582,13 @@
             return;
         }
 
+        var shouldUnlock = window.confirm(
+            'Вы уверены, что хотите разблокировать заявку?\n\n' +
+            'Пас аз кушодан, ариза ба ҳолати ислоҳ бармегардад.\n' +
+            'После разблокировки заявка будет переведена в режим редактирования.'
+        );
+        if (!shouldUnlock) return;
+
         app.status = 'fac_revision';
         app.revisionCount = 0;
         app.reactivated = true;
