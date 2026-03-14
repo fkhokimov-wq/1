@@ -278,6 +278,38 @@
             background: linear-gradient(135deg, #0f766e, #0ea5a5);
         }
 
+        .mobile-toc {
+            display: none;
+            margin: .5rem auto 0;
+            padding: .4rem;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: #fff;
+            overflow-x: auto;
+            gap: .45rem;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-toc-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #0f3d39;
+            border: 1px solid #c7d7ce;
+            border-radius: 999px;
+            padding: .3rem .6rem;
+            font-size: .78rem;
+            font-weight: 700;
+            background: #fff;
+        }
+
+        .mobile-toc-link.active {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(135deg, #0f766e, #0ea5a5);
+        }
+
         .qs-card {
             border: 1px solid var(--line);
             border-radius: 14px;
@@ -517,6 +549,10 @@
             .toc {
                 display: none;
             }
+
+            .mobile-toc {
+                display: flex;
+            }
         }
 
         @media (max-width: 600px) {
@@ -614,6 +650,16 @@
             </ol>
         </article>
     </section>
+
+    <nav class="wrap mobile-toc" aria-label="Быстрые переходы FAQ">
+        <a class="mobile-toc-link" href="#common" data-toc-mobile="common">Общие</a>
+        <a class="mobile-toc-link" href="#facilitator" data-toc-mobile="facilitator">Фасилитатор</a>
+        <a class="mobile-toc-link" href="#gmc" data-toc-mobile="gmc">ШИГ / КУГ</a>
+        <a class="mobile-toc-link" href="#piu" data-toc-mobile="piu">ГТЛ / ГРП</a>
+        <a class="mobile-toc-link" href="#committee" data-toc-mobile="committee">Комитет</a>
+        <a class="mobile-toc-link" href="#monitoring" data-toc-mobile="monitoring">Мониторинг</a>
+        <a class="mobile-toc-link" href="#errors" data-toc-mobile="errors">Ошибки</a>
+    </nav>
 
     <div class="wrap faq-layout">
         <main class="faq-main">
@@ -952,6 +998,7 @@
             var tagButtons = Array.prototype.slice.call(document.querySelectorAll("#quickTags [data-tag]"));
             var sectionBlocks = Array.prototype.slice.call(document.querySelectorAll("main .section"));
             var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc-link"));
+            var mobileTocLinks = Array.prototype.slice.call(document.querySelectorAll(".mobile-toc-link"));
             var resetFiltersBtn = document.getElementById("resetFiltersBtn");
             var shareStateBtn = document.getElementById("shareStateBtn");
             var activeRoleFilter = "all";
@@ -1130,6 +1177,9 @@
                 tocLinks.forEach(function (link) {
                     link.classList.toggle("active", String(link.getAttribute("data-toc") || "") === sectionId);
                 });
+                mobileTocLinks.forEach(function (link) {
+                    link.classList.toggle("active", String(link.getAttribute("data-toc-mobile") || "") === sectionId);
+                });
             }
 
             function getFirstVisibleSectionId() {
@@ -1224,6 +1274,13 @@
             tocLinks.forEach(function (link) {
                 link.addEventListener("click", function () {
                     var targetId = String(link.getAttribute("data-toc") || "");
+                    setActiveTocBySection(targetId);
+                });
+            });
+
+            mobileTocLinks.forEach(function (link) {
+                link.addEventListener("click", function () {
+                    var targetId = String(link.getAttribute("data-toc-mobile") || "");
                     setActiveTocBySection(targetId);
                 });
             });
