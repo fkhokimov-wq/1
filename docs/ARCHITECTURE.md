@@ -1,5 +1,11 @@
 # Архитектура системы / System Architecture
 
+## Актуализация от 14.03.2026
+
+- Добавлена централизованная подсистема уведомлений `AppNotify` в `core/utils.js` (toast + confirm modal).
+- Фича-модули используют локальные `notifyMessage`-обертки и вызывают `AppNotify` как основной канал, сохраняя `alert` только как fallback.
+- В блоке черновика договора (pane approved) в UI добавлена нижняя кнопка закрытия `Бекор кардан / Отмена`.
+
 ## Обзор
 
 Система представляет собой **одностраничное веб-приложение** (SPA), работающее полностью на клиенте без серверной части. Все данные хранятся в памяти браузера (`window.state`).
@@ -23,6 +29,7 @@ graph TB
 
         subgraph "Core Layer"
             UTILS[core/utils.js<br/>sanitizeText, addLog,<br/>getCurrentDateTime,<br/>sanitizeCsvField,<br/>ensureDocumentBundle,<br/>registerWordVersion,<br/>downloadBusinessPlan*]
+            NOTIFY[core/utils.js<br/>AppNotify:<br/>toast, confirmByKey,<br/>successByKey/warningByKey]
         end
 
         subgraph "State Layer"
@@ -47,17 +54,18 @@ graph TB
     end
 
     APP -->|1. load| UTILS
-    APP -->|2. load| DICT
-    APP -->|3. load| SEED_APP
-    APP -->|4. load| SEED_MON
-    APP -->|5. load| SEED_DATA
-    APP -->|6. load| STORE
-    APP -->|7. load| RENDER
-    APP -->|8. load| FAC
-    APP -->|9. load| GMC
-    APP -->|10. load| PIU
-    APP -->|11. load| COM
-    APP -->|12. load| MON
+    APP -->|2. load| NOTIFY
+    APP -->|3. load| DICT
+    APP -->|4. load| SEED_APP
+    APP -->|5. load| SEED_MON
+    APP -->|6. load| SEED_DATA
+    APP -->|7. load| STORE
+    APP -->|8. load| RENDER
+    APP -->|9. load| FAC
+    APP -->|10. load| GMC
+    APP -->|11. load| PIU
+    APP -->|12. load| COM
+    APP -->|13. load| MON
 
     SEED_DATA --> DICT
     SEED_DATA --> SEED_APP
@@ -66,18 +74,23 @@ graph TB
 
     FAC --> STORE
     FAC --> UTILS
+    FAC --> NOTIFY
     FAC --> RENDER
     GMC --> STORE
     GMC --> UTILS
+    GMC --> NOTIFY
     GMC --> RENDER
     PIU --> STORE
     PIU --> UTILS
+    PIU --> NOTIFY
     PIU --> RENDER
     COM --> STORE
     COM --> UTILS
+    COM --> NOTIFY
     COM --> RENDER
     MON --> STORE
     MON --> UTILS
+    MON --> NOTIFY
     MON --> RENDER
 ```
 
