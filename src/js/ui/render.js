@@ -410,8 +410,9 @@
         };
 
         return '' +
-            '<h1 style="text-align:center;font-size:20px;margin:0 0 10px 0;">ШАРТНОМА ДАР БОРАИ ГРАНТ № ' + val('contractNumber', '___-____') + '</h1>' +
-            '<h3 style="margin:18px 0 8px 0;">I. МАЪЛУМОТИ УМУМӢ ВА ТЕХНИКИИ ГРАНТ</h3>' +
+            '<div class="contract-doc">' +
+            '<h1>ШАРТНОМА ДАР БОРАИ ГРАНТ № ' + val('contractNumber', '___-____') + '</h1>' +
+            '<h3>I. МАЪЛУМОТИ УМУМӢ ВА ТЕХНИКИИ ГРАНТ</h3>' +
             '<p><b>Идентификатори грант:</b> ' + val('grantIdentifier') + '</p>' +
             '<p><b>Рақами гранти аз ҷониби кумита тасдиқшуда:</b> ' + val('committeeGrantNumber') + '</p>' +
             '<p><b>Санаи тасдиқ:</b> ' + val('approvalDate') + '</p>' +
@@ -419,9 +420,9 @@
             '<p><b>Маблағи грант:</b> ' + val('grantAmount') + ' (' + val('grantAmountWords', 'маблағ бо ҳарфҳо') + ') сомонӣ</p>' +
             '<p><b>Муассисаи ташкилкунанда:</b> «' + val('organizerName') + '»</p>' +
 
-            '<h3 style="margin:18px 0 8px 0;">II. МАЪЛУМОТ ДАР БОРАИ ТАРАФҲО</h3>' +
+            '<h3>II. МАЪЛУМОТ ДАР БОРАИ ТАРАФҲО</h3>' +
             '<p><b>1. ГРАНТГИРАНДА:</b></p>' +
-            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<ul>' +
             '<li><b>Вазъи ҳуқуқӣ / Ному насаби баҳрагир:</b> ' + val('beneficiaryStatusOrName') + '</li>' +
             '<li><b>Номи ҳуқуқӣ:</b> ' + val('beneficiaryLegalName') + '</li>' +
             '<li><b>Суроғаи ҷойи бақайдгирӣ:</b> ' + val('beneficiaryRegAddress') + '</li>' +
@@ -431,30 +432,31 @@
             '</ul>' +
 
             '<p><b>2. ГРАНТДИҲАНДА (Намояндаи ваколатдор):</b></p>' +
-            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<ul>' +
             '<li><b>Ному насаб:</b> ' + val('donorRepName') + '</li>' +
             '<li><b>Вазифа:</b> ' + val('donorRepPosition') + '</li>' +
             '<li><b>Суроға:</b> ' + val('donorAddress') + '</li>' +
             '<li><b>Телефон:</b> ' + val('donorPhone') + '</li>' +
             '<li><b>E-mail:</b> ' + val('donorEmail') + '</li>' +
             '</ul>' +
-            getGrantContractLegalTextTemplateHtml(val);
+            getGrantContractLegalTextTemplateHtml(val) +
+            '</div>';
     }
 
     function getGrantContractLegalTextTemplateHtml(val) {
         return '' +
-            '<h3 style="margin:18px 0 8px 0;">III. МАТНИ СОЗИШНОМА</h3>' +
+            '<h3>III. МАТНИ СОЗИШНОМА</h3>' +
             '<p>Созишномаи мазкур байни Вазорати меҳнат, муҳоҷират ва шуғли аҳолии Ҷумҳурии Тоҷикистон / Лоиҳаи навсозии ҳифзи иҷтимоӣ ва ҳамгироии иқтисодӣ, ки аз ҷониби <b>' + val('donorEntityForText') + '</b>, минбаъд «Грантдиҳанда» номида мешавад ва <b>' + val('granteeEntityForText') + '</b>, минбаъд «Грантгир» номида мешавад, баста шудааст.</p>' +
             '<p>Тарафҳо ба таври зайл ба созиш расиданд:</p>' +
-            '<h4 style="margin:12px 0 6px 0;">1. МАБЛАҒГУЗОРӢ</h4>' +
+            '<h4>1. МАБЛАҒГУЗОРӢ</h4>' +
             '<p>1.1. Грантгир дар доираи Лоиҳа барои гирифтани грант ба маблағи <b>' + val('grantAmount') + ' (' + val('grantAmountWords', 'маблағ бо ҳарфҳо') + ') сомонӣ</b> дархост пешниҳод кардааст.</p>' +
             '<p>1.2. Ӯҳдадориҳо ва масъулияти Грантдиҳанда тибқи Шартномаи мазкур танҳо бо пардохти Грант маҳдуд аст.</p>' +
-            '<h4 style="margin:12px 0 6px 0;">2. ИСТИФОДАИ МАБЛАҒГУЗОРӢ</h4>' +
+            '<h4>2. ИСТИФОДАИ МАБЛАҒГУЗОРӢ</h4>' +
             '<p>2.1. Маблағгузорӣ аз ҷониби Грантгир барои харидани молҳо/таҷҳизот/хизматрасонӣ истифода мешавад. Дигар харидҳо бе розигии пешакии хаттии Грантдиҳанда манъ аст.</p>' +
-            '<h4 style="margin:12px 0 6px 0;">3. ТАРТИБИ ПАРДОХТИ ГРАНТ</h4>' +
+            '<h4>3. ТАРТИБИ ПАРДОХТИ ГРАНТ</h4>' +
             '<p>3.1. Грантгиранда бояд дар давоми 10 рӯз пас аз имзои Шартномаи грантӣ аз ҷониби ҳарду тараф маблағҳои грантиро гирад.</p>' +
             '<p>3.2. Грант мустақиман ба суратҳисоби бонкии Грантгиранда пардохт карда мешавад:</p>' +
-            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<ul>' +
             '<li><b>Номи бонк:</b> ' + val('bankName') + '</li>' +
             '<li><b>Суратҳисоби ҷорӣ:</b> ' + val('currentAccount') + '</li>' +
             '<li><b>Суратҳисоби муросилотӣ:</b> ' + val('correspondentAccount') + '</li>' +
@@ -462,9 +464,9 @@
             '</ul>' +
             '<p>3.3. Интиқоли маблағҳои грантӣ ба Грантгиранда бо пули миллӣ - сомонӣ сурат мегирад.</p>' +
 
-            '<h4 style="margin:12px 0 6px 0;">4. ӮҲДАДОРИҲОИ ТАРАФҲО</h4>' +
+            '<h4>4. ӮҲДАДОРИҲОИ ТАРАФҲО</h4>' +
             '<p><b>4.1. Грантгиранда ӯҳдадор аст:</b></p>' +
-            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<ul>' +
             '<li>а) Лоиҳаро дар мутобиқат бо шартҳои Шартномаи мазкур самаранок амалӣ намояд.</li>' +
             '<li>б) Танҳо маҳсулот ва хизматрасониҳоеро харидорӣ намояд, ки дар нақшаҳои соҳибкорӣ нишон дода шудаанд.</li>' +
             '<li>в) Нафурӯшад, интиқол надиҳад ва ба шахси сеюм иҷозат надиҳад, ки ашёи бо маблағҳои грантӣ харидашударо истифода барад.</li>' +
@@ -472,25 +474,23 @@
             '<li>д) Харидҳоро бо иштироки намояндаи Грантдиҳанда анҷом диҳад.</li>' +
             '</ul>' +
             '<p><b>4.2. Грантдиҳанда ӯҳдадор аст:</b></p>' +
-            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<ul>' +
             '<li>а) Пардохтҳоро сари вақт анҷом диҳад.</li>' +
             '<li>б) Дар доираи салоҳияти худ ба Грантгир барои татбиқи бомуваффақияти лоиҳа кӯмак расонад.</li>' +
             '</ul>' +
 
-            '<h4 style="margin:12px 0 6px 0;">5. ТАРТИБИ ВОРИД НАМУДАНИ ТАҒЙИРОТ</h4>' +
-            '<ul style="margin:6px 0 10px 18px; padding:0;">' +
+            '<h4>5. ТАРТИБИ ВОРИД НАМУДАНИ ТАҒЙИРОТ</h4>' +
+            '<ul>' +
             '<li>а) Ҳама гуна дархост оид ба тағйир додани Созишномаи мазкур бояд дар шакли хаттӣ пешниҳод карда шавад.</li>' +
             '<li>б) Тарафи дигар дар давоми 20 рӯзи корӣ ҷавоби худро пешниҳод менамояд.</li>' +
             '<li>в) Ҳангоми тасдиқ, замимаи дахлдор тартиб дода ва имзо карда мешавад.</li>' +
             '</ul>' +
 
-            '<h3 style="margin:18px 0 8px 0;">IV. ИМЗОҲОИ ТАРАФҲО</h3>' +
-            '<p><b>ГРАНТДИҲАНДА</b>: Имзо: _________________________</p>' +
-            '<p>Сана: ' + val('signDateDonor', '________________') + '</p>' +
-            '<p><i>(ҷойи мӯҳр)</i></p>' +
-            '<p><b>ГРАНТГИРАНДА</b>: Имзо: _________________________</p>' +
-            '<p>Сана: ' + val('signDateBeneficiary', '________________') + '</p>' +
-            '<p><i>(ҷойи мӯҳр)</i></p>';
+            '<h3>IV. ИМЗОҲОИ ТАРАФҲО</h3>' +
+            '<div class="sign-grid">' +
+            '<div class="sign-col"><p><b>ГРАНТДИҲАНДА</b></p><p>Имзо: _________________________</p><p>Сана: ' + val('signDateDonor', '________________') + '</p><p><i>(ҷойи мӯҳр)</i></p></div>' +
+            '<div class="sign-col"><p><b>ГРАНТГИРАНДА</b></p><p>Имзо: _________________________</p><p>Сана: ' + val('signDateBeneficiary', '________________') + '</p><p><i>(ҷойи мӯҳр)</i></p></div>' +
+            '</div>';
     }
 
     function resetGrantContractAutoFieldsFromModal() {
@@ -523,7 +523,7 @@
         }
 
         popup.document.open();
-        popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + (title || 'Grant Contract Preview') + '</title><style>body{font-family:Arial,sans-serif;padding:24px;color:#111;line-height:1.45}h1,h2,h3{page-break-after:avoid} .hint{font-size:12px;color:#555;margin-bottom:12px;padding:8px;border:1px dashed #ccc;border-radius:8px;background:#fafafa} @media print {.hint{display:none}}</style></head><body>' + (showPdfHint ? '<div class="hint">Для экспорта в PDF выберите в окне печати: Save as PDF / Сохранить как PDF.</div>' : '') + bodyHtml + '</body></html>');
+        popup.document.write('<!doctype html><html><head><meta charset="utf-8"><title>' + (title || 'Grant Contract Preview') + '</title><style>@page{size:A4;margin:18mm 16mm 18mm 16mm}html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.45} .hint{font-size:10pt;color:#555;margin:0 0 10px 0;padding:7px 10px;border:1px dashed #cbd5e1;border-radius:8px;background:#f8fafc} .contract-doc{max-width:180mm;margin:0 auto} .contract-doc h1{font-size:15pt;text-align:center;margin:0 0 10px 0;line-height:1.3} .contract-doc h3{font-size:12pt;margin:12px 0 6px 0;line-height:1.3;page-break-after:avoid} .contract-doc h4{font-size:12pt;margin:8px 0 4px 0;line-height:1.3;page-break-after:avoid} .contract-doc p{margin:0 0 6px 0;text-align:justify} .contract-doc ul{margin:4px 0 8px 18px;padding:0} .contract-doc li{margin:0 0 4px 0} .sign-grid{display:flex;gap:18mm;justify-content:space-between;margin-top:10mm} .sign-col{flex:1;min-width:0} .sign-col p{text-align:left} @media print {.hint{display:none} body{font-size:12pt} .contract-doc{max-width:none;margin:0} .contract-doc h1,.contract-doc h3,.contract-doc h4,.contract-doc p,.contract-doc li{orphans:3;widows:3}}</style></head><body>' + (showPdfHint ? '<div class="hint">Для экспорта в PDF выберите в окне печати: Save as PDF / Сохранить как PDF.</div>' : '') + bodyHtml + '</body></html>');
         popup.document.close();
 
         if (autoPrint) {
