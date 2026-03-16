@@ -413,7 +413,7 @@
 
             // Build missing fields list
             if (fieldsListEl) {
-                var listHtml = '<span class="font-bold">Нопурраҳо / Отсутствуют:</span> ';
+                var listHtml = '<span class="font-bold">Майдонҳо / Поля:</span> ';
                 result.missingFields.forEach(function (key) {
                     var fieldDef = fields.find(function (f) { return f.key === key; });
                     if (fieldDef) listHtml += '<span class="inline-block bg-orange-200 text-orange-900 px-1.5 py-0.5 rounded mr-1 mb-1">' + fieldDef.label + '</span>';
@@ -799,7 +799,7 @@
                         var missingLabels = getMissingFieldLabels(selCompleteness.missingFields).join(', ');
                         duplicateWarning.classList.remove('hidden', 'bg-rose-50', 'border-rose-200', 'text-rose-800', 'bg-amber-50', 'border-amber-200', 'text-amber-800');
                         duplicateWarning.classList.add('bg-orange-50', 'border-orange-300', 'text-orange-800');
-                        duplicateWarning.textContent = '⚠ Маълумоти бенефициар нопурра аст! / Данные бенефициара неполные! Нопурра / Неполное: ' + missingLabels + '.';
+                        duplicateWarning.textContent = '⚠ Маълумоти бенефициар нопурра аст! / Данные бенефициара неполные: ' + missingLabels + '.';
                         if (details.fields.length > 0) {
                             var hitIds2 = details.matches.slice(0, 3).map(function (m) { return '#' + m.appId; });
                             duplicateWarning.textContent += ' Инчунин ёфт шуд такрор / Также найден дубль: ' + details.fields.join(', ') + ' дар дархостҳо / в заявках: ' + hitIds2.join(', ') + '.';
