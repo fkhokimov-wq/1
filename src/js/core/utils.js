@@ -674,6 +674,12 @@
         return agreement;
     }
 
+    function isFullyCompletedApplication(app) {
+        if (!app || app.status !== 'approved') return false;
+        var agreement = ensureGrantAgreement(app);
+        return !!(agreement && agreement.uploaded && agreement.fileName);
+    }
+
     function ensureGrantContractDraft(app) {
         if (!app) return null;
         if (!app.grantContractDraft) {
@@ -923,6 +929,7 @@
         getCurrentWordVersionInfo,
         ensureGrantAgreement,
         registerGrantAgreement,
+        isFullyCompletedApplication,
         ensureGrantContractDraft,
         registerGrantContractDraft,
         getApplicationDocumentCompleteness,
@@ -950,6 +957,7 @@
     window.getCurrentWordVersionInfo = getCurrentWordVersionInfo;
     window.ensureGrantAgreement = ensureGrantAgreement;
     window.registerGrantAgreement = registerGrantAgreement;
+    window.isFullyCompletedApplication = isFullyCompletedApplication;
     window.ensureGrantContractDraft = ensureGrantContractDraft;
     window.registerGrantContractDraft = registerGrantContractDraft;
     window.getApplicationDocumentCompleteness = getApplicationDocumentCompleteness;

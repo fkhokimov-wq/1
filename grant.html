@@ -157,6 +157,15 @@
                     <span id="dash-approved-badge"
                         class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
+                <button data-filter="finance_registry"
+                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[145px]">
+                    <div class="flex flex-col items-start leading-tight text-left"><span
+                            class="text-[13px] font-bold">Молия</span><span
+                            class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">Финансовый отдел</span>
+                    </div>
+                    <span id="dash-finance-badge"
+                        class="bg-emerald-700 text-white px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                </button>
                 <button data-filter="statuses"
                     class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[120px]">
                     <div class="flex flex-col items-start leading-tight text-left"><span
@@ -240,8 +249,8 @@
                     class="bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded text-[10px] hidden">0</span></button>
             <button data-fac-filter="completed"
                 class="fac-filter-btn bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-[12px] font-bold whitespace-nowrap hover:bg-slate-50 transition-colors flex items-center gap-2"><span
-                    class="filter-text"><span>Ба анҷом расида</span><span
-                        class="ru-block">Завершенные</span></span><span id="sub-fac-completed-badge"
+                    class="filter-text"><span>Пурра анҷом ёфт</span><span class="ru-block">Полностью
+                        завершенные</span></span><span id="sub-fac-completed-badge"
                     class="bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded text-[10px] hidden">0</span></button>
             <button data-fac-filter="postponed"
                 class="fac-filter-btn bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-[12px] font-bold whitespace-nowrap hover:bg-slate-50 transition-colors flex items-center gap-2"><span
@@ -340,6 +349,11 @@
                     class="filter-text"><span>Тасдиқшуда</span><span class="ru-block">Одобренные</span></span><span
                     id="sub-stat-approved-badge"
                     class="bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded text-[10px] hidden">0</span></button>
+            <button data-stat-filter="completed"
+                class="stat-filter-btn bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-[12px] font-bold whitespace-nowrap hover:bg-slate-50 transition-colors flex items-center gap-2"><span
+                    class="filter-text"><span>Пурра анҷом ёфт</span><span class="ru-block">Полностью
+                        завершенные</span></span><span id="sub-stat-completed-badge"
+                    class="bg-emerald-700 text-white px-1.5 py-0.5 rounded text-[10px] hidden">0</span></button>
             <button data-stat-filter="postponed"
                 class="stat-filter-btn bg-white text-slate-600 border border-slate-200 px-4 py-2 rounded-lg text-[12px] font-bold whitespace-nowrap hover:bg-slate-50 transition-colors flex items-center gap-2"><span
                     class="filter-text"><span>Мавқуф</span><span class="ru-block">Отложенные</span></span><span
@@ -501,6 +515,21 @@
             <div id="active-mode-title" class="text-[13px] font-bold text-slate-800">Режим: По статусам</div>
             <div id="active-mode-desc" class="text-[11px] text-slate-500 mt-0.5">Показываются заявки согласно выбранному
                 фильтру.</div>
+        </div>
+
+        <div id="completed-summary-bar"
+            class="hidden mb-4 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                    <div class="text-[13px] font-bold text-emerald-900">Полностью завершенные заявки: <span
+                            id="completed-summary-count">0</span></div>
+                    <div id="completed-summary-desc" class="text-[12px] text-emerald-800 mt-0.5">Показаны только
+                        заявки после одобрения Комитетом и с загруженным подписанным договором.</div>
+                </div>
+                <button id="btn-export-finance-statement"
+                    class="hidden bg-white border border-emerald-300 text-emerald-700 px-4 py-2 rounded-lg text-[12px] font-bold hover:bg-emerald-100 transition-colors w-full md:w-auto">Скачать
+                    выписку (CSV)</button>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="mainDashboardGrid"></div>
