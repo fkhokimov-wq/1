@@ -1922,7 +1922,7 @@
             piu: 'ГТЛ / ГРП',
             committee: 'Кумита / Комитет',
             approved_registry: 'Тасдиқшуда / Одобренные',
-            finance_registry: 'Молия / Финансовый отдел',
+            finance_registry: 'Молия / Финансы',
             statuses: 'Аз рӯи статус / По статусам'
         };
 
