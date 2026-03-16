@@ -739,8 +739,8 @@
             используйте карточки ниже.
         </p>
         <div class="updated">
-            <span class="chip">Последнее обновление: 14.03.2026</span>
-            <span class="chip">Версия справки: 2.0</span>
+            <span class="chip">Последнее обновление: 16.03.2026</span>
+            <span class="chip">Версия справки: 2.1</span>
             <span class="chip">Источник: инструкция пользователя</span>
         </div>
     </header>
@@ -834,6 +834,45 @@
                         </div>
                     </details>
 
+                    <details class="faq-item" data-role="common"
+                        data-keywords="это не зона работы роли ин мархила кори роли нет доступа">
+                        <summary>Почему вижу сообщение «Это не зона работы роли»? <span class="tag">Доступ</span>
+                        </summary>
+                        <div class="answer">
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Открыть заявку через фильтр той роли, которой принадлежит текущий статус.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>В верхних фильтрах переключитесь на нужную роль: Фасилитатор, ШИГ/КУГ, ГРП или
+                                        Комитет.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Откроется рабочая форма вместо режима просмотра или предупреждения.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="faq-item" data-role="common"
+                        data-keywords="статусы по роли draft fac_revision gmc_review piu_review com_review">
+                        <summary>Какие статусы рабочие для каждой роли? <span class="tag">Статусы</span></summary>
+                        <div class="answer">
+                            <ul>
+                                <li><strong>Фасилитатор:</strong> draft, incomplete_data, fac_revision, postponed.</li>
+                                <li><strong>ШИГ / КУГ:</strong> gmc_review, gmc_revision, gmc_preparation,
+                                    gmc_ready_for_registry.</li>
+                                <li><strong>ГТЛ / ГРП:</strong> piu_review.</li>
+                                <li><strong>Комитет:</strong> com_review.</li>
+                            </ul>
+                            <div class="callout">Статусы approved/rejected открываются из любой роли как только
+                                просмотр.</div>
+                        </div>
+                    </details>
+
                     <details class="faq-item" data-role="common" data-keywords="не могу найти заявку поиск фильтр">
                         <summary>Не могу найти заявку в списке. Что проверить? <span class="tag">Поиск</span></summary>
                         <div class="answer">
@@ -898,7 +937,8 @@
                                             <strong>Сумма</strong>.
                                         </li>
                                         <li>Загрузите Word, PDF и ровно 4 фото.</li>
-                                        <li>Убедитесь, что нет блокировки по дублям.</li>
+                                        <li>Убедитесь, что профиль бенефициара полный и нет блокировки по дублям.</li>
+                                        <li>Проверьте, что обязательные обучающие сессии пройдены.</li>
                                     </ul>
                                 </div>
                                 <div class="howto-block">
@@ -960,7 +1000,8 @@
                                     <span class="howto-title">Где нажать</span>
                                     <ul>
                                         <li>В заявке со статусом <strong>Одобрено</strong> откройте блок
-                                            <strong>Подписанный договор</strong>.</li>
+                                            <strong>Подписанный договор</strong>.
+                                        </li>
                                         <li>Выберите файл PDF/JPG/JPEG/PNG до 10MB.</li>
                                         <li>Нажмите <strong>Загрузить</strong>.</li>
                                     </ul>
@@ -1084,7 +1125,8 @@
                                 </div>
                                 <div class="howto-block">
                                     <span class="howto-title">Результат</span>
-                                    <p>Заявка переводится в следующий статус по принятому решению.</p>
+                                    <p>При заполнении шага 1/1 кнопка завершения активируется, заявка переходит в
+                                        следующий статус по решению.</p>
                                 </div>
                             </div>
                         </div>
@@ -1110,6 +1152,8 @@
                                 <div class="howto-block">
                                     <span class="howto-title">Где нажать</span>
                                     <ul>
+                                        <li>Если входящих реестров несколько, сначала выберите нужный в блоке
+                                            Комитета.</li>
                                         <li>Откройте входящий реестр Комитета.</li>
                                         <li>Заполните дату протокола.</li>
                                         <li>Для каждой заявки выберите решение.</li>
@@ -1157,6 +1201,8 @@
                                     <p>Текущий визит закрыт как выполненный, следующий визит становится активным.</p>
                                 </div>
                             </div>
+                            <div class="callout warn">Если выбрать «Оборудование продано», система отправляет
+                                уведомление администратору.</div>
                             <div class="callout">После сохранения текущий визит становится завершенным, следующий -
                                 активным.
                             </div>
@@ -1214,6 +1260,54 @@
                                 <div class="howto-block">
                                     <span class="howto-title">Результат</span>
                                     <p>Заявка переходит в режим доработки и снова доступна для работы.</p>
+                                </div>
+                            </div>
+                            <div class="callout">Автоматической разблокировки нет: действие выполняется вручную после
+                                даты разблокировки.</div>
+                        </div>
+                    </details>
+
+                    <details class="faq-item" data-keywords="снятие блокировки пока недоступно срок до даты postponed">
+                        <summary>Сообщение: «Снятие блокировки пока недоступно. Срок до даты…» <span
+                                class="tag">Сообщение</span>
+                        </summary>
+                        <div class="answer">
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Дождаться даты разблокировки и повторить действие.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Проверьте дату в уведомлении, затем вернитесь в отложенную заявку и нажмите
+                                        <strong>Разблокировать</strong> повторно.
+                                    </p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>После наступления срока заявка переводится в fac_revision.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <details class="faq-item"
+                        data-keywords="это не зона работы роли танҳо дидан только просмотр чужой статус">
+                        <summary>Сообщение: «Это не зона работы роли» <span class="tag">Сообщение</span></summary>
+                        <div class="answer">
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Открывать заявку в фильтре роли-владельца ее текущего статуса.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Переключите главный фильтр на нужную роль и откройте заявку снова.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Для рабочего статуса откроется редактирование, для approved/rejected — только
+                                        просмотр.</p>
                                 </div>
                             </div>
                         </div>
