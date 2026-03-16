@@ -373,9 +373,79 @@
             /* Keep horizontal centering when used with .wrap (prevent layout drift). */
             margin: .35rem auto 1rem;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: .7rem;
             min-width: 0;
+        }
+
+        .quick-role-link {
+            display: inline-flex;
+            margin-top: .55rem;
+            text-decoration: none;
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-radius: 10px;
+            min-height: 40px;
+            padding: .35rem .6rem;
+            font-size: .82rem;
+            font-weight: 700;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quick-role-link:hover {
+            border-color: #60a5fa;
+            background: #dbeafe;
+        }
+
+        .role-manuals {
+            margin: .2rem auto 1rem;
+            border: 1px solid #dbe7e0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+            padding: .9rem;
+        }
+
+        .role-manuals h3 {
+            font-size: 1.02rem;
+            color: #0f3d39;
+            margin-bottom: .2rem;
+        }
+
+        .role-manuals p {
+            margin: 0 0 .7rem;
+            color: #475569;
+            font-size: .92rem;
+        }
+
+        .manual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: .6rem;
+        }
+
+        .manual-card {
+            border: 1px solid #dbe7e0;
+            border-radius: 12px;
+            padding: .6rem .65rem;
+            background: #fcfefc;
+        }
+
+        .manual-card h4 {
+            margin: 0 0 .3rem;
+            font-size: .92rem;
+            color: #0f766e;
+            font-family: "Exo 2", sans-serif;
+        }
+
+        .manual-card ol {
+            margin: 0;
+            padding-left: 1rem;
+            color: #334155;
+            font-size: .86rem;
+            line-height: 1.42;
         }
 
         .route-quick {
@@ -871,7 +941,7 @@
             <div class="search-help"><strong>Совет:</strong> введите одно слово, например: договор, отправка, ошибка.
             </div>
             <div class="assist-bar">
-                <a class="assist-btn" href="#errors">Я не понимаю, что делать</a>
+                <a class="assist-btn" data-role-jump="all" href="#errors">Я не понимаю, что делать</a>
                 <span class="assist-note">Откроется раздел с типовыми проблемами и быстрыми действиями.</span>
             </div>
         </div>
@@ -912,7 +982,7 @@
             <small>Нажмите карточку роли и получите пошаговую инструкцию</small>
         </div>
         <div class="role-grid">
-            <a class="role-card" href="#facilitator">
+            <a class="role-card" data-role-jump="facilitator" href="#facilitator">
                 <b>Фасилитатор</b>
                 <ul>
                     <li>Создать и заполнить заявку.</li>
@@ -920,7 +990,7 @@
                     <li>Отправить, доработать, разблокировать.</li>
                 </ul>
             </a>
-            <a class="role-card" href="#gmc">
+            <a class="role-card" data-role-jump="gmc" href="#gmc">
                 <b>ШИГ / КУГ</b>
                 <ul>
                     <li>Оценить заявку.</li>
@@ -928,7 +998,7 @@
                     <li>Сформировать и отправить реестр.</li>
                 </ul>
             </a>
-            <a class="role-card" href="#piu">
+            <a class="role-card" data-role-jump="piu" href="#piu">
                 <b>ГТЛ / ГРП</b>
                 <ul>
                     <li>Провести проверку.</li>
@@ -936,7 +1006,7 @@
                     <li>Завершить этап.</li>
                 </ul>
             </a>
-            <a class="role-card" href="#committee">
+            <a class="role-card" data-role-jump="committee" href="#committee">
                 <b>Комитет</b>
                 <ul>
                     <li>Открыть входящий реестр.</li>
@@ -944,7 +1014,7 @@
                     <li>Утвердить список и выгрузить протокол.</li>
                 </ul>
             </a>
-            <a class="role-card" href="#monitoring">
+            <a class="role-card" data-role-jump="monitoring" href="#monitoring">
                 <b>Мониторинг</b>
                 <ul>
                     <li>Открыть активный визит.</li>
@@ -963,6 +1033,7 @@
                 <li>Приложить Word + PDF + 4 фото.</li>
                 <li>Отправить в ШИГ / КУГ.</li>
             </ol>
+            <a class="quick-role-link" data-role-jump="facilitator" href="#facilitator">Открыть инструкцию</a>
         </article>
         <article class="qs-card">
             <h3>Быстрый старт: ШИГ / КУГ</h3>
@@ -971,6 +1042,16 @@
                 <li>Принять решение по заявке.</li>
                 <li>При необходимости вернуть на доработку.</li>
             </ol>
+            <a class="quick-role-link" data-role-jump="gmc" href="#gmc">Открыть инструкцию</a>
+        </article>
+        <article class="qs-card">
+            <h3>Быстрый старт: ГТЛ / ГРП</h3>
+            <ol>
+                <li>Открыть заявку на проверке.</li>
+                <li>Выбрать решение и комментарий.</li>
+                <li>Завершить проверку.</li>
+            </ol>
+            <a class="quick-role-link" data-role-jump="piu" href="#piu">Открыть инструкцию</a>
         </article>
         <article class="qs-card">
             <h3>Быстрый старт: Комитет</h3>
@@ -979,7 +1060,72 @@
                 <li>Выставить решения по заявкам.</li>
                 <li>Утвердить список и выгрузить протокол.</li>
             </ol>
+            <a class="quick-role-link" data-role-jump="committee" href="#committee">Открыть инструкцию</a>
         </article>
+        <article class="qs-card">
+            <h3>Быстрый старт: Мониторинг</h3>
+            <ol>
+                <li>Открыть активный визит.</li>
+                <li>Заполнить обязательные поля.</li>
+                <li>Сохранить визит.</li>
+            </ol>
+            <a class="quick-role-link" data-role-jump="monitoring" href="#monitoring">Открыть инструкцию</a>
+        </article>
+    </section>
+
+    <section class="wrap role-manuals" id="roleManuals">
+        <h3>Расширенные инструкции для пользователей</h3>
+        <p>Для каждой роли ниже даны конкретные шаги работы с заявкой. Нажмите «Открыть инструкцию» в карточке роли
+            выше, чтобы перейти к подробному разделу.</p>
+        <div class="manual-grid">
+            <article class="manual-card">
+                <h4>Фасилитатор: полный цикл</h4>
+                <ol>
+                    <li>Создайте заявку и заполните поля.</li>
+                    <li>Проверьте сектор, сумму, комплект документов.</li>
+                    <li>Отправьте в ШИГ / КУГ.</li>
+                    <li>Если вернули: исправьте и отправьте снова.</li>
+                    <li>После одобрения: договор + мониторинг.</li>
+                </ol>
+            </article>
+            <article class="manual-card">
+                <h4>ШИГ / КУГ: оценка и реестр</h4>
+                <ol>
+                    <li>Откройте заявку на оценке.</li>
+                    <li>Заполните критерии и комментарий.</li>
+                    <li>Примите решение: дальше / на доработку / отказ.</li>
+                    <li>Для реестра: отметьте заявки и отправьте в Комитет.</li>
+                </ol>
+            </article>
+            <article class="manual-card">
+                <h4>ГТЛ / ГРП: проверка</h4>
+                <ol>
+                    <li>Откройте заявку в проверке.</li>
+                    <li>Выберите решение по шагу.</li>
+                    <li>При возврате обязательно укажите причину.</li>
+                    <li>Завершите проверку.</li>
+                </ol>
+            </article>
+            <article class="manual-card">
+                <h4>Комитет: решение по списку</h4>
+                <ol>
+                    <li>Выберите входящий реестр.</li>
+                    <li>Заполните дату протокола.</li>
+                    <li>Укажите решение по каждой заявке.</li>
+                    <li>Для отказа укажите причину.</li>
+                    <li>Утвердите список и выгрузите протокол.</li>
+                </ol>
+            </article>
+            <article class="manual-card">
+                <h4>Мониторинг: визиты</h4>
+                <ol>
+                    <li>Откройте активный визит.</li>
+                    <li>Заполните оборудование, бизнес, доход, эко-проверку.</li>
+                    <li>Сохраните визит.</li>
+                    <li>Проверьте, что следующий визит стал активным.</li>
+                </ol>
+            </article>
+        </div>
     </section>
 
     <section class="wrap route-quick" id="statusRoutesQuick">
@@ -1655,6 +1801,7 @@
             var sectionBlocks = Array.prototype.slice.call(document.querySelectorAll("main .section"));
             var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc-link"));
             var mobileTocLinks = Array.prototype.slice.call(document.querySelectorAll(".mobile-toc-link"));
+            var roleJumpLinks = Array.prototype.slice.call(document.querySelectorAll("[data-role-jump]"));
             var resetFiltersBtn = document.getElementById("resetFiltersBtn");
             var shareStateBtn = document.getElementById("shareStateBtn");
             var activeRoleFilter = "all";
@@ -1905,6 +2052,33 @@
                 });
             }
 
+            function setRoleFilter(nextRole) {
+                activeRoleFilter = String(nextRole || "all").toLowerCase();
+                roleFilterButtons.forEach(function (b) {
+                    var role = String(b.getAttribute("data-role-filter") || "all").toLowerCase();
+                    b.classList.toggle("active", role === activeRoleFilter);
+                });
+                runSearch();
+            }
+
+            function handleRoleJump(link) {
+                if (!link) return;
+                var targetRole = String(link.getAttribute("data-role-jump") || "all").toLowerCase();
+                var href = String(link.getAttribute("href") || "");
+                if (!href || href.charAt(0) !== "#") {
+                    setRoleFilter(targetRole || "all");
+                    return;
+                }
+                var targetId = href.slice(1);
+                setRoleFilter(targetRole || "all");
+                var target = document.getElementById(targetId);
+                if (!target) return;
+                setTimeout(function () {
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                    if (target.classList.contains("section")) setActiveTocBySection(target.id);
+                }, 80);
+            }
+
             function runSearch() {
                 var q = normalize(searchInput.value);
                 applyRoleFilter();
@@ -1959,6 +2133,7 @@
             tocLinks.forEach(function (link) {
                 link.addEventListener("click", function () {
                     var targetId = String(link.getAttribute("data-toc") || "");
+                    setRoleFilter("all");
                     setActiveTocBySection(targetId);
                 });
             });
@@ -1966,16 +2141,22 @@
             mobileTocLinks.forEach(function (link) {
                 link.addEventListener("click", function () {
                     var targetId = String(link.getAttribute("data-toc-mobile") || "");
+                    setRoleFilter("all");
                     setActiveTocBySection(targetId);
                 });
             });
 
             roleFilterButtons.forEach(function (btn) {
                 btn.addEventListener("click", function () {
-                    activeRoleFilter = String(btn.getAttribute("data-role-filter") || "all").toLowerCase();
-                    roleFilterButtons.forEach(function (b) { b.classList.remove("active"); });
-                    btn.classList.add("active");
-                    runSearch();
+                    var role = String(btn.getAttribute("data-role-filter") || "all").toLowerCase();
+                    setRoleFilter(role);
+                });
+            });
+
+            roleJumpLinks.forEach(function (link) {
+                link.addEventListener("click", function (e) {
+                    if (String(link.getAttribute("href") || "").charAt(0) === "#") e.preventDefault();
+                    handleRoleJump(link);
                 });
             });
 
