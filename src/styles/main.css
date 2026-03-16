@@ -183,6 +183,24 @@ body {
     font-size: 11px;
 }
 
+#main-filters-bar .main-filter-btn {
+    min-width: 0;
+    flex: 1 1 0;
+}
+
+#main-filters-bar .main-filter-btn .filter-ru-text {
+    font-size: 11px;
+    line-height: 1.15;
+}
+
+#main-filters-bar .main-filter-btn .main-filter-badge {
+    flex-shrink: 0;
+}
+
+#main-filters-bar .main-filter-btn>div:first-child {
+    min-width: 0;
+}
+
 /* Unified visual style for all filter counters. */
 [id$="-badge"] {
     min-width: 20px;

@@ -115,64 +115,64 @@
 
         <!-- ПАНЕЛЬ ФИЛЬТРОВ И ПЕРЕКЛЮЧАТЕЛЬ ВИДОВ -->
         <div class="flex flex-col xl:flex-row items-center justify-between gap-4 mb-4 w-full">
-            <div
-                class="bg-slate-100 border border-slate-200 rounded-2xl p-1.5 flex items-stretch overflow-x-auto hide-scrollbar w-full shadow-sm">
+            <div id="main-filters-bar"
+                class="bg-slate-100 border border-slate-200 rounded-2xl p-1.5 flex items-stretch gap-1.5 overflow-x-auto hide-scrollbar w-full shadow-sm">
                 <button data-filter="facilitator"
-                    class="filter-btn bg-primary text-white px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 shadow-sm min-w-[146px]">
+                    class="filter-btn main-filter-btn bg-primary text-white px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0 shadow-sm">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">Фасилитатор</span><span
                             class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">Фасилитатор</span></div>
                     <span id="dash-fac-badge"
-                        class="bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-[11px] font-bold hidden animate-pulse">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-[11px] font-bold hidden animate-pulse">0</span>
                 </button>
                 <button data-filter="gmc"
-                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[132px]">
+                    class="filter-btn main-filter-btn text-slate-600 hover:bg-slate-200 px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">ШИГ</span><span
                             class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">КУГ</span></div>
                     <span id="dash-gmc-badge"
-                        class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
                 <button data-filter="piu"
-                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[132px]">
+                    class="filter-btn main-filter-btn text-slate-600 hover:bg-slate-200 px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">ГТЛ</span><span
                             class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">ГРП</span></div>
                     <span id="dash-piu-badge"
-                        class="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
                 <button data-filter="committee"
-                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[138px]">
+                    class="filter-btn main-filter-btn text-slate-600 hover:bg-slate-200 px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">Кумита</span><span
                             class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">Комитет</span></div>
                     <span id="dash-com-badge"
-                        class="bg-teal-100 text-teal-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-teal-100 text-teal-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
                 <button data-filter="approved_registry"
-                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[146px]">
+                    class="filter-btn main-filter-btn text-slate-600 hover:bg-slate-200 px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">Тасдиқшуда</span><span
                             class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">Одобренные</span></div>
                     <span id="dash-approved-badge"
-                        class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
                 <button data-filter="statuses"
-                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 self-stretch min-w-[170px]">
+                    class="filter-btn main-filter-btn text-slate-600 hover:bg-slate-200 px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0 self-stretch">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">Аз рӯи статус</span><span
                             class="text-[11px] font-normal opacity-80 mt-0.5 filter-ru-text">По статусам</span></div>
                     <span id="dash-status-badge"
-                        class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
                 <button data-filter="finance_registry"
-                    class="filter-btn text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-xl flex items-center justify-between gap-3 whitespace-nowrap transition-all flex-shrink-0 min-w-[146px]">
+                    class="filter-btn main-filter-btn text-slate-600 hover:bg-slate-200 px-3 py-2 rounded-xl flex items-start justify-start gap-2.5 transition-all flex-1 min-w-0">
                     <div class="flex flex-col items-start leading-tight text-left"><span
                             class="text-[13px] font-bold">Молия</span><span
                             class="text-[11px] font-normal opacity-70 mt-0.5 filter-ru-text">Финансы</span>
                     </div>
                     <span id="dash-finance-badge"
-                        class="bg-emerald-700 text-white px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
+                        class="main-filter-badge self-start mt-0.5 bg-emerald-700 text-white px-2 py-0.5 rounded-md text-[11px] font-bold hidden">0</span>
                 </button>
             </div>
             <div class="flex items-center justify-end gap-3 w-full xl:w-auto">
