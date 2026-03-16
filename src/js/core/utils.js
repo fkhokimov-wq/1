@@ -195,7 +195,7 @@
         toastHost.style.zIndex = '9998';
         toastHost.style.display = 'flex';
         toastHost.style.flexDirection = 'column';
-        toastHost.style.gap = '12px';
+        toastHost.style.gap = '14px';
         toastHost.style.maxWidth = '560px';
         toastHost.style.pointerEvents = 'none';
         document.body.appendChild(toastHost);
@@ -333,10 +333,10 @@
 
         var tone = kind || 'info';
         var palette = {
-            success: { accent: '#1d4ed8', bd: '#bfdbfe' },
-            info: { accent: '#2563eb', bd: '#bfdbfe' },
-            warning: { accent: '#1e40af', bd: '#c7d2fe' },
-            error: { accent: '#1e3a8a', bd: '#cbd5e1' }
+            success: { accent: '#60a5fa', bd: '#dbeafe' },
+            info: { accent: '#60a5fa', bd: '#dbeafe' },
+            warning: { accent: '#93c5fd', bd: '#dbeafe' },
+            error: { accent: '#93c5fd', bd: '#dbeafe' }
         };
         var ui = palette[tone] || palette.info;
 
@@ -351,10 +351,10 @@
         toast.style.background = '#ffffff';
         toast.style.color = '#1e3a8a';
         toast.style.border = '1px solid ' + ui.bd;
-        toast.style.borderRadius = '18px';
-        toast.style.padding = '14px 16px';
+        toast.style.borderRadius = '24px';
+        toast.style.padding = '18px 20px';
         toast.style.width = 'min(520px, calc(100vw - 28px))';
-        toast.style.boxShadow = '0 16px 34px rgba(30,58,138,0.16)';
+        toast.style.boxShadow = '0 18px 42px rgba(30,58,138,0.12)';
         toast.style.transform = 'translateY(8px)';
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 180ms ease, transform 180ms ease';
@@ -364,20 +364,20 @@
         accent.style.left = '0';
         accent.style.top = '0';
         accent.style.bottom = '0';
-        accent.style.width = '6px';
+        accent.style.width = '8px';
         accent.style.background = ui.accent;
 
         var topRow = document.createElement('div');
         topRow.style.display = 'flex';
         topRow.style.justifyContent = 'space-between';
         topRow.style.alignItems = 'flex-start';
-        topRow.style.gap = '10px';
-        topRow.style.paddingLeft = '6px';
+        topRow.style.gap = '12px';
+        topRow.style.paddingLeft = '10px';
 
         var titleEl = document.createElement('div');
         titleEl.style.fontSize = '16px';
         titleEl.style.fontWeight = '700';
-        titleEl.style.lineHeight = '1.25';
+        titleEl.style.lineHeight = '1.3';
         titleEl.textContent = title || '';
 
         var closeBtn = document.createElement('button');
@@ -386,17 +386,17 @@
         closeBtn.style.border = 'none';
         closeBtn.style.background = 'transparent';
         closeBtn.style.color = '#1e40af';
-        closeBtn.style.fontSize = '22px';
+        closeBtn.style.fontSize = '24px';
         closeBtn.style.lineHeight = '1';
         closeBtn.style.cursor = 'pointer';
         closeBtn.style.padding = '0';
         closeBtn.style.marginTop = '-2px';
 
         var msgEl = document.createElement('div');
-        msgEl.style.marginTop = '8px';
-        msgEl.style.paddingLeft = '6px';
+        msgEl.style.marginTop = '10px';
+        msgEl.style.paddingLeft = '10px';
         msgEl.style.fontSize = '14px';
-        msgEl.style.lineHeight = '1.55';
+        msgEl.style.lineHeight = '1.6';
         msgEl.style.color = '#1e40af';
         msgEl.textContent = message || '';
 
