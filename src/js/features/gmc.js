@@ -17,14 +17,50 @@
         return document.getElementById('gmc-operator-name');
     }
 
-    function getGmcOperatorName(app) {
+    function getNormalizedGmcOperatorName(app) {
         var input = getGmcOperatorInputEl();
         var typed = input ? String(input.value || '').trim() : '';
-        if (typed) {
-            if (app) app.gmcOperatorName = typed;
-            return typed;
+        if (typed) return typed;
+        if (app && app.gmcOperatorName) return String(app.gmcOperatorName).trim();
+        return '';
+    }
+
+    function setGmcOperatorInputErrorState(hasError) {
+        var input = getGmcOperatorInputEl();
+        if (!input) return;
+        input.classList.toggle('border-red-300', hasError);
+        input.classList.toggle('bg-red-50', hasError);
+        input.classList.toggle('text-red-800', hasError);
+        input.classList.toggle('focus:ring-2', hasError);
+        input.classList.toggle('focus:ring-red-100', hasError);
+    }
+
+    function validateGmcOperatorRequired(app, showMessage) {
+        var input = getGmcOperatorInputEl();
+        if (input && input.disabled) {
+            setGmcOperatorInputErrorState(false);
+            return true;
         }
-        if (app && app.gmcOperatorName) return String(app.gmcOperatorName);
+
+        var name = getNormalizedGmcOperatorName(app);
+        var isValid = !!name;
+        setGmcOperatorInputErrorState(!isValid);
+
+        if (!isValid && showMessage) {
+            notifyMessage('warning', 'Лутфан ФИО оператори ШИГ/КУГ-ро ворид кунед. / Пожалуйста, укажите ФИО оператора ШИГ/КУГ.');
+            if (input && typeof input.focus === 'function') input.focus();
+        }
+
+        if (isValid && app) app.gmcOperatorName = name;
+        return isValid;
+    }
+
+    function getGmcOperatorName(app) {
+        var name = getNormalizedGmcOperatorName(app);
+        if (name) {
+            if (app) app.gmcOperatorName = name;
+            return name;
+        }
         return 'ШИГ / КУГ';
     }
 
@@ -36,6 +72,7 @@
         input.disabled = !isEditable;
         input.classList.toggle('bg-slate-100', !isEditable);
         input.classList.toggle('cursor-not-allowed', !isEditable);
+        setGmcOperatorInputErrorState(false);
     }
 
     function updateGmcWordVersionLabel(app) {
@@ -194,6 +231,16 @@
         if (bRev) bRev.disabled = false;
         if (bRej) bRej.disabled = false;
 
+        var app = window.getApp(window.currentGmcAppId);
+        var hasOperatorName = validateGmcOperatorRequired(app, false);
+        if (!hasOperatorName) {
+            if (bOk) bOk.disabled = true;
+            if (bRev) bRev.disabled = true;
+            if (bRej) bRej.disabled = true;
+            if (window.currentGmcChoice) setGmcDecision(null);
+            return;
+        }
+
         // Hard gate: no decision can be selected until all required answers are provided.
         if (!isComplete) {
             if (bOk) bOk.disabled = true;
@@ -280,6 +327,8 @@
         const bRev = document.getElementById('btn-resubmit-gmc');
         const bRej = document.getElementById('btn-reject');
         if (!bOk) return;
+        var app = window.getApp(window.currentGmcAppId);
+        if (val && !validateGmcOperatorRequired(app, true)) return;
         if (val === 'ok' && bOk.disabled) return;
         if (val === 'rev' && bRev.disabled) return;
         if (val === 'rej' && bRej.disabled) return;
@@ -321,6 +370,10 @@
     }
 
     function saveGmcDecision() {
+        const app = window.getApp(window.currentGmcAppId);
+        if (!app) return;
+        if (!validateGmcOperatorRequired(app, true)) return;
+
         var validation = validateGmcQuestionnaire();
         if (!validation.isValid) {
             if (validation.firstRow && typeof validation.firstRow.scrollIntoView === 'function') {
@@ -342,8 +395,6 @@
             return;
         }
 
-        const app = window.getApp(window.currentGmcAppId);
-        if (!app) return;
         app.date = window.getCurrentDateTime();
         var gmcActor = getGmcOperatorName(app);
         const comment = document.getElementById('gmc-comment').value || '';
@@ -391,6 +442,7 @@
     function sendGmcBackToPiu() {
         const app = window.getApp(window.currentGmcAppId);
         if (!app) return;
+        if (!validateGmcOperatorRequired(app, true)) return;
         var gmcActor = getGmcOperatorName(app);
 
         var wordFileName = getGmcRevisionUploadFileName();
@@ -440,6 +492,7 @@
     function sendGmcToFacilitator() {
         const app = window.getApp(window.currentGmcAppId);
         if (!app) return;
+        if (!validateGmcOperatorRequired(app, true)) return;
         var gmcActor = getGmcOperatorName(app);
 
         const commentEl = document.getElementById('gmc-return-comment');
@@ -479,6 +532,7 @@
     function markReadyForRegistry() {
         const app = window.getApp(window.currentGmcAppId);
         if (!app) return;
+        if (!validateGmcOperatorRequired(app, true)) return;
         var gmcActor = getGmcOperatorName(app);
         app.status = 'gmc_ready_for_registry';
         app.date = window.getCurrentDateTime();
@@ -608,6 +662,14 @@
                 var checked = document.querySelector('#gmc-evaluation-content input[name="' + name + '"]:checked');
                 if (row && checked) applyGmcRowError(row, false);
             }
+            updateGmcScoreAndButtons();
+        }
+    });
+
+    document.addEventListener('input', function (e) {
+        if (e.target && e.target.id === 'gmc-operator-name') {
+            var app = window.getApp(window.currentGmcAppId);
+            validateGmcOperatorRequired(app, false);
             updateGmcScoreAndButtons();
         }
     });
