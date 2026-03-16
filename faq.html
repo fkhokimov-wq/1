@@ -43,7 +43,7 @@
                 radial-gradient(circle at 10% -10%, #ecfdf5 0%, rgba(236, 253, 245, 0) 45%),
                 radial-gradient(circle at 95% 0%, #fef3c7 0%, rgba(254, 243, 199, 0) 40%),
                 var(--bg);
-            line-height: 1.5;
+            line-height: 1.6;
             overflow-x: hidden;
         }
 
@@ -101,6 +101,7 @@
             display: flex;
             gap: .65rem;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .search input {
@@ -109,8 +110,8 @@
             border: 1px solid #b8cfc4;
             background: var(--surface);
             border-radius: 12px;
-            padding: .72rem .8rem;
-            font-size: .96rem;
+            padding: .84rem .9rem;
+            font-size: 1rem;
         }
 
         .btn {
@@ -118,9 +119,11 @@
             background: var(--surface);
             color: #0f3d39;
             border-radius: 10px;
-            padding: .65rem .85rem;
+            padding: .68rem .9rem;
             font-weight: 700;
             cursor: pointer;
+            min-height: 44px;
+            font-size: .92rem;
         }
 
         .btn:hover {
@@ -144,7 +147,77 @@
             gap: .6rem;
             flex-wrap: wrap;
             color: var(--muted);
+            font-size: .98rem;
+        }
+
+        .search-help {
+            color: #1f2937;
+            font-size: .95rem;
+        }
+
+        .search-help strong {
+            color: #0f3d39;
+        }
+
+        .primary-actions {
+            display: inline-flex;
+            gap: .55rem;
+            flex-wrap: wrap;
+        }
+
+        .advanced-tools {
+            border: 1px dashed #bfd6cb;
+            border-radius: 12px;
+            padding: .45rem .55rem;
+            background: #fbfefd;
+        }
+
+        .advanced-tools summary {
+            cursor: pointer;
+            color: #0f3d39;
+            font-family: "PT Sans", sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            list-style: none;
+        }
+
+        .advanced-tools summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .advanced-tools-row {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin-top: .5rem;
+        }
+
+        .assist-bar {
+            margin-top: .6rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .assist-btn {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #bfdbfe;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-radius: 12px;
+            min-height: 44px;
+            padding: .55rem .85rem;
             font-size: .92rem;
+            font-weight: 700;
+        }
+
+        .assist-note {
+            color: #475569;
+            font-size: .9rem;
         }
 
         .toolbar-row {
@@ -170,10 +243,11 @@
             background: #fff;
             color: #0f3d39;
             border-radius: 999px;
-            padding: .35rem .65rem;
-            font-size: .82rem;
+            padding: .45rem .75rem;
+            font-size: .9rem;
             font-weight: 700;
             cursor: pointer;
+            min-height: 40px;
         }
 
         .pill:hover {
@@ -399,11 +473,12 @@
             cursor: pointer;
             font-family: "Exo 2", sans-serif;
             font-weight: 700;
-            padding: .62rem 0;
+            padding: .75rem 0;
             display: flex;
             justify-content: space-between;
             gap: .9rem;
             align-items: flex-start;
+            font-size: 1.04rem;
         }
 
         summary::-webkit-details-marker {
@@ -425,6 +500,7 @@
         .answer {
             color: #1f2937;
             padding: 0 0 .85rem;
+            font-size: 1rem;
         }
 
         .answer p {
@@ -438,6 +514,37 @@
 
         .answer li {
             margin: .15rem 0;
+        }
+
+        .howto-grid {
+            display: grid;
+            gap: .5rem;
+            margin: .35rem 0;
+        }
+
+        .howto-block {
+            border: 1px solid #d9e6df;
+            border-radius: 12px;
+            background: #fbfefd;
+            padding: .5rem .65rem;
+        }
+
+        .howto-title {
+            display: block;
+            font-family: "Exo 2", sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+            color: #0f3d39;
+            margin-bottom: .15rem;
+        }
+
+        .howto-block p {
+            margin: 0;
+        }
+
+        .howto-block ul {
+            margin: .2rem 0 0;
+            padding-left: 1rem;
         }
 
         .hl {
@@ -588,8 +695,8 @@
             }
 
             .btn {
-                padding: .56rem .72rem;
-                font-size: .83rem;
+                padding: .6rem .76rem;
+                font-size: .9rem;
             }
         }
     </style>
@@ -602,11 +709,24 @@
                 <input id="faqSearch" type="search"
                     placeholder="Поиск по вопросам: договор, отправка, мониторинг, комитет..."
                     aria-label="Поиск по справке">
-                <button class="btn" id="openAllBtn" type="button">Открыть все ответы</button>
-                <button class="btn" id="closeAllBtn" type="button">Скрыть все ответы</button>
-                <button class="btn" id="resetFiltersBtn" type="button">Сбросить</button>
-                <button class="btn btn-accent" id="shareStateBtn" type="button">Поделиться</button>
-                <a class="btn" href="grant.html">Открыть систему</a>
+                <div class="primary-actions">
+                    <button class="btn" id="resetFiltersBtn" type="button">Очистить поиск</button>
+                    <a class="btn btn-accent" href="grant.html">Вернуться в систему</a>
+                </div>
+                <details class="advanced-tools" id="advancedFaqTools">
+                    <summary>Дополнительно</summary>
+                    <div class="advanced-tools-row">
+                        <button class="btn" id="openAllBtn" type="button">Открыть все ответы</button>
+                        <button class="btn" id="closeAllBtn" type="button">Скрыть все ответы</button>
+                        <button class="btn" id="shareStateBtn" type="button">Поделиться</button>
+                    </div>
+                </details>
+            </div>
+            <div class="search-help"><strong>Совет:</strong> введите одно слово, например: договор, отправка, ошибка.
+            </div>
+            <div class="assist-bar">
+                <a class="assist-btn" href="#errors">Я не понимаю, что делать</a>
+                <span class="assist-note">Откроется раздел с типовыми проблемами и быстрыми действиями.</span>
             </div>
         </div>
     </div>
@@ -677,12 +797,12 @@
 
     <nav class="wrap mobile-toc" aria-label="Быстрые переходы FAQ">
         <a class="mobile-toc-link" href="#common" data-toc-mobile="common">Общие</a>
+        <a class="mobile-toc-link" href="#errors" data-toc-mobile="errors">Ошибки</a>
         <a class="mobile-toc-link" href="#facilitator" data-toc-mobile="facilitator">Фасилитатор</a>
         <a class="mobile-toc-link" href="#gmc" data-toc-mobile="gmc">ШИГ / КУГ</a>
         <a class="mobile-toc-link" href="#piu" data-toc-mobile="piu">ГТЛ / ГРП</a>
         <a class="mobile-toc-link" href="#committee" data-toc-mobile="committee">Комитет</a>
         <a class="mobile-toc-link" href="#monitoring" data-toc-mobile="monitoring">Мониторинг</a>
-        <a class="mobile-toc-link" href="#errors" data-toc-mobile="errors">Ошибки</a>
     </nav>
 
     <div class="wrap faq-layout">
@@ -738,12 +858,24 @@
                         data-keywords="новая заявка создать beneficiary certified">
                         <summary>Как правильно создать новую заявку? <span class="tag">Шаг</span></summary>
                         <div class="answer">
-                            <ul>
-                                <li>Нажмите <strong>Новая заявка</strong>.</li>
-                                <li>Найдите бенефициара по ФИО/ИНН/телефону.</li>
-                                <li>Выберите запись и нажмите <strong>Создать</strong>.</li>
-                                <li>Заполните поля вкладки Фасилитатора.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Создать новую заявку и заполнить базовые поля Фасилитатора.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <ul>
+                                        <li>Нажмите <strong>Новая заявка</strong>.</li>
+                                        <li>Найдите бенефициара по ФИО/ИНН/телефону.</li>
+                                        <li>Выберите запись и нажмите <strong>Создать</strong>.</li>
+                                    </ul>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Открыта заявка для заполнения полей и дальнейшей отправки.</p>
+                                </div>
+                            </div>
                             <div class="callout warn">Если не создается: проверьте статус сертификации и предупреждение
                                 о дубле.
                             </div>
@@ -754,11 +886,25 @@
                         data-keywords="отправка шиг word pdf 4 фото комплект">
                         <summary>Что обязательно перед отправкой в ШИГ / КУГ? <span class="tag">Шаг</span></summary>
                         <div class="answer">
-                            <ul>
-                                <li>Заполнены поле сектора и сумма.</li>
-                                <li>Загружен комплект: документ Word, PDF и ровно 4 фото.</li>
-                                <li>Нет блокирующих дублей и неполного профиля.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Проверить обязательные условия перед отправкой заявки.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <ul>
+                                        <li>Во вкладке Фасилитатора заполните <strong>Сектор</strong> и
+                                            <strong>Сумма</strong>.</li>
+                                        <li>Загрузите Word, PDF и ровно 4 фото.</li>
+                                        <li>Убедитесь, что нет блокировки по дублям.</li>
+                                    </ul>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Кнопка отправки активна, заявку можно отправить в ШИГ / КУГ.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -778,13 +924,25 @@
                         data-keywords="договор создать редактировать approved preview print pdf">
                         <summary>Как сформировать договор в системе? <span class="tag">Шаг</span></summary>
                         <div class="answer">
-                            <ul>
-                                <li>Откройте заявку в статусе <strong>Одобрено</strong>.</li>
-                                <li>Раскройте блок <strong>Создание договора</strong>.</li>
-                                <li>Заполните разделы сверху вниз.</li>
-                                <li>Сохраните черновик.</li>
-                                <li>Откройте предварительный просмотр, затем печать или экспорт PDF.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Создать черновик договора и проверить его перед печатью.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <ul>
+                                        <li>Откройте заявку в статусе <strong>Одобрено</strong>.</li>
+                                        <li>Раскройте блок <strong>Создание договора</strong>.</li>
+                                        <li>Заполните разделы и нажмите <strong>Сохранить черновик</strong>.</li>
+                                        <li>Используйте <strong>Предпросмотр</strong>, затем печать/экспорт PDF.</li>
+                                    </ul>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Сформирован корректный договор, готовый к печати или выгрузке.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -919,12 +1077,24 @@
                         <summary>Заявка не отправляется из Фасилитатора. Почему? <span class="tag">Ошибка</span>
                         </summary>
                         <div class="answer">
-                            <ul>
-                                <li>Не заполнены сектор/сумма.</li>
-                                <li>Нет полного документного пакета.</li>
-                                <li>Неполный профиль бенефициара.</li>
-                                <li>Сработала блокировка по дублю.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что проверить</span>
+                                    <ul>
+                                        <li>Заполнены сектор и сумма.</li>
+                                        <li>Есть полный пакет Word + PDF + 4 фото.</li>
+                                        <li>Нет неполного профиля и блокировки по дублю.</li>
+                                    </ul>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Откройте вкладку Фасилитатора и проверьте все поля перед кнопкой отправки.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>После исправления кнопка отправки становится активной.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -933,9 +1103,21 @@
                                 class="tag">Ошибка</span>
                         </summary>
                         <div class="answer">
-                            <p>Потому что автоматического снятия блокировки нет. Нужна ручная разблокировка
-                                Фасилитатором.
-                            </p>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Выполнить ручную разблокировку заявки Фасилитатором.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Откройте карточку отложенной заявки и нажмите <strong>Разблокировать</strong>.
+                                    </p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Заявка переходит в режим доработки и снова доступна для работы.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -944,11 +1126,20 @@
                         <summary>Системное сообщение: "Заполните сектор и сумму" <span class="tag">Сообщение</span>
                         </summary>
                         <div class="answer">
-                            <ul>
-                                <li>Откройте вкладку Фасилитатора.</li>
-                                <li>Заполните поля `Сектор` и `Сумма`.</li>
-                                <li>Повторите отправку в ШИГ / КУГ.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Заполнить обязательные поля сектора и суммы.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Во вкладке Фасилитатора заполните поля Сектор и Сумма.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Повторная отправка в ШИГ / КУГ проходит успешно.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -957,11 +1148,20 @@
                         <summary>Системное сообщение: "Данные бенефициара неполные" <span class="tag">Сообщение</span>
                         </summary>
                         <div class="answer">
-                            <ul>
-                                <li>Проверьте недостающие поля профиля бенефициара.</li>
-                                <li>Обновите данные в базе бенефициара.</li>
-                                <li>Снова сохраните/отправьте заявку.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Заполнить недостающие данные профиля бенефициара.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Откройте профиль бенефициара в базе и добавьте пустые поля.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>После обновления профиля заявку можно сохранить и отправить без ошибки.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
 
@@ -969,8 +1169,20 @@
                         <summary>Системное сообщение: "Номер договора должен быть в формате Ш-******-ДДММГГ" <span
                                 class="tag">Сообщение</span></summary>
                         <div class="answer">
-                            <p>Номер договора системный и выставляется автоматически. Проверьте, что поле не изменялось
-                                вручную.</p>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Не вводите номер вручную, используйте системное значение.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>Откройте блок договора и оставьте поле номера без ручного редактирования.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Номер формируется автоматически в правильном формате.</p>
+                                </div>
+                            </div>
                             <div class="callout good">Система генерирует сквозную серию: Ш-000001-..., Ш-000002-...,
                                 Ш-000003-...</div>
                         </div>
@@ -982,12 +1194,20 @@
                                 class="tag">Сообщение</span>
                         </summary>
                         <div class="answer">
-                            <ul>
-                                <li>В мониторинге заполните 4 обязательных поля: оборудование, бизнес, доход,
-                                    эко-проверка.
-                                </li>
-                                <li>После этого повторите сохранение визита.</li>
-                            </ul>
+                            <div class="howto-grid">
+                                <div class="howto-block">
+                                    <span class="howto-title">Что делать</span>
+                                    <p>Заполнить все 4 обязательных поля мониторинга.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Где нажать</span>
+                                    <p>В форме визита укажите: оборудование, бизнес, доход, эко-проверку.</p>
+                                </div>
+                                <div class="howto-block">
+                                    <span class="howto-title">Результат</span>
+                                    <p>Сохранение визита выполняется без предупреждения.</p>
+                                </div>
+                            </div>
                         </div>
                     </details>
                 </div>
@@ -1000,12 +1220,12 @@
             </div>
             <nav class="toc-list">
                 <a class="toc-link" href="#common" data-toc="common">Общие вопросы</a>
+                <a class="toc-link" href="#errors" data-toc="errors">Типовые ошибки</a>
                 <a class="toc-link" href="#facilitator" data-toc="facilitator">Фасилитатор</a>
                 <a class="toc-link" href="#gmc" data-toc="gmc">ШИГ / КУГ</a>
                 <a class="toc-link" href="#piu" data-toc="piu">ГТЛ / ГРП</a>
                 <a class="toc-link" href="#committee" data-toc="committee">Комитет</a>
                 <a class="toc-link" href="#monitoring" data-toc="monitoring">Мониторинг</a>
-                <a class="toc-link" href="#errors" data-toc="errors">Типовые ошибки</a>
             </nav>
         </aside>
     </div>
@@ -1029,6 +1249,35 @@
             var resetFiltersBtn = document.getElementById("resetFiltersBtn");
             var shareStateBtn = document.getElementById("shareStateBtn");
             var activeRoleFilter = "all";
+
+            function reorderByBeginnerFlow() {
+                var flow = ["common", "errors", "facilitator", "gmc", "piu", "committee", "monitoring"];
+
+                var main = document.querySelector(".faq-main");
+                if (main) {
+                    flow.forEach(function (id) {
+                        var section = main.querySelector("#" + id);
+                        if (section) main.appendChild(section);
+                    });
+                    sectionBlocks = Array.prototype.slice.call(main.querySelectorAll(".section"));
+                }
+
+                var desktopToc = document.querySelector(".toc .toc-list");
+                if (desktopToc) {
+                    flow.forEach(function (id) {
+                        var link = desktopToc.querySelector('[data-toc="' + id + '"]');
+                        if (link) desktopToc.appendChild(link);
+                    });
+                }
+
+                var mobileToc = document.querySelector(".mobile-toc");
+                if (mobileToc) {
+                    flow.forEach(function (id) {
+                        var mLink = mobileToc.querySelector('[data-toc-mobile="' + id + '"]');
+                        if (mLink) mobileToc.appendChild(mLink);
+                    });
+                }
+            }
 
             function escapeRegExp(value) {
                 return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -1331,6 +1580,7 @@
 
             ensureQuestionIdsAndTools();
             attachFeedback();
+            reorderByBeginnerFlow();
             applyStateFromUrl();
             searchInput.addEventListener("input", runSearch);
             faqItems.forEach(function (item) {
