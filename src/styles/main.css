@@ -183,27 +183,6 @@ body {
     font-size: 11px;
 }
 
-@media (max-width: 1360px) {
-    .filter-btn:not(.bg-primary) {
-        min-width: 108px !important;
-        gap: 8px !important;
-    }
-
-    .filter-btn[data-filter="approved_registry"]:not(.bg-primary),
-    .filter-btn[data-filter="statuses"]:not(.bg-primary),
-    .filter-btn[data-filter="finance_registry"]:not(.bg-primary) {
-        min-width: 118px !important;
-    }
-
-    .filter-btn:not(.bg-primary) .filter-ru-text {
-        display: none;
-    }
-
-    .filter-btn:not(.bg-primary) .text-\[13px\] {
-        font-size: 12px;
-    }
-}
-
 /* Unified visual style for all filter counters. */
 [id$="-badge"] {
     min-width: 20px;
