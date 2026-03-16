@@ -369,6 +369,35 @@
         var isRouteMessage = String(message || '').indexOf('Маршрут:') !== -1;
         var host = isRouteMessage ? notifyState.centerToastHost : notifyState.toastHost;
 
+        function extractRouteParts(rawMessage) {
+            var raw = String(rawMessage || '').trim();
+            if (!raw) return null;
+
+            var routeLabel = 'Маршрут:';
+            var nextLabel = 'Следующий статус:';
+            var routeIndex = raw.indexOf(routeLabel);
+            if (routeIndex === -1) return null;
+
+            var nextIndex = raw.indexOf(nextLabel);
+            var summary = raw.slice(0, routeIndex).trim().replace(/[.\s]+$/, '');
+            var routeValue = (nextIndex === -1
+                ? raw.slice(routeIndex + routeLabel.length)
+                : raw.slice(routeIndex + routeLabel.length, nextIndex)
+            ).trim().replace(/[.\s]+$/, '');
+            var nextValue = (nextIndex === -1
+                ? ''
+                : raw.slice(nextIndex + nextLabel.length)
+            ).trim().replace(/[.\s]+$/, '');
+
+            return {
+                summary: summary,
+                route: routeValue,
+                next: nextValue
+            };
+        }
+
+        var routeParts = isRouteMessage ? extractRouteParts(message) : null;
+
         while (host.children.length >= (isRouteMessage ? 1 : 3)) {
             host.removeChild(host.children[0]);
         }
@@ -381,9 +410,11 @@
         toast.style.color = '#1e3a8a';
         toast.style.border = '1px solid ' + ui.bd;
         toast.style.borderRadius = '24px';
-        toast.style.padding = '18px 20px';
-        toast.style.width = 'min(520px, calc(100vw - 28px))';
-        toast.style.boxShadow = '0 18px 42px rgba(30,58,138,0.12)';
+        toast.style.padding = isRouteMessage ? '22px 24px' : '18px 20px';
+        toast.style.width = isRouteMessage ? 'min(760px, calc(100vw - 28px))' : 'min(520px, calc(100vw - 28px))';
+        toast.style.boxShadow = isRouteMessage
+            ? '0 28px 64px rgba(30,58,138,0.18)'
+            : '0 18px 42px rgba(30,58,138,0.12)';
         toast.style.transform = isRouteMessage ? 'scale(0.98)' : 'translateY(8px)';
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 180ms ease, transform 180ms ease';
@@ -404,7 +435,7 @@
         topRow.style.paddingLeft = '10px';
 
         var titleEl = document.createElement('div');
-        titleEl.style.fontSize = '16px';
+        titleEl.style.fontSize = isRouteMessage ? '20px' : '16px';
         titleEl.style.fontWeight = '700';
         titleEl.style.lineHeight = '1.3';
         titleEl.textContent = title || '';
@@ -424,16 +455,45 @@
         var msgEl = document.createElement('div');
         msgEl.style.marginTop = '10px';
         msgEl.style.paddingLeft = '10px';
-        msgEl.style.fontSize = '14px';
+        msgEl.style.fontSize = isRouteMessage ? '15px' : '14px';
         msgEl.style.lineHeight = '1.6';
         msgEl.style.color = '#1e40af';
-        msgEl.textContent = message || '';
+        msgEl.textContent = routeParts && routeParts.summary ? routeParts.summary : (message || '');
+
+        var routeLine = null;
+        var nextLine = null;
+        if (isRouteMessage && routeParts && routeParts.route) {
+            routeLine = document.createElement('div');
+            routeLine.style.marginTop = '10px';
+            routeLine.style.marginLeft = '10px';
+            routeLine.style.padding = '10px 12px';
+            routeLine.style.borderRadius = '12px';
+            routeLine.style.background = '#eff6ff';
+            routeLine.style.border = '1px solid #bfdbfe';
+            routeLine.style.fontSize = '15px';
+            routeLine.style.lineHeight = '1.4';
+            routeLine.style.fontWeight = '700';
+            routeLine.style.color = '#1d4ed8';
+            routeLine.textContent = 'Маршрут: ' + routeParts.route;
+        }
+        if (isRouteMessage && routeParts && routeParts.next) {
+            nextLine = document.createElement('div');
+            nextLine.style.marginTop = '8px';
+            nextLine.style.marginLeft = '10px';
+            nextLine.style.fontSize = '14px';
+            nextLine.style.lineHeight = '1.45';
+            nextLine.style.fontWeight = '600';
+            nextLine.style.color = '#1e40af';
+            nextLine.textContent = 'Следующий статус: ' + routeParts.next;
+        }
 
         toast.appendChild(accent);
         topRow.appendChild(titleEl);
         topRow.appendChild(closeBtn);
         toast.appendChild(topRow);
         if (message) toast.appendChild(msgEl);
+        if (routeLine) toast.appendChild(routeLine);
+        if (nextLine) toast.appendChild(nextLine);
         host.appendChild(toast);
 
         requestAnimationFrame(function () {
