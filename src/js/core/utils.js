@@ -367,12 +367,13 @@
         var ui = palette[tone] || palette.info;
 
         var isRouteMessage = String(message || '').indexOf('Маршрут:') !== -1;
-        var host = isRouteMessage ? notifyState.centerToastHost : notifyState.toastHost;
+        var host = notifyState.centerToastHost;
 
         function extractRouteParts(rawMessage) {
             var raw = String(rawMessage || '').trim();
             if (!raw) return null;
 
+            var happenedLabel = 'Что произошло:';
             var routeLabel = 'Маршрут:';
             var nextLabel = 'Следующий статус:';
             var routeIndex = raw.indexOf(routeLabel);
@@ -380,6 +381,7 @@
 
             var nextIndex = raw.indexOf(nextLabel);
             var summary = raw.slice(0, routeIndex).trim().replace(/[.\s]+$/, '');
+            summary = summary.replace(new RegExp('^' + happenedLabel, 'i'), '').trim();
             var routeValue = (nextIndex === -1
                 ? raw.slice(routeIndex + routeLabel.length)
                 : raw.slice(routeIndex + routeLabel.length, nextIndex)
@@ -398,7 +400,7 @@
 
         var routeParts = isRouteMessage ? extractRouteParts(message) : null;
 
-        while (host.children.length >= (isRouteMessage ? 1 : 3)) {
+        while (host.children.length >= 1) {
             host.removeChild(host.children[0]);
         }
 
@@ -408,14 +410,12 @@
         toast.style.overflow = 'hidden';
         toast.style.background = '#ffffff';
         toast.style.color = '#1e3a8a';
-        toast.style.border = '1px solid ' + ui.bd;
-        toast.style.borderRadius = '24px';
-        toast.style.padding = isRouteMessage ? '22px 24px' : '18px 20px';
-        toast.style.width = isRouteMessage ? 'min(760px, calc(100vw - 28px))' : 'min(520px, calc(100vw - 28px))';
-        toast.style.boxShadow = isRouteMessage
-            ? '0 28px 64px rgba(30,58,138,0.18)'
-            : '0 18px 42px rgba(30,58,138,0.12)';
-        toast.style.transform = isRouteMessage ? 'scale(0.98)' : 'translateY(8px)';
+        toast.style.border = '1px solid #cfd8e3';
+        toast.style.borderRadius = '16px';
+        toast.style.padding = '20px 22px';
+        toast.style.width = 'min(760px, calc(100vw - 28px))';
+        toast.style.boxShadow = '0 28px 64px rgba(15,23,42,0.22)';
+        toast.style.transform = 'scale(0.98)';
         toast.style.opacity = '0';
         toast.style.transition = 'opacity 180ms ease, transform 180ms ease';
 
@@ -424,7 +424,7 @@
         accent.style.left = '0';
         accent.style.top = '0';
         accent.style.bottom = '0';
-        accent.style.width = '8px';
+        accent.style.width = '6px';
         accent.style.background = ui.accent;
 
         var topRow = document.createElement('div');
@@ -435,9 +435,10 @@
         topRow.style.paddingLeft = '10px';
 
         var titleEl = document.createElement('div');
-        titleEl.style.fontSize = isRouteMessage ? '20px' : '16px';
+        titleEl.style.fontSize = '22px';
         titleEl.style.fontWeight = '700';
-        titleEl.style.lineHeight = '1.3';
+        titleEl.style.lineHeight = '1.2';
+        titleEl.style.letterSpacing = '-0.01em';
         titleEl.textContent = title || '';
 
         var closeBtn = document.createElement('button');
@@ -446,44 +447,46 @@
         closeBtn.style.border = 'none';
         closeBtn.style.background = 'transparent';
         closeBtn.style.color = '#1e40af';
-        closeBtn.style.fontSize = '24px';
+        closeBtn.style.fontSize = '30px';
         closeBtn.style.lineHeight = '1';
         closeBtn.style.cursor = 'pointer';
         closeBtn.style.padding = '0';
         closeBtn.style.marginTop = '-2px';
 
         var msgEl = document.createElement('div');
-        msgEl.style.marginTop = '10px';
+        msgEl.style.marginTop = '12px';
         msgEl.style.paddingLeft = '10px';
-        msgEl.style.fontSize = isRouteMessage ? '15px' : '14px';
-        msgEl.style.lineHeight = '1.6';
-        msgEl.style.color = '#1e40af';
-        msgEl.textContent = routeParts && routeParts.summary ? routeParts.summary : (message || '');
+        msgEl.style.fontSize = '17px';
+        msgEl.style.lineHeight = '1.35';
+        msgEl.style.color = '#475569';
+        msgEl.textContent = routeParts && routeParts.summary
+            ? routeParts.summary
+            : String(message || '').replace(/^Что произошло:\s*/i, '');
 
         var routeLine = null;
         var nextLine = null;
         if (isRouteMessage && routeParts && routeParts.route) {
             routeLine = document.createElement('div');
-            routeLine.style.marginTop = '10px';
+            routeLine.style.marginTop = '12px';
             routeLine.style.marginLeft = '10px';
-            routeLine.style.padding = '10px 12px';
+            routeLine.style.padding = '12px 14px';
             routeLine.style.borderRadius = '12px';
-            routeLine.style.background = '#eff6ff';
-            routeLine.style.border = '1px solid #bfdbfe';
-            routeLine.style.fontSize = '15px';
+            routeLine.style.background = '#f1f5f9';
+            routeLine.style.border = '1px solid #d0d9e4';
+            routeLine.style.fontSize = '17px';
             routeLine.style.lineHeight = '1.4';
-            routeLine.style.fontWeight = '700';
-            routeLine.style.color = '#1d4ed8';
+            routeLine.style.fontWeight = '500';
+            routeLine.style.color = '#475569';
             routeLine.textContent = 'Маршрут: ' + routeParts.route;
         }
         if (isRouteMessage && routeParts && routeParts.next) {
             nextLine = document.createElement('div');
             nextLine.style.marginTop = '8px';
             nextLine.style.marginLeft = '10px';
-            nextLine.style.fontSize = '14px';
-            nextLine.style.lineHeight = '1.45';
-            nextLine.style.fontWeight = '600';
-            nextLine.style.color = '#1e40af';
+            nextLine.style.fontSize = '16px';
+            nextLine.style.lineHeight = '1.4';
+            nextLine.style.fontWeight = '500';
+            nextLine.style.color = '#475569';
             nextLine.textContent = 'Следующий статус: ' + routeParts.next;
         }
 
@@ -498,12 +501,12 @@
 
         requestAnimationFrame(function () {
             toast.style.opacity = '1';
-            toast.style.transform = isRouteMessage ? 'scale(1)' : 'translateY(0)';
+            toast.style.transform = 'scale(1)';
         });
 
         var timeout = timeoutMs;
         if (!timeout) {
-            timeout = tone === 'error' ? 7000 : tone === 'warning' ? 5000 : 3500;
+            timeout = tone === 'error' ? 9000 : tone === 'warning' ? 7000 : 5000;
         }
 
         var timer = setTimeout(removeToast, timeout);
@@ -514,7 +517,7 @@
         function removeToast() {
             if (!toast.parentNode) return;
             toast.style.opacity = '0';
-            toast.style.transform = isRouteMessage ? 'scale(0.98)' : 'translateY(8px)';
+            toast.style.transform = 'scale(0.98)';
             setTimeout(function () {
                 if (toast.parentNode) toast.parentNode.removeChild(toast);
             }, 170);
