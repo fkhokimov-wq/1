@@ -295,15 +295,15 @@
         var photosCount = existing.photosCount > 0 ? existing.photosCount : selectedPhotos.length;
 
         if (!hasWord) {
-            notifyMessage('warning', 'Лутфан Word файли бизнес-планро замима кунед. / Пожалуйста, приложите Word файл бизнес-плана.');
+            notifyMessage('warning', 'Лутфан Word-файли бизнес-планро замима кунед. / Пожалуйста, приложите Word-файл бизнес-плана.');
             return false;
         }
         if (!hasPdf) {
-            notifyMessage('warning', 'Лутфан PDF файли бизнес-планро замима кунед. / Пожалуйста, приложите PDF файл бизнес-плана.');
+            notifyMessage('warning', 'Лутфан PDF-файли бизнес-планро замима кунед. / Пожалуйста, приложите PDF-файл бизнес-плана.');
             return false;
         }
         if (photosCount !== 4) {
-            notifyMessage('warning', 'Бояд маҳз 4 сурат замима шавад. / Необходимо приложить ровно 4 фото.');
+            notifyMessage('warning', 'Лутфан маҳз 4 сурат замима кунед. / Пожалуйста, приложите ровно 4 фото.');
             return false;
         }
         return true;

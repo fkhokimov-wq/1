@@ -78,7 +78,7 @@
         const noteVal = noteInput ? noteInput.value : '';
 
         if (!eqVal || !bizVal || !incVal || !ecoVal) {
-            notifyMessage('warning', 'Лутфан ҳамаи майдонҳои ҳатмиро пур кунед! / Заполните все обязательные поля!');
+            notifyMessage('warning', 'Лутфан ҳамаи майдонҳои ҳатмиро пур кунед! / Пожалуйста, заполните все обязательные поля!');
             return;
         }
 

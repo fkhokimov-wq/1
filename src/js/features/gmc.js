@@ -229,7 +229,7 @@
             if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
                 window.AppNotify.errorByKey('validation.error');
             } else {
-                notifyMessage('error', 'Қарорро интихоб кунед / Выберите решение');
+                notifyMessage('error', 'Лутфан қарорро интихоб кунед / Пожалуйста, выберите решение');
             }
             return;
         }
@@ -288,7 +288,7 @@
             if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
                 window.AppNotify.errorByKey('validation.errorDetailed');
             } else {
-                notifyMessage('error', 'Лутфан версияи нави Word-ҳуҷҷатро бор кунед. / Пожалуйста, загрузите новую версию Word документа.');
+                notifyMessage('error', 'Лутфан версияи нави Word-ҳуҷҷатро бор кунед. / Пожалуйста, загрузите новую версию Word-документа.');
             }
             return;
         }
@@ -336,7 +336,7 @@
             if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
                 window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
             } else {
-                notifyMessage('warning', 'Лутфан эзоҳи бозгардониданро нависед! / Пожалуйста, укажите комментарий для возврата!');
+                notifyMessage('warning', 'Сабаби бозгардониданро нишон диҳед! / Укажите причину возврата!');
             }
             return;
         }
@@ -410,7 +410,7 @@
 
     function openRegistryPreview() {
         if (!window.selectedForRegistry || window.selectedForRegistry.size === 0) {
-            notifyMessage('warning', 'Ҳадди аққал як дархостро интихоб кунед! / Выберите хотя бы одну заявку!');
+            notifyMessage('warning', 'Лутфан ҳадди аққал як дархостро интихоб кунед! / Пожалуйста, выберите хотя бы одну заявку!');
             return;
         }
 

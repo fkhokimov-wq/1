@@ -93,7 +93,7 @@
             if (pending.length === 1) {
                 targetProtocolId = pending[0].id;
             } else if (pending.length > 1) {
-                notifyMessage('warning', 'Аввал рӯйхати лозимро аз блоки Комитет интихоб кунед / Сначала выберите нужный список в блоке Комитета');
+                notifyMessage('warning', 'Лутфан рӯйхати лозимро аз блоки Кумита интихоб кунед / Пожалуйста, выберите нужный список в блоке Комитета');
                 return;
             }
         }
@@ -243,7 +243,7 @@
                 if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
                     window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
                 } else {
-                    notifyMessage('warning', 'Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                    notifyMessage('warning', 'Сабаби рад карданро нишон диҳед / Укажите причину отклонения');
                 }
                 return;
             }
@@ -481,7 +481,7 @@
             if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
                 window.AppNotify.errorByKey('validation.error');
             } else {
-                notifyMessage('error', 'Қарорро интихоб кунед / Выберите решение');
+                notifyMessage('error', 'Лутфан қарорро интихоб кунед / Пожалуйста, выберите решение');
             }
             return;
         }
@@ -500,7 +500,7 @@
                 if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
                     window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
                 } else {
-                    notifyMessage('warning', 'Лутфан сабаби рад карданро нависед / Укажите причину отклонения');
+                    notifyMessage('warning', 'Сабаби рад карданро нишон диҳед / Укажите причину отклонения');
                 }
                 return;
             }

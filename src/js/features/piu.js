@@ -143,7 +143,7 @@
             if (window.AppNotify && typeof window.AppNotify.errorByKey === 'function') {
                 window.AppNotify.errorByKey('validation.error');
             } else {
-                notifyMessage('error', 'Қарорро интихоб кунед / Выберите решение');
+                notifyMessage('error', 'Лутфан қарорро интихоб кунед / Пожалуйста, выберите решение');
             }
             return;
         }
@@ -151,7 +151,7 @@
             if (window.AppNotify && typeof window.AppNotify.warningByKey === 'function') {
                 window.AppNotify.warningByKey('returnForRevision.warningCommentRequired');
             } else {
-                notifyMessage('warning', 'Лутфан сабаби баргардониданро нависед! / Укажите причину возврата!');
+                notifyMessage('warning', 'Сабаби баргардониданро нишон диҳед! / Укажите причину возврата!');
             }
             return;
         }
