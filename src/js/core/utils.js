@@ -165,10 +165,18 @@
 
     var notifyState = {
         initialized: false,
-        toastHost: null,
-        centerToastHost: null,
+        // toast modal
+        toastOverlay: null,
+        toastCard: null,
+        toastIcon: null,
+        toastTitle: null,
+        toastText: null,
+        toastCloseBtn: null,
+        toastTimer: null,
+        // confirm modal
         modalHost: null,
         modalCard: null,
+        modalIcon: null,
         modalTitle: null,
         modalMessage: null,
         modalConsequence: null,
@@ -196,133 +204,212 @@
         return node || null;
     }
 
+    function makeModalOverlay(id, zIndex) {
+        var el = document.createElement('div');
+        el.id = id;
+        el.style.position = 'fixed';
+        el.style.top = '0';
+        el.style.left = '0';
+        el.style.width = '100%';
+        el.style.height = '100%';
+        el.style.background = 'rgba(0,0,0,0.4)';
+        el.style.backdropFilter = 'blur(4px)';
+        el.style.webkitBackdropFilter = 'blur(4px)';
+        el.style.display = 'none';
+        el.style.justifyContent = 'center';
+        el.style.alignItems = 'center';
+        el.style.zIndex = String(zIndex || 9998);
+        el.style.padding = '18px';
+        return el;
+    }
+
+    function makeModalCard() {
+        var card = document.createElement('div');
+        card.style.background = '#ffffff';
+        card.style.width = '100%';
+        card.style.maxWidth = '360px';
+        card.style.padding = '28px 24px 22px';
+        card.style.borderRadius = '20px';
+        card.style.textAlign = 'center';
+        card.style.boxShadow = '0 20px 25px -5px rgba(0,0,0,0.2), 0 8px 10px -6px rgba(0,0,0,0.1)';
+        card.style.border = '1px solid #e5e7eb';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.9)';
+        card.style.transition = 'opacity 0.25s ease, transform 0.25s cubic-bezier(0.34,1.56,0.64,1)';
+        return card;
+    }
+
+    function makeIconCircle() {
+        var icon = document.createElement('div');
+        icon.style.width = '60px';
+        icon.style.height = '60px';
+        icon.style.borderRadius = '50%';
+        icon.style.display = 'flex';
+        icon.style.justifyContent = 'center';
+        icon.style.alignItems = 'center';
+        icon.style.margin = '0 auto 18px';
+        icon.style.fontSize = '28px';
+        icon.style.fontWeight = 'bold';
+        icon.style.flexShrink = '0';
+        return icon;
+    }
+
+    function animateCardIn(card) {
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            });
+        });
+    }
+
+    function animateCardOut(card, done) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.92)';
+        setTimeout(done, 220);
+    }
+
     function ensureNotifyUi() {
         if (notifyState.initialized) return;
         notifyState.initialized = true;
 
-        var toastHost = document.createElement('div');
-        toastHost.id = 'app-toast-host';
-        toastHost.style.position = 'fixed';
-        toastHost.style.right = '16px';
-        toastHost.style.bottom = '16px';
-        toastHost.style.zIndex = '9998';
-        toastHost.style.display = 'flex';
-        toastHost.style.flexDirection = 'column';
-        toastHost.style.gap = '14px';
-        toastHost.style.maxWidth = '560px';
-        toastHost.style.pointerEvents = 'none';
-        document.body.appendChild(toastHost);
-        notifyState.toastHost = toastHost;
+        // ── Toast modal ──────────────────────────────────────────────
+        var toastOverlay = makeModalOverlay('app-toast-overlay', 9998);
+        var toastCard = makeModalCard();
+        var toastIcon = makeIconCircle();
 
-        var centerToastHost = document.createElement('div');
-        centerToastHost.id = 'app-toast-host-center';
-        centerToastHost.style.position = 'fixed';
-        centerToastHost.style.inset = '0';
-        centerToastHost.style.zIndex = '9998';
-        centerToastHost.style.display = 'flex';
-        centerToastHost.style.alignItems = 'flex-start';
-        centerToastHost.style.justifyContent = 'center';
-        centerToastHost.style.paddingTop = '72px';
-        centerToastHost.style.paddingLeft = '16px';
-        centerToastHost.style.paddingRight = '16px';
-        centerToastHost.style.pointerEvents = 'none';
-        document.body.appendChild(centerToastHost);
-        notifyState.centerToastHost = centerToastHost;
+        var toastTitle = document.createElement('h3');
+        toastTitle.style.margin = '0 0 10px 0';
+        toastTitle.style.fontSize = '17px';
+        toastTitle.style.fontWeight = '700';
+        toastTitle.style.color = '#0f172a';
+        toastTitle.style.lineHeight = '1.3';
 
-        var overlay = document.createElement('div');
-        overlay.id = 'app-confirm-overlay';
-        overlay.style.position = 'fixed';
-        overlay.style.inset = '0';
-        overlay.style.zIndex = '9999';
-        overlay.style.background = 'rgba(15,23,42,0.45)';
-        overlay.style.display = 'none';
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        overlay.style.padding = '18px';
+        var toastText = document.createElement('p');
+        toastText.style.margin = '0 0 20px 0';
+        toastText.style.fontSize = '14px';
+        toastText.style.color = '#334155';
+        toastText.style.lineHeight = '1.55';
 
-        var card = document.createElement('div');
-        card.style.width = 'min(560px, 100%)';
-        card.style.background = '#ffffff';
-        card.style.border = '1px solid #e2e8f0';
-        card.style.borderRadius = '16px';
-        card.style.boxShadow = '0 12px 36px rgba(15,23,42,0.24)';
-        card.style.padding = '18px 18px 14px';
+        var toastCloseBtn = document.createElement('button');
+        toastCloseBtn.type = 'button';
+        toastCloseBtn.textContent = 'Понятно';
+        toastCloseBtn.style.padding = '10px 32px';
+        toastCloseBtn.style.border = 'none';
+        toastCloseBtn.style.borderRadius = '12px';
+        toastCloseBtn.style.fontWeight = '700';
+        toastCloseBtn.style.fontSize = '15px';
+        toastCloseBtn.style.cursor = 'pointer';
+        toastCloseBtn.style.color = '#ffffff';
 
-        var title = document.createElement('h3');
-        title.style.margin = '0 0 8px 0';
-        title.style.fontSize = '18px';
-        title.style.fontWeight = '700';
-        title.style.color = '#0f172a';
+        toastCard.appendChild(toastIcon);
+        toastCard.appendChild(toastTitle);
+        toastCard.appendChild(toastText);
+        toastCard.appendChild(toastCloseBtn);
+        toastOverlay.appendChild(toastCard);
+        document.body.appendChild(toastOverlay);
 
-        var msg = document.createElement('p');
-        msg.style.margin = '0 0 10px 0';
-        msg.style.fontSize = '14px';
-        msg.style.color = '#334155';
-        msg.style.lineHeight = '1.45';
+        toastOverlay.addEventListener('click', function (e) {
+            if (e.target === toastOverlay) closeToast();
+        });
+        toastCloseBtn.addEventListener('click', closeToast);
 
-        var cons = document.createElement('p');
-        cons.style.margin = '0';
-        cons.style.fontSize = '13px';
-        cons.style.color = '#475569';
-        cons.style.lineHeight = '1.45';
-        cons.style.background = '#f8fafc';
-        cons.style.border = '1px solid #e2e8f0';
-        cons.style.borderRadius = '10px';
-        cons.style.padding = '10px 12px';
+        notifyState.toastOverlay = toastOverlay;
+        notifyState.toastCard = toastCard;
+        notifyState.toastIcon = toastIcon;
+        notifyState.toastTitle = toastTitle;
+        notifyState.toastText = toastText;
+        notifyState.toastCloseBtn = toastCloseBtn;
 
-        var actions = document.createElement('div');
-        actions.style.display = 'flex';
-        actions.style.justifyContent = 'flex-end';
-        actions.style.gap = '10px';
-        actions.style.marginTop = '14px';
+        // ── Confirm modal ────────────────────────────────────────────
+        var confirmOverlay = makeModalOverlay('app-confirm-overlay', 9999);
+        var confirmCard = makeModalCard();
+        var confirmIcon = makeIconCircle();
+
+        var confirmTitle = document.createElement('h3');
+        confirmTitle.style.margin = '0 0 10px 0';
+        confirmTitle.style.fontSize = '17px';
+        confirmTitle.style.fontWeight = '700';
+        confirmTitle.style.color = '#0f172a';
+        confirmTitle.style.lineHeight = '1.3';
+
+        var confirmMsg = document.createElement('p');
+        confirmMsg.style.margin = '0 0 10px 0';
+        confirmMsg.style.fontSize = '14px';
+        confirmMsg.style.color = '#334155';
+        confirmMsg.style.lineHeight = '1.5';
+
+        var confirmCons = document.createElement('p');
+        confirmCons.style.margin = '0 0 4px 0';
+        confirmCons.style.fontSize = '13px';
+        confirmCons.style.color = '#475569';
+        confirmCons.style.lineHeight = '1.45';
+        confirmCons.style.background = '#f8fafc';
+        confirmCons.style.border = '1px solid #e2e8f0';
+        confirmCons.style.borderRadius = '10px';
+        confirmCons.style.padding = '10px 12px';
+        confirmCons.style.textAlign = 'left';
+
+        var confirmActions = document.createElement('div');
+        confirmActions.style.display = 'flex';
+        confirmActions.style.justifyContent = 'center';
+        confirmActions.style.gap = '10px';
+        confirmActions.style.marginTop = '18px';
 
         var cancelBtn = document.createElement('button');
         cancelBtn.type = 'button';
-        cancelBtn.style.padding = '8px 14px';
+        cancelBtn.style.padding = '10px 22px';
         cancelBtn.style.border = '1px solid #cbd5e1';
         cancelBtn.style.background = '#ffffff';
         cancelBtn.style.color = '#334155';
-        cancelBtn.style.borderRadius = '10px';
+        cancelBtn.style.borderRadius = '12px';
         cancelBtn.style.fontWeight = '600';
+        cancelBtn.style.fontSize = '14px';
         cancelBtn.style.cursor = 'pointer';
 
         var confirmBtn = document.createElement('button');
         confirmBtn.type = 'button';
-        confirmBtn.style.padding = '8px 14px';
+        confirmBtn.style.padding = '10px 22px';
         confirmBtn.style.border = '1px solid #16a34a';
         confirmBtn.style.background = '#16a34a';
         confirmBtn.style.color = '#ffffff';
-        confirmBtn.style.borderRadius = '10px';
+        confirmBtn.style.borderRadius = '12px';
         confirmBtn.style.fontWeight = '700';
+        confirmBtn.style.fontSize = '14px';
         confirmBtn.style.cursor = 'pointer';
 
-        actions.appendChild(cancelBtn);
-        actions.appendChild(confirmBtn);
-        card.appendChild(title);
-        card.appendChild(msg);
-        card.appendChild(cons);
-        card.appendChild(actions);
-        overlay.appendChild(card);
-        document.body.appendChild(overlay);
+        confirmActions.appendChild(cancelBtn);
+        confirmActions.appendChild(confirmBtn);
+        confirmCard.appendChild(confirmIcon);
+        confirmCard.appendChild(confirmTitle);
+        confirmCard.appendChild(confirmMsg);
+        confirmCard.appendChild(confirmCons);
+        confirmCard.appendChild(confirmActions);
+        confirmOverlay.appendChild(confirmCard);
+        document.body.appendChild(confirmOverlay);
 
-        overlay.addEventListener('click', function (e) {
-            if (e.target === overlay) closeConfirm(false);
+        confirmOverlay.addEventListener('click', function (e) {
+            if (e.target === confirmOverlay) closeConfirm(false);
         });
         cancelBtn.addEventListener('click', function () { closeConfirm(false); });
         confirmBtn.addEventListener('click', function () { closeConfirm(true); });
 
-        notifyState.modalHost = overlay;
-        notifyState.modalCard = card;
-        notifyState.modalTitle = title;
-        notifyState.modalMessage = msg;
-        notifyState.modalConsequence = cons;
+        notifyState.modalHost = confirmOverlay;
+        notifyState.modalCard = confirmCard;
+        notifyState.modalIcon = confirmIcon;
+        notifyState.modalTitle = confirmTitle;
+        notifyState.modalMessage = confirmMsg;
+        notifyState.modalConsequence = confirmCons;
         notifyState.modalCancelBtn = cancelBtn;
         notifyState.modalConfirmBtn = confirmBtn;
     }
 
     function closeConfirm(result) {
         if (!notifyState.modalHost) return;
-        notifyState.modalHost.style.display = 'none';
+        var overlay = notifyState.modalHost;
+        animateCardOut(notifyState.modalCard, function () {
+            overlay.style.display = 'none';
+        });
         if (notifyState.escHandler) {
             document.removeEventListener('keydown', notifyState.escHandler);
             notifyState.escHandler = null;
@@ -335,6 +422,13 @@
     function notifyConfirm(config) {
         ensureNotifyUi();
         var safe = config || {};
+
+        // Icon: question mark in amber
+        notifyState.modalIcon.style.background = '#fef9c3';
+        notifyState.modalIcon.style.color = '#d97706';
+        notifyState.modalIcon.style.border = '1px solid #fde68a';
+        notifyState.modalIcon.textContent = '?';
+
         notifyState.modalTitle.textContent = safe.title || 'Подтвердите действие';
         notifyState.modalMessage.textContent = safe.message || '';
         notifyState.modalConsequence.textContent = safe.consequence || '';
@@ -344,7 +438,11 @@
         notifyState.modalConfirmBtn.style.borderColor = safe.confirmColor || '#16a34a';
         notifyState.modalConfirmBtn.style.background = safe.confirmColor || '#16a34a';
 
+        // Reset animation state
+        notifyState.modalCard.style.opacity = '0';
+        notifyState.modalCard.style.transform = 'scale(0.9)';
         notifyState.modalHost.style.display = 'flex';
+        animateCardIn(notifyState.modalCard);
         notifyState.modalCancelBtn.focus();
 
         return new Promise(function (resolve) {
@@ -356,157 +454,83 @@
         });
     }
 
+    function closeToast() {
+        if (!notifyState.toastOverlay) return;
+        if (notifyState.toastTimer) {
+            clearTimeout(notifyState.toastTimer);
+            notifyState.toastTimer = null;
+        }
+        animateCardOut(notifyState.toastCard, function () {
+            if (notifyState.toastOverlay) notifyState.toastOverlay.style.display = 'none';
+        });
+    }
+
     function notifyToast(kind, title, message, timeoutMs) {
         ensureNotifyUi();
 
         var tone = kind || 'info';
         var palette = {
-            success: { dot: '#16a34a', bd: '#bbf7d0' },
-            info: { dot: '#2563eb', bd: '#bfdbfe' },
-            warning: { dot: '#d97706', bd: '#fde68a' },
-            error: { dot: '#dc2626', bd: '#fecaca' }
+            success: {
+                bg: '#dcfce7', color: '#16a34a', border: '#bbf7d0', icon: '✓',
+                defaultTitle: 'Успешно'
+            },
+            info: {
+                bg: '#dbeafe', color: '#2563eb', border: '#bfdbfe', icon: 'i',
+                defaultTitle: 'Информация'
+            },
+            warning: {
+                bg: '#fef9c3', color: '#d97706', border: '#fde68a', icon: '!',
+                defaultTitle: 'Внимание'
+            },
+            error: {
+                bg: '#fee2e2', color: '#ef4444', border: '#fecaca', icon: '!',
+                defaultTitle: 'Ошибка'
+            }
         };
         var ui = palette[tone] || palette.info;
 
-        var isRouteMessage = String(message || '').indexOf('Маршрут:') !== -1;
-        var host = notifyState.centerToastHost;
+        // Cancel any pending auto-dismiss
+        if (notifyState.toastTimer) {
+            clearTimeout(notifyState.toastTimer);
+            notifyState.toastTimer = null;
+        }
 
-        function extractRouteParts(rawMessage) {
-            var raw = String(rawMessage || '').trim();
-            if (!raw) return null;
+        // Set icon
+        notifyState.toastIcon.style.background = ui.bg;
+        notifyState.toastIcon.style.color = ui.color;
+        notifyState.toastIcon.style.border = '1px solid ' + ui.border;
+        notifyState.toastIcon.textContent = ui.icon;
 
-            var happenedLabel = 'Что произошло:';
-            var routeLabel = 'Маршрут:';
-            var nextLabel = 'Следующий статус:';
-            var routeIndex = raw.indexOf(routeLabel);
-            if (routeIndex === -1) return null;
+        // Set button color
+        notifyState.toastCloseBtn.style.background = ui.color;
 
-            var nextIndex = raw.indexOf(nextLabel);
+        // Format message: strip "Что произошло:" prefix, pull route into text
+        var raw = String(message || '');
+        var routeIndex = raw.indexOf('Маршрут:');
+        var displayText;
+        if (routeIndex !== -1) {
             var summary = raw.slice(0, routeIndex).trim().replace(/[.\s]+$/, '');
-            summary = summary.replace(new RegExp('^' + happenedLabel, 'i'), '').trim();
-            var routeValue = (nextIndex === -1
-                ? raw.slice(routeIndex + routeLabel.length)
-                : raw.slice(routeIndex + routeLabel.length, nextIndex)
-            ).trim().replace(/[.\s]+$/, '');
-            var nextValue = (nextIndex === -1
-                ? ''
-                : raw.slice(nextIndex + nextLabel.length)
-            ).trim().replace(/[.\s]+$/, '');
-
-            return { summary: summary, route: routeValue, next: nextValue };
+            summary = summary.replace(/^Что произошло:\s*/i, '').trim();
+            var routeTail = raw.slice(routeIndex).trim();
+            displayText = summary + (routeTail ? '\n\n' + routeTail : '');
+        } else {
+            displayText = raw.replace(/^Что произошло:\s*/i, '').trim();
         }
 
-        var routeParts = isRouteMessage ? extractRouteParts(message) : null;
+        notifyState.toastTitle.textContent = title || ui.defaultTitle;
+        notifyState.toastText.textContent = displayText;
+        notifyState.toastText.style.whiteSpace = routeIndex !== -1 ? 'pre-line' : 'normal';
 
-        while (host.children.length >= 10) {
-            host.removeChild(host.children[0]);
-        }
+        // Animate in
+        notifyState.toastCard.style.opacity = '0';
+        notifyState.toastCard.style.transform = 'scale(0.9)';
+        notifyState.toastOverlay.style.display = 'flex';
+        animateCardIn(notifyState.toastCard);
 
-        var toast = document.createElement('div');
-        toast.style.pointerEvents = 'auto';
-        toast.style.background = '#ffffff';
-        toast.style.border = '2px solid ' + ui.bd;
-        toast.style.borderRadius = '16px';
-        toast.style.padding = '18px 18px 14px';
-        toast.style.width = 'min(560px, calc(100vw - 32px))';
-        toast.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.07), 0 20px 50px -8px rgba(15,23,42,0.16), 0 0 0 1px rgba(0,0,0,0.03)';
-        toast.style.transform = 'translateY(-18px) scale(0.97)';
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 220ms ease, transform 220ms cubic-bezier(0.34,1.56,0.64,1)';
-
-        // Header: dot + title + close
-        var topRow = document.createElement('div');
-        topRow.style.display = 'flex';
-        topRow.style.alignItems = 'center';
-        topRow.style.gap = '8px';
-        topRow.style.marginBottom = '0';
-
-        var dot = document.createElement('span');
-        dot.style.display = 'inline-block';
-        dot.style.width = '12px';
-        dot.style.height = '12px';
-        dot.style.borderRadius = '50%';
-        dot.style.background = ui.dot;
-        dot.style.flexShrink = '0';
-
-        var titleEl = document.createElement('div');
-        titleEl.style.flex = '1';
-        titleEl.style.fontSize = '18px';
-        titleEl.style.fontWeight = '700';
-        titleEl.style.lineHeight = '1.2';
-        titleEl.style.color = '#0f172a';
-        titleEl.textContent = title || '';
-
-        var closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.textContent = '×';
-        closeBtn.style.border = 'none';
-        closeBtn.style.background = 'transparent';
-        closeBtn.style.color = '#94a3b8';
-        closeBtn.style.fontSize = '22px';
-        closeBtn.style.lineHeight = '1';
-        closeBtn.style.cursor = 'pointer';
-        closeBtn.style.padding = '0';
-        closeBtn.style.flexShrink = '0';
-        topRow.appendChild(dot);
-        topRow.appendChild(titleEl);
-        topRow.appendChild(closeBtn);
-
-        var msgEl = document.createElement('p');
-        msgEl.style.margin = '8px 0 0 0';
-        msgEl.style.fontSize = '14px';
-        msgEl.style.lineHeight = '1.5';
-        msgEl.style.color = '#334155';
-        msgEl.textContent = routeParts && routeParts.summary
-            ? routeParts.summary
-            : String(message || '').replace(/^Что произошло:\s*/i, '');
-
-        // Route + next status box — same style as consequence in confirm modal
-        var routeBox = null;
-        if (isRouteMessage && routeParts && (routeParts.route || routeParts.next)) {
-            routeBox = document.createElement('p');
-            routeBox.style.margin = '10px 0 0 0';
-            routeBox.style.fontSize = '13px';
-            routeBox.style.color = '#475569';
-            routeBox.style.lineHeight = '1.5';
-            routeBox.style.background = '#f8fafc';
-            routeBox.style.border = '1px solid #e2e8f0';
-            routeBox.style.borderRadius = '10px';
-            routeBox.style.padding = '10px 12px';
-            routeBox.style.whiteSpace = 'pre-line';
-            var boxText = '';
-            if (routeParts.route) boxText += 'Маршрут: ' + routeParts.route;
-            if (routeParts.next) boxText += (boxText ? '\n' : '') + 'Следующий статус: ' + routeParts.next;
-            routeBox.textContent = boxText;
-        }
-
-        toast.appendChild(topRow);
-        if (message) toast.appendChild(msgEl);
-        if (routeBox) toast.appendChild(routeBox);
-        host.appendChild(toast);
-
-        requestAnimationFrame(function () {
-            toast.style.opacity = '1';
-            toast.style.transform = 'translateY(0) scale(1)';
-        });
-
-        var timeout = timeoutMs;
-        if (!timeout) {
-            timeout = tone === 'error' ? 9000 : tone === 'warning' ? 7000 : 5000;
-        }
-
-        var timer = setTimeout(removeToast, timeout);
-        closeBtn.addEventListener('click', removeToast);
-        toast.addEventListener('mouseenter', function () { clearTimeout(timer); });
-        toast.addEventListener('mouseleave', function () { timer = setTimeout(removeToast, 1400); });
-
-        function removeToast() {
-            if (!toast.parentNode) return;
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(-10px) scale(0.97)';
-            setTimeout(function () {
-                if (toast.parentNode) toast.parentNode.removeChild(toast);
-            }, 180);
+        // Auto-dismiss for success/info; error/warning require manual close
+        if (tone === 'success' || tone === 'info') {
+            var delay = timeoutMs || (tone === 'success' ? 4000 : 5000);
+            notifyState.toastTimer = setTimeout(closeToast, delay);
         }
     }
 
