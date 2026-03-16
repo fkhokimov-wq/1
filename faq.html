@@ -238,6 +238,71 @@
             gap: .65rem;
         }
 
+        .role-hub {
+            margin: .35rem auto .95rem;
+            border: 1px solid #dbe7e0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+            padding: .85rem .9rem;
+        }
+
+        .role-hub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-bottom: .65rem;
+        }
+
+        .role-hub-head h3 {
+            font-size: 1rem;
+            color: #0f3d39;
+        }
+
+        .role-hub-head small {
+            color: #475569;
+            font-size: .9rem;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: .55rem;
+        }
+
+        .role-card {
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #dbe7e0;
+            border-radius: 12px;
+            background: #fcfefc;
+            padding: .55rem .6rem;
+            display: block;
+            min-height: 100%;
+        }
+
+        .role-card:hover {
+            border-color: #0ea5a5;
+            background: #f0fdfa;
+        }
+
+        .role-card b {
+            display: block;
+            color: #0f766e;
+            font-size: .9rem;
+            margin-bottom: .2rem;
+        }
+
+        .role-card ul {
+            margin: 0;
+            padding-left: 1rem;
+            color: #334155;
+            font-size: .84rem;
+            line-height: 1.4;
+        }
+
         .pill {
             border: 1px solid #bfd6cb;
             background: #fff;
@@ -741,6 +806,10 @@
                 grid-template-columns: 1fr 1fr;
             }
 
+            .role-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
             .faq-layout {
                 grid-template-columns: 1fr;
             }
@@ -769,6 +838,10 @@
             }
 
             .route-track {
+                grid-template-columns: 1fr;
+            }
+
+            .role-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -831,13 +904,54 @@
             <button class="pill" type="button" data-role-filter="committee">Комитет</button>
             <button class="pill" type="button" data-role-filter="monitoring">Мониторинг</button>
         </div>
-        <div class="toolbar-row" id="quickTags">
-            <button class="pill" type="button" data-tag="договор"># Договор</button>
-            <button class="pill" type="button" data-tag="отправка"># Отправка</button>
-            <button class="pill" type="button" data-tag="реестр"># Реестр</button>
-            <button class="pill" type="button" data-tag="мониторинг"># Мониторинг</button>
-            <button class="pill" type="button" data-tag="ошибка"># Ошибки</button>
-            <button class="pill" type="button" data-tag="отложено"># Отложено</button>
+    </section>
+
+    <section class="wrap role-hub" id="roleHub">
+        <div class="role-hub-head">
+            <h3>Выберите свою роль: что делать с заявкой</h3>
+            <small>Нажмите карточку роли и получите пошаговую инструкцию</small>
+        </div>
+        <div class="role-grid">
+            <a class="role-card" href="#facilitator">
+                <b>Фасилитатор</b>
+                <ul>
+                    <li>Создать и заполнить заявку.</li>
+                    <li>Загрузить Word, PDF и 4 фото.</li>
+                    <li>Отправить, доработать, разблокировать.</li>
+                </ul>
+            </a>
+            <a class="role-card" href="#gmc">
+                <b>ШИГ / КУГ</b>
+                <ul>
+                    <li>Оценить заявку.</li>
+                    <li>Выбрать решение.</li>
+                    <li>Сформировать и отправить реестр.</li>
+                </ul>
+            </a>
+            <a class="role-card" href="#piu">
+                <b>ГТЛ / ГРП</b>
+                <ul>
+                    <li>Провести проверку.</li>
+                    <li>Указать решение и комментарий.</li>
+                    <li>Завершить этап.</li>
+                </ul>
+            </a>
+            <a class="role-card" href="#committee">
+                <b>Комитет</b>
+                <ul>
+                    <li>Открыть входящий реестр.</li>
+                    <li>Принять решения по заявкам.</li>
+                    <li>Утвердить список и выгрузить протокол.</li>
+                </ul>
+            </a>
+            <a class="role-card" href="#monitoring">
+                <b>Мониторинг</b>
+                <ul>
+                    <li>Открыть активный визит.</li>
+                    <li>Заполнить обязательные поля.</li>
+                    <li>Сохранить и перейти к следующему визиту.</li>
+                </ul>
+            </a>
         </div>
     </section>
 
@@ -1538,7 +1652,6 @@
             var openAllBtn = document.getElementById("openAllBtn");
             var closeAllBtn = document.getElementById("closeAllBtn");
             var roleFilterButtons = Array.prototype.slice.call(document.querySelectorAll("#roleFilters [data-role-filter]"));
-            var tagButtons = Array.prototype.slice.call(document.querySelectorAll("#quickTags [data-tag]"));
             var sectionBlocks = Array.prototype.slice.call(document.querySelectorAll("main .section"));
             var tocLinks = Array.prototype.slice.call(document.querySelectorAll(".toc-link"));
             var mobileTocLinks = Array.prototype.slice.call(document.querySelectorAll(".mobile-toc-link"));
@@ -1862,14 +1975,6 @@
                     activeRoleFilter = String(btn.getAttribute("data-role-filter") || "all").toLowerCase();
                     roleFilterButtons.forEach(function (b) { b.classList.remove("active"); });
                     btn.classList.add("active");
-                    runSearch();
-                });
-            });
-
-            tagButtons.forEach(function (btn) {
-                btn.addEventListener("click", function () {
-                    var term = String(btn.getAttribute("data-tag") || "").trim();
-                    searchInput.value = term;
                     runSearch();
                 });
             });
