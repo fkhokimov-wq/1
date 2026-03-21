@@ -353,6 +353,75 @@
             })();
         </script>
 
+        <div id="mobile-controls-row" class="mobile-controls-row hidden mb-4">
+            <button id="btn-mobile-filters" type="button"
+                class="mobile-controls-btn bg-white text-slate-700 border border-slate-200 shadow-sm">
+                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                <span>Фильтры</span>
+            </button>
+            <button id="btn-mobile-tools" type="button"
+                class="mobile-controls-btn bg-white text-slate-700 border border-slate-200 shadow-sm">
+                <i data-lucide="ellipsis" class="w-4 h-4"></i>
+                <span>Инструменты</span>
+            </button>
+        </div>
+
+        <div id="mobile-filters-sheet" class="mobile-sheet hidden" aria-hidden="true">
+            <div class="mobile-sheet__backdrop" data-mobile-sheet-close="mobile-filters-sheet"></div>
+            <div class="mobile-sheet__panel">
+                <div class="mobile-sheet__head">
+                    <h3 class="text-[13px] font-bold text-slate-800">Фильтры раздела</h3>
+                    <button type="button" class="mobile-sheet__close" data-mobile-sheet-close="mobile-filters-sheet"
+                        aria-label="Закрыть">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="mobile-main-filter-list">
+                    <button type="button" class="mobile-main-filter-btn"
+                        data-mobile-main-filter="facilitator">Фасилитатор</button>
+                    <button type="button" class="mobile-main-filter-btn" data-mobile-main-filter="gmc">ШИГ /
+                        КУГ</button>
+                    <button type="button" class="mobile-main-filter-btn"
+                        data-mobile-main-filter="committee">Комитет</button>
+                    <button type="button" class="mobile-main-filter-btn" data-mobile-main-filter="statuses">По
+                        статусам</button>
+                    <button type="button" class="mobile-main-filter-btn"
+                        data-mobile-main-filter="finance_registry">Финансы</button>
+                </div>
+                <div id="mobile-subfilters-wrap" class="hidden mt-3">
+                    <h4 class="text-[11px] font-bold text-slate-600 mb-2">Подфильтры</h4>
+                    <div id="mobile-subfilters-list" class="mobile-tools-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-tools-sheet" class="mobile-sheet hidden" aria-hidden="true">
+            <div class="mobile-sheet__backdrop" data-mobile-sheet-close="mobile-tools-sheet"></div>
+            <div class="mobile-sheet__panel">
+                <div class="mobile-sheet__head">
+                    <h3 class="text-[13px] font-bold text-slate-800">Инструменты</h3>
+                    <button type="button" class="mobile-sheet__close" data-mobile-sheet-close="mobile-tools-sheet"
+                        aria-label="Закрыть">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div class="mobile-tools-list">
+                    <button type="button" id="btn-mobile-grid" class="mobile-tools-btn">
+                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                        <span>Режим карточек</span>
+                    </button>
+                    <button type="button" id="btn-mobile-list" class="mobile-tools-btn">
+                        <i data-lucide="list" class="w-4 h-4"></i>
+                        <span>Режим таблицы</span>
+                    </button>
+                    <button type="button" id="btn-mobile-notifications" class="mobile-tools-btn">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        <span>Уведомления</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Блок создания заявки -->
         <div id="createFormBlock"
             class="hidden bg-[#F4F5FC] border border-[#E1E4FA] rounded-xl p-5 sm:p-6 shadow-sm mb-6 animate-fade-in relative z-50">
@@ -1098,7 +1167,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-center gap-4 mt-6 pt-5 border-t border-gray-100">
+                    <div
+                        class="mobile-sticky-actions flex flex-col sm:flex-row items-center gap-4 mt-6 pt-5 border-t border-gray-100">
                         <button type="button" onclick="saveToDraft()"
                             class="w-full sm:w-1/2 bg-slate-100 text-slate-700 py-3 rounded-xl text-[13px] font-bold hover:bg-slate-200 shadow-sm flex flex-col items-center leading-tight transition-colors border border-slate-200"><span>Захира
                                 ба сиёҳнавис</span><span class="ru">Сохранить в черновик</span></button>
@@ -1163,14 +1233,23 @@
                                         </div>
                                     </button>
                                     <button type="button" onclick="downloadCurrentPdfFromModal()"
-                                        class="bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-2 shadow-sm justify-center"><i
+                                        class="modal-secondary-action bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-2 shadow-sm justify-center"><i
                                             data-lucide="file" class="w-4 h-4"></i><span class="leading-tight">Боргирии
                                             PDF <span class="ru font-normal">/ Скачать PDF</span></span></button>
                                     <button type="button" onclick="downloadCurrentPhotoPackFromModal()"
-                                        class="bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-2 shadow-sm justify-center"><i
+                                        class="modal-secondary-action bg-white border border-blue-300 text-blue-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-blue-100 transition-colors inline-flex items-center gap-2 shadow-sm justify-center"><i
                                             data-lucide="images" class="w-4 h-4"></i><span
                                             class="leading-tight">Боргирии фото
                                             <span class="ru font-normal">/ Скачать фото</span></span></button>
+                                    <details class="modal-more-actions sm:hidden">
+                                        <summary>Еще</summary>
+                                        <div class="modal-more-actions__panel">
+                                            <button type="button" onclick="downloadCurrentPdfFromModal()">Скачать
+                                                PDF</button>
+                                            <button type="button" onclick="downloadCurrentPhotoPackFromModal()">Скачать
+                                                фото</button>
+                                        </div>
+                                    </details>
                                 </div>
                             </div>
 
@@ -1623,14 +1702,23 @@
                                         Word
                                         <span class="ru font-normal">/ Скачать Word</span></span></button>
                                 <button type="button" onclick="downloadCurrentPdfFromModal()"
-                                    class="bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
+                                    class="modal-secondary-action bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
                                         data-lucide="file" class="w-4 h-4"></i><span class="leading-tight">Боргирии PDF
                                         <span class="ru font-normal">/ Скачать PDF</span></span></button>
                                 <button type="button" onclick="downloadCurrentPhotoPackFromModal()"
-                                    class="bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
+                                    class="modal-secondary-action bg-white border border-teal-300 text-teal-700 py-2 px-3 rounded-lg text-[12px] font-bold hover:bg-teal-100 shadow-sm inline-flex items-center gap-2"><i
                                         data-lucide="images" class="w-4 h-4"></i><span class="leading-tight">Боргирии
                                         фото
                                         <span class="ru font-normal">/ Скачать фото</span></span></button>
+                                <details class="modal-more-actions sm:hidden">
+                                    <summary>Еще</summary>
+                                    <div class="modal-more-actions__panel">
+                                        <button type="button" onclick="downloadCurrentPdfFromModal()">Скачать
+                                            PDF</button>
+                                        <button type="button" onclick="downloadCurrentPhotoPackFromModal()">Скачать
+                                            фото</button>
+                                    </div>
+                                </details>
                             </div>
                         </div>
 
@@ -1657,7 +1745,7 @@
                                     placeholder="Шарҳи худро нависед... / Введите комментарий..."></textarea>
                             </div>
 
-                            <button onclick="saveComDecision()"
+                            <button id="btn-com-save-action" onclick="saveComDecision()"
                                 class="w-full bg-[#5b4ef5] text-white py-3 rounded-xl text-[13px] font-bold mt-5 shadow-sm hover:bg-[#4a3be0] transition-colors flex flex-col items-center leading-tight"><span>Захира
                                     кардани қарор</span><span class="ru">Сохранить решение</span></button>
                         </div>
@@ -1730,13 +1818,22 @@
                                         title="Боргирии Word / Скачать Word"><i data-lucide="download"
                                             class="w-4 h-4"></i></button>
                                     <button onclick="downloadCurrentPdfFromModal()"
-                                        class="bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                        class="modal-secondary-action bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
                                         title="Боргирии PDF / Скачать PDF"><i data-lucide="file"
                                             class="w-4 h-4"></i></button>
                                     <button onclick="downloadCurrentPhotoPackFromModal()"
-                                        class="bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
+                                        class="modal-secondary-action bg-white border border-blue-200 text-blue-600 p-2 rounded-lg hover:bg-blue-50 transition-colors"
                                         title="Боргирии фото / Скачать фото-комплект"><i data-lucide="images"
                                             class="w-4 h-4"></i></button>
+                                    <details class="modal-more-actions sm:hidden">
+                                        <summary>Еще</summary>
+                                        <div class="modal-more-actions__panel">
+                                            <button type="button" onclick="downloadCurrentPdfFromModal()">Скачать
+                                                PDF</button>
+                                            <button type="button" onclick="downloadCurrentPhotoPackFromModal()">Скачать
+                                                фото</button>
+                                        </div>
+                                    </details>
                                 </div>
                             </div>
                             <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
@@ -2033,7 +2130,7 @@
                                     class="hidden mt-3 text-[11px] text-red-800 bg-red-50 border border-red-200 rounded-lg px-2.5 py-2">
                                 </div>
 
-                                <div class="mt-3 flex flex-wrap gap-2">
+                                <div class="mobile-sticky-actions mt-3 flex flex-wrap gap-2">
                                     <button type="button" id="btn-save-grant-contract-draft"
                                         onclick="saveGrantContractDraftFromModal()"
                                         class="bg-indigo-600 text-white py-1.5 px-2.5 rounded-lg text-[11px] font-bold hover:bg-indigo-700 transition-colors">Сохранить

@@ -1239,6 +1239,198 @@
         renderAllCards();
     }
 
+    function setMobileSheetVisibility(id, visible) {
+        const sheet = document.getElementById(id);
+        if (!sheet) return;
+        sheet.classList.toggle('hidden', !visible);
+        sheet.setAttribute('aria-hidden', visible ? 'false' : 'true');
+
+        const anyOpen = ['mobile-filters-sheet', 'mobile-tools-sheet'].some(function (sheetId) {
+            const el = document.getElementById(sheetId);
+            return !!el && !el.classList.contains('hidden');
+        });
+        if (document.body) document.body.classList.toggle('mobile-sheet-open', anyOpen);
+    }
+
+    function closeAllMobileSheets() {
+        setMobileSheetVisibility('mobile-filters-sheet', false);
+        setMobileSheetVisibility('mobile-tools-sheet', false);
+    }
+
+    function closeAllCardMorePanels(exceptPanelId) {
+        document.querySelectorAll('.card-more-panel').forEach(function (panel) {
+            if (exceptPanelId && panel.id === exceptPanelId) return;
+            panel.classList.add('hidden');
+        });
+    }
+
+    function syncMobileMainFilterButtons() {
+        const active = window.activeMainFilter || 'facilitator';
+        document.querySelectorAll('.mobile-main-filter-btn').forEach(function (btn) {
+            btn.classList.toggle('is-active', btn.getAttribute('data-mobile-main-filter') === active);
+        });
+    }
+
+    function getMobileSubFilterConfig() {
+        if (window.activeMainFilter === 'facilitator') {
+            return {
+                sourceSelector: '.fac-filter-btn',
+                sourceAttr: 'data-fac-filter',
+                sourceActiveValue: window.activeFacFilter,
+                targetSelectorPrefix: '.fac-filter-btn[data-fac-filter="'
+            };
+        }
+        if (window.activeMainFilter === 'gmc') {
+            return {
+                sourceSelector: '.gmc-filter-btn',
+                sourceAttr: 'data-gmc-filter',
+                sourceActiveValue: window.activeGmcFilter,
+                targetSelectorPrefix: '.gmc-filter-btn[data-gmc-filter="'
+            };
+        }
+        if (window.activeMainFilter === 'statuses') {
+            return {
+                sourceSelector: '.stat-filter-btn',
+                sourceAttr: 'data-stat-filter',
+                sourceActiveValue: window.activeStatFilter,
+                targetSelectorPrefix: '.stat-filter-btn[data-stat-filter="'
+            };
+        }
+        if (window.activeMainFilter === 'committee') {
+            return {
+                sourceSelector: '.com-filter-btn',
+                sourceAttr: 'data-com-filter',
+                sourceActiveValue: window.activeComFilter,
+                targetSelectorPrefix: '.com-filter-btn[data-com-filter="'
+            };
+        }
+        return null;
+    }
+
+    function renderMobileSubFilters() {
+        const wrap = document.getElementById('mobile-subfilters-wrap');
+        const list = document.getElementById('mobile-subfilters-list');
+        if (!wrap || !list) return;
+
+        const config = getMobileSubFilterConfig();
+        if (!config) {
+            wrap.classList.add('hidden');
+            list.innerHTML = '';
+            return;
+        }
+
+        const sourceButtons = Array.from(document.querySelectorAll(config.sourceSelector));
+        if (sourceButtons.length === 0) {
+            wrap.classList.add('hidden');
+            list.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        sourceButtons.forEach(function (sourceBtn) {
+            const value = sourceBtn.getAttribute(config.sourceAttr) || '';
+            if (!value) return;
+
+            const labelPrimary = sourceBtn.querySelector('.filter-text span:first-child');
+            const fallbackText = (sourceBtn.textContent || '').replace(/\s+/g, ' ').trim();
+            const label = (labelPrimary ? labelPrimary.textContent : fallbackText) || fallbackText || value;
+            const activeClass = (config.sourceActiveValue === value) ? ' is-active' : '';
+            html += '<button type="button" class="mobile-main-filter-btn mobile-subfilter-btn' + activeClass + '" data-mobile-subfilter-value="' + value + '">' + label + '</button>';
+        });
+
+        list.innerHTML = html;
+        wrap.classList.remove('hidden');
+
+        list.querySelectorAll('.mobile-subfilter-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const value = btn.getAttribute('data-mobile-subfilter-value');
+                const target = document.querySelector(config.targetSelectorPrefix + value + '"]');
+                if (target) target.click();
+                renderMobileSubFilters();
+            });
+        });
+    }
+
+    function initializeMobileControls() {
+        if (window.__mobileControlsInitialized) return;
+        window.__mobileControlsInitialized = true;
+
+        const btnOpenFilters = document.getElementById('btn-mobile-filters');
+        const btnOpenTools = document.getElementById('btn-mobile-tools');
+
+        if (btnOpenFilters) {
+            btnOpenFilters.addEventListener('click', function () {
+                const target = document.getElementById('mobile-filters-sheet');
+                const nextState = !!target && target.classList.contains('hidden');
+                setMobileSheetVisibility('mobile-tools-sheet', false);
+                setMobileSheetVisibility('mobile-filters-sheet', nextState);
+                syncMobileMainFilterButtons();
+                renderMobileSubFilters();
+            });
+        }
+
+        if (btnOpenTools) {
+            btnOpenTools.addEventListener('click', function () {
+                const target = document.getElementById('mobile-tools-sheet');
+                const nextState = !!target && target.classList.contains('hidden');
+                setMobileSheetVisibility('mobile-filters-sheet', false);
+                setMobileSheetVisibility('mobile-tools-sheet', nextState);
+            });
+        }
+
+        document.querySelectorAll('[data-mobile-main-filter]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                applyMainFilter(btn.getAttribute('data-mobile-main-filter'));
+                syncMobileMainFilterButtons();
+                renderMobileSubFilters();
+            });
+        });
+
+        document.querySelectorAll('[data-mobile-sheet-close]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const id = btn.getAttribute('data-mobile-sheet-close');
+                setMobileSheetVisibility(id, false);
+            });
+        });
+
+        const btnMobileGrid = document.getElementById('btn-mobile-grid');
+        if (btnMobileGrid) {
+            btnMobileGrid.addEventListener('click', function () {
+                setViewMode('grid');
+                setMobileSheetVisibility('mobile-tools-sheet', false);
+            });
+        }
+
+        const btnMobileList = document.getElementById('btn-mobile-list');
+        if (btnMobileList) {
+            btnMobileList.addEventListener('click', function () {
+                setViewMode('list');
+                setMobileSheetVisibility('mobile-tools-sheet', false);
+            });
+        }
+
+        const btnMobileNotifications = document.getElementById('btn-mobile-notifications');
+        if (btnMobileNotifications) {
+            btnMobileNotifications.addEventListener('click', function () {
+                const desktopBellBtn = document.getElementById('btn-unlock-notifications');
+                if (desktopBellBtn) desktopBellBtn.click();
+                setMobileSheetVisibility('mobile-tools-sheet', false);
+            });
+        }
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') closeAllMobileSheets();
+        });
+
+        document.addEventListener('click', function (event) {
+            if (event.target.closest('.card-more-wrap')) return;
+            closeAllCardMorePanels();
+        });
+
+        syncMobileMainFilterButtons();
+        renderMobileSubFilters();
+    }
+
     function isApprovedRegistryApplicantView() {
         return window.activeMainFilter === 'approved_registry'
             && ['facilitator', 'gmc'].includes(window.approvedRegistrySourceRole);
@@ -1450,7 +1642,10 @@
             ? '<span class="bg-teal-100 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded text-[10px] font-bold ml-2 whitespace-nowrap"><i data-lucide="layers" class="w-3 h-3 inline mr-0.5"></i>' + app.protocolId + '</span>'
             : '';
         const protocolOpenAction = app.protocolId
-            ? '<button onclick="event.stopPropagation(); openCommitteeBatch(\'' + app.protocolId + '\')" class="bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-2.5 py-1 rounded-lg hover:bg-teal-50 transition-colors">Рӯйхат <span class="ru font-normal">/ Список</span></button>'
+            ? '<button onclick="event.stopPropagation(); openCommitteeBatch(\'' + app.protocolId + '\')" class="card-secondary-desktop bg-white text-teal-700 border border-teal-300 text-[11px] font-bold px-2.5 py-1 rounded-lg hover:bg-teal-50 transition-colors">Рӯйхат <span class="ru font-normal">/ Список</span></button>'
+            : '';
+        const protocolMoreMobile = app.protocolId
+            ? '<div class="card-more-wrap"><button type="button" class="card-more-toggle" onclick="event.stopPropagation(); window.toggleCardMorePanel(\'more-approved-' + app.id + '\')">Еще</button><div id="more-approved-' + app.id + '" class="card-more-panel hidden"><button type="button" class="card-more-item" onclick="event.stopPropagation(); openCommitteeBatch(\'' + app.protocolId + '\'); window.closeAllCardMorePanels();">Список</button></div></div>'
             : '';
         const docs = (typeof window.ensureDocumentBundle === 'function') ? window.ensureDocumentBundle(app) : null;
         const currentWordVersion = docs && docs.currentWordVersion ? docs.currentWordVersion : 0;
@@ -1480,7 +1675,7 @@
         card.className = isFullyCompleted
             ? 'bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-5 shadow-md shadow-emerald-100/70 transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-emerald-500'
             : 'bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm transition-all duration-200 flex flex-col min-h-[160px] animate-fade-in cursor-pointer hover:border-emerald-400';
-        card.innerHTML = '<div class="flex justify-between items-start mb-1 gap-3"><h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3><div class="' + (isFullyCompleted ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-700') + ' px-2 py-1 rounded-md text-[10px] font-bold">' + (isFullyCompleted ? 'Пурра анҷом ёфт <span class="ru font-normal">/ Полностью завершена</span>' : 'Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span>') + '</div></div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolBadge + wordVersionBadge + completionBadge + agreementBadge + packageBadge + '</div>' + (isFullyCompleted ? '<div class="mt-2 text-[11px] text-emerald-800 font-semibold">Закрыта: ' + completionStamp + '</div>' : '') + '<div class="mt-4 mb-4 flex flex-col"><span class="text-emerald-700 font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + String((app.date || '').split(',')[0] || '—') + '</span><div class="flex items-center gap-2">' + protocolOpenAction + '<span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="event.stopPropagation(); openApprovedFor(\'' + app.id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span></div></div>';
+        card.innerHTML = '<div class="flex justify-between items-start mb-1 gap-3"><h3 class="font-bold text-[14px] text-slate-800">' + app.name + '</h3><div class="' + (isFullyCompleted ? 'bg-emerald-700 text-white' : 'bg-emerald-100 text-emerald-700') + ' px-2 py-1 rounded-md text-[10px] font-bold">' + (isFullyCompleted ? 'Пурра анҷом ёфт <span class="ru font-normal">/ Полностью завершена</span>' : 'Тасдиқ шуд <span class="ru font-normal">/ Одобрена</span>') + '</div></div><div class="text-[11px] text-slate-500 mb-auto flex items-center flex-wrap gap-y-1">#' + app.id + ' • ' + app.sector + protocolBadge + wordVersionBadge + completionBadge + agreementBadge + packageBadge + '</div>' + (isFullyCompleted ? '<div class="mt-2 text-[11px] text-emerald-800 font-semibold">Закрыта: ' + completionStamp + '</div>' : '') + '<div class="mt-4 mb-4 flex flex-col"><span class="text-emerald-700 font-bold text-[14px]">' + app.amount + ' сомонӣ / сом.</span></div><div class="flex justify-between items-center mt-auto border-t border-slate-200 pt-4"><span class="text-xs text-slate-400 font-medium">' + String((app.date || '').split(',')[0] || '—') + '</span><div class="flex items-center gap-2">' + protocolOpenAction + protocolMoreMobile + '<span class="text-emerald-600 text-[12px] font-bold cursor-pointer" onclick="event.stopPropagation(); openApprovedFor(\'' + app.id + '\')">Кушодан <span class="ru font-normal">/ Открыть</span></span></div></div>';
         card.onclick = function (e) {
             if (e.target.closest('button, a, svg, select, input, span[onclick]')) return;
             window.openApprovedFor(app.id);
@@ -2207,6 +2402,8 @@
         // Rebuild cards each time to avoid stale "view-only" actions from previous mode.
         renderAllCards();
         updateActiveModeIndicator();
+        syncMobileMainFilterButtons();
+        renderMobileSubFilters();
     }
 
     function setupSubFilters(cls) {
@@ -2239,6 +2436,7 @@
                 }
                 updateCompletedSummaryBar();
                 updateActiveModeIndicator();
+                renderMobileSubFilters();
             });
         });
     }
@@ -2264,6 +2462,8 @@
             const el = document.getElementById(id);
             if (el) el.addEventListener('change', updateDashboardFilter);
         });
+
+        initializeMobileControls();
 
         const exportBtn = document.getElementById('btn-export-finance-statement');
         if (exportBtn) {
@@ -2517,4 +2717,13 @@
     window.resetGrantContractAutoFieldsFromModal = resetGrantContractAutoFieldsFromModal;
     window.toggleGrantContractDraftPanelFromModal = toggleGrantContractDraftPanelFromModal;
     window.exportFinanceCompletedStatement = exportFinanceCompletedStatement;
+    window.closeAllCardMorePanels = closeAllCardMorePanels;
+    window.toggleCardMorePanel = function (panelId) {
+        if (!panelId) return;
+        const panel = document.getElementById(panelId);
+        if (!panel) return;
+        const willOpen = panel.classList.contains('hidden');
+        closeAllCardMorePanels(panelId);
+        panel.classList.toggle('hidden', !willOpen);
+    };
 })();
