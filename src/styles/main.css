@@ -506,15 +506,15 @@ body {
     }
 
     .role-tools {
-        display: none !important;
+        display: none;
     }
 
     #main-filters-bar {
-        display: none !important;
+        display: none;
     }
 
     .mobile-controls-row {
-        display: flex;
+        display: flex !important;
     }
 
     body.mobile-sheet-open {
@@ -534,11 +534,11 @@ body {
     }
 
     #mainDashboardList {
-        display: none !important;
+        display: none;
     }
 
     #mainDashboardGrid {
-        display: grid !important;
+        display: grid;
     }
 
     .card-secondary-desktop {
@@ -550,11 +550,11 @@ body {
     }
 
     .modal-secondary-action {
-        display: none !important;
+        display: none;
     }
 
     .modal-more-actions {
-        display: inline-flex;
+        display: inline-flex !important;
     }
 
     .mobile-sticky-actions {
@@ -576,5 +576,140 @@ body {
         bottom: 0;
         z-index: 15;
         box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.06);
+    }
+}
+
+@media (max-width: 390px) {
+    body {
+        padding: 10px;
+    }
+
+    #mainDashboardGrid {
+        gap: 10px;
+    }
+
+    #mainDashboardGrid>div {
+        padding: 12px;
+        min-height: 138px;
+        border-radius: 14px;
+    }
+
+    #mainDashboardGrid>div h3 {
+        font-size: 13px;
+        line-height: 1.2;
+    }
+
+    #mainDashboardGrid>div [class*="text-[14px]"] {
+        font-size: 13px;
+    }
+
+    #mainDashboardGrid>div [class*="text-[13px]"] {
+        font-size: 12px;
+    }
+
+    #mainDashboardGrid>div [class*="text-[11px]"] {
+        font-size: 10px;
+    }
+
+    #mainDashboardGrid>div>div:first-child {
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+
+    #mainDashboardGrid>div>div:first-child>div:last-child {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #mainDashboardGrid>div [class*="rounded text-[10px]"] {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #mainDashboardGrid>div [class*="mt-5 mb-5"] {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    #mainDashboardGrid>div [class*="border-t"] {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    #mainDashboardGrid>div [class*="border-t"]>span:first-child {
+        flex: 1 1 auto;
+        min-width: 96px;
+    }
+
+    #mainDashboardGrid>div [class*="border-t"] .card-more-toggle {
+        min-height: 28px;
+        padding: 0 8px;
+        font-size: 10px;
+    }
+
+    .card-more-panel,
+    .modal-more-actions__panel {
+        max-width: calc(100vw - 24px);
+    }
+
+    .modal-more-actions summary {
+        min-height: 32px;
+        padding: 5px 9px;
+    }
+
+    .mobile-sticky-actions {
+        gap: 6px;
+        padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+    }
+
+    #btn-save-grant-contract-draft {
+        flex: 1 1 100%;
+        min-height: 38px;
+    }
+
+    .role-tab {
+        min-width: 112px;
+        padding: 8px 8px;
+    }
+
+    .mobile-controls-btn {
+        min-height: 40px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 360px) {
+    #mainDashboardGrid {
+        gap: 8px;
+    }
+
+    #mainDashboardGrid>div {
+        padding: 10px;
+        min-height: 130px;
+    }
+
+    #mainDashboardGrid>div h3 {
+        font-size: 12px;
+    }
+
+    #mainDashboardGrid>div [class*="text-[10px]"],
+    #mainDashboardGrid>div [class*="text-[11px]"] {
+        font-size: 9px;
+    }
+
+    .card-more-panel,
+    .modal-more-actions__panel {
+        max-width: calc(100vw - 16px);
+    }
+
+    .mobile-sticky-actions {
+        padding: 7px 6px calc(7px + env(safe-area-inset-bottom));
     }
 }
